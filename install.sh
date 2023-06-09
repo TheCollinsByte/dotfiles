@@ -8,7 +8,7 @@
 # This script will create links for the dotfiles.
 
 # Step 1: ensure all necessary directories exist before linking files.
-for dir in $(find dotfiles/ -mindepth 1 -type d); do
+for dir in $(ls | find * -mindepth 1 -type d ! -name '.git' ! -name '.gitignore'); do
 	target="$HOME/${dir#dotfiles/}"
 	echo "INFO: Ensuring directory exists: $target"
 	mkdir -p $target
