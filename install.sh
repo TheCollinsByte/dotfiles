@@ -68,6 +68,18 @@ function setup_symlinks {
     echo -e "\u001b[7m Done! \u001b[0m"
 }
 
+function setup_symlinks {
+    echo -e "\u001b[7m Setting up symlinks... \u001b[0m"
+
+    echo -e "\u001b[7m Done! \u001b[0m"
+}
+
+function distro_tweaks {
+    echo -e "\u001b[7m Distro specific tweaks... \u001b[0m"
+
+    echo -e "\u001b[7m Done! \u001b[0m"
+}
+
 # Menu TUI
 echo -e "\u001b[32;1m Setting up Dotfiles...\u001b[0m"
 
@@ -107,6 +119,14 @@ case $option in
         setup_symlinks
         ;;
 
+    "5")
+        distro_tweaks
+        ;;
+
+    *)
+        echo -e "\u001b[31;1m Invalid option entered, Bye! \u001b[0m"
+        exit 0
+        ;;
 esac
 
 
