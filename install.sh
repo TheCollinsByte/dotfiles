@@ -50,6 +50,12 @@ function install_packages {
        echo -e "\u001b[7m Done! \u001b[0m"
 }
 
+function install_extras {
+      echo -e "\u001b[7m Installing Extras.... \u001b[0m"
+
+       echo -e "\u001b[7m Done! \u001b[0m"
+}
+
 # Menu TUI
 echo -e "\u001b[32;1m Setting up Dotfiles...\u001b[0m"
 
@@ -77,4 +83,19 @@ case $option in
         install_packages
         ;;
 
+    "2")
+        install_extras
+        ;;
+
 esac
+
+
+
+
+
+
+
+
+
+
+
