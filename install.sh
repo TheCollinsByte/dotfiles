@@ -35,3 +35,7 @@ for dir in $(find * -mindepth 1 -type d ! -name '.git'); do
     done
 done
 
+
+# Menu TUI
+echo -e "\u001b[32;1m Setting up Dotfiles...\u001b[0m"
+
