@@ -8,6 +8,7 @@
 # This script will create links for the dotfiles.
 
 # Step 1: ensure all necessary directories exist before linking files.
+<<com 
 for dir in $(find * -mindepth 1 -type d ! -name '.git'); do
 
 	target="$HOME/${dir#dotfiles/}"
@@ -34,7 +35,20 @@ for dir in $(find * -mindepth 1 -type d ! -name '.git'); do
         fi
     done
 done
+com
 
+
+function setup_dotfiles {
+      echo -e "\u001b[7m Setting up Dotfiles... \u001b[0m"
+
+       echo -e "\u001b[7m Done! \u001b[0m"
+}
+
+function install_packages {
+      echo -e "\u001b[7m Setting up Dotfiles... \u001b[0m"
+
+       echo -e "\u001b[7m Done! \u001b[0m"
+}
 
 # Menu TUI
 echo -e "\u001b[32;1m Setting up Dotfiles...\u001b[0m"
@@ -52,6 +66,54 @@ echo -en "\u001b[32;1m ==> \u001b[0m"
 
 read -r option
 
+
 case $option in 
 
+    "0")
+        setup_dotfiles
+        ;;
+
+    "1")
+        install_packages
+        ;;
+
 esac
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
