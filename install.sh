@@ -56,6 +56,12 @@ function install_extras {
        echo -e "\u001b[7m Done! \u001b[0m"
 }
 
+function backup_configs {
+      echo -e "\u001b[7m Backing Up the configurations.... \u001b[0m"
+
+       echo -e "\u001b[7m Done! \u001b[0m"
+}
+
 # Menu TUI
 echo -e "\u001b[32;1m Setting up Dotfiles...\u001b[0m"
 
@@ -85,6 +91,10 @@ case $option in
 
     "2")
         install_extras
+        ;;
+
+    "3")
+        backup_configs
         ;;
 
 esac
