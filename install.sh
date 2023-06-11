@@ -51,3 +51,7 @@ echo -e "  \u001b[31;1m (*) Anything else to exit \u001b[0m"
 echo -en "\u001b[32;1m ==> \u001b[0m"
 
 read -r option
+
+case $option in 
+
+esac
