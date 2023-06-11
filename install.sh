@@ -45,7 +45,7 @@ function setup_dotfiles {
 }
 
 function install_packages {
-      echo -e "\u001b[7m Setting up Dotfiles... \u001b[0m"
+      echo -e "\u001b[7m Installing Packages.... \u001b[0m"
 
        echo -e "\u001b[7m Done! \u001b[0m"
 }
@@ -78,42 +78,3 @@ case $option in
         ;;
 
 esac
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
