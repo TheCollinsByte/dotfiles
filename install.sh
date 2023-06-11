@@ -39,27 +39,33 @@ com
 
 
 function setup_dotfiles {
-      echo -e "\u001b[7m Setting up Dotfiles... \u001b[0m"
+    echo -e "\u001b[7m Setting up Dotfiles... \u001b[0m"
 
-       echo -e "\u001b[7m Done! \u001b[0m"
+    echo -e "\u001b[7m Done! \u001b[0m"
 }
 
 function install_packages {
-      echo -e "\u001b[7m Installing Packages.... \u001b[0m"
+    echo -e "\u001b[7m Installing Packages.... \u001b[0m"
 
-       echo -e "\u001b[7m Done! \u001b[0m"
+    echo -e "\u001b[7m Done! \u001b[0m"
 }
 
 function install_extras {
-      echo -e "\u001b[7m Installing Extras.... \u001b[0m"
+    echo -e "\u001b[7m Installing Extras.... \u001b[0m"
 
-       echo -e "\u001b[7m Done! \u001b[0m"
+    echo -e "\u001b[7m Done! \u001b[0m"
 }
 
 function backup_configs {
-      echo -e "\u001b[7m Backing Up the configurations.... \u001b[0m"
+    echo -e "\u001b[33;1m Backing up existing files... \u001b[0m"
 
-       echo -e "\u001b[7m Done! \u001b[0m"
+    echo -e "\u001b[7m Done! \u001b[0m"
+}
+
+function setup_symlinks {
+    echo -e "\u001b[7m Setting up symlinks... \u001b[0m"
+
+    echo -e "\u001b[7m Done! \u001b[0m"
 }
 
 # Menu TUI
@@ -95,6 +101,10 @@ case $option in
 
     "3")
         backup_configs
+        ;;
+
+    "4")
+        setup_symlinks
         ;;
 
 esac
