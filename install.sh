@@ -72,11 +72,6 @@ function setup_symlinks {
     echo -e "\u001b[7m Done! \u001b[0m"
 }
 
-function setup_symlinks {
-    echo -e "\u001b[7m Setting up symlinks... \u001b[0m"
-
-    echo -e "\u001b[7m Done! \u001b[0m"
-}
 
 function distro_tweaks {
     echo -e "\u001b[7m Distro specific tweaks... \u001b[0m"
