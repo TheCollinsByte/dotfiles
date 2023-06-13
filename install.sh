@@ -50,6 +50,10 @@ function install_packages {
     echo -e "\u001b[7m Done! \u001b[0m"
 }
 
+
+<< required
+    vim plugins, tmux plugins, bash plugins
+required
 function install_extras {
     echo -e "\u001b[7m Installing Extras.... \u001b[0m"
 
