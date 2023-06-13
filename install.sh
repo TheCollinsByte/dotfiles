@@ -63,7 +63,7 @@ function install_extras {
 function backup_configs {
     echo -e "\u001b[33;1m Backing up existing files... \u001b[0m"
 
-    echo -e "\u001b[7m Done! \u001b[0m"
+    echo -e "\u001b[36;1m Remove backups with 'rm -ir ~/.*.old && rm -ir ~/.config/*.old'. \u001b[0m"
 }
 
 function setup_symlinks {
