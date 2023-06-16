@@ -17,4 +17,6 @@
 <a href="https://github.com/paradigm-lab/dotfiles/pulse">
 <img alt="Last Updated" src="https://img.shields.io/github/last-commit/paradigm-lab/dotfiles?style=flat&color=e06c75&label="> </a>
 
+<h3>Command Line Interface (CLI) Lovers</h3>
+
 </div>
