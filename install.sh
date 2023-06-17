@@ -38,11 +38,6 @@ done
 com
 
 
-function setup_dotfiles {
-    echo -e "\u001b[7m Setting up Dotfiles... \u001b[0m"
-
-    echo -e "\u001b[7m Done! \u001b[0m"
-}
 
 function install_packages {
     echo -e "\u001b[7m Installing Packages.... \u001b[0m"
@@ -81,6 +76,17 @@ function setup_symlinks {
 function distro_tweaks {
     echo -e "\u001b[7m Distro specific tweaks... \u001b[0m"
 
+    echo -e "\u001b[7m Done! \u001b[0m"
+}
+
+
+function setup_dotfiles {
+    echo -e "\u001b[7m Setting up Dotfiles... \u001b[0m"
+    install_packages
+    install_extras
+    backup_configs
+    setup_symlinks
+    distro_tweaks
     echo -e "\u001b[7m Done! \u001b[0m"
 }
 
