@@ -1,10 +1,5 @@
 #!/bin/bash
 
-# TODO(collins): add ~/.config/nvim/init.vim to dotfiles/ in this git repo
-# TODO(collins): add ~/.config/X11 to dotfiles/ in this git repo
-# TODO(collins): add ~/.vim to dotfiles/ in this git repo
-# TODO(collins): add ~/.vimrc to dotfiles/ in this git repo
-
 # This script will create links for the dotfiles.
 
 # Step 1: ensure all necessary directories exist before linking files.
