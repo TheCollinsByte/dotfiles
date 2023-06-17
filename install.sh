@@ -69,6 +69,11 @@ function backup_configs {
 function setup_symlinks {
     echo -e "\u001b[7m Setting up symlinks... \u001b[0m"
 
+    ln -sfnv "$PWD/.config/nvim" ~/.config
+    ln -sfnv "$PWD/.bashrc" ~/
+    ln -sfnv "$PWD/.vimrc" ~/
+    ln -sfnv "$PWD/.tmux.conf" ~/
+
     echo -e "\u001b[7m Done! \u001b[0m"
 }
 
