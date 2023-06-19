@@ -106,6 +106,10 @@ if ["$1" == "--install"] || ["$1" == "-i"]; then
     exit 0
 fi
 
+if ["$1" == "--symlinks"] || ["$1" == "-s"]; then
+    setup_symlinks
+    exit 0
+fi
 
 # Menu TUI
 echo -e "\u001b[32;1m Setting up Dotfiles...\u001b[0m"
