@@ -92,6 +92,14 @@ function setup_dotfiles {
     echo -e "\u001b[7m Done! \u001b[0m"
 }
 
+
+# Command-Line parameters
+if ["$1" == "--all"] || ["$1" == "-a"]; then
+   setup_dotfiles 
+   exit 0
+fi
+
+
 # Menu TUI
 echo -e "\u001b[32;1m Setting up Dotfiles...\u001b[0m"
 
