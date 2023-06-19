@@ -100,6 +100,13 @@ if ["$1" == "--all"] || ["$1" == "-a"]; then
 fi
 
 
+if ["$1" == "--install"] || ["$1" == "-i"]; then
+    install_packages 
+    install_extras
+    exit 0
+fi
+
+
 # Menu TUI
 echo -e "\u001b[32;1m Setting up Dotfiles...\u001b[0m"
 
