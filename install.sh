@@ -80,7 +80,7 @@ function install_linux {
 
 
 function install_packages {
-    echo -e "\u001b[7m Installing Packages for $system_kind \u001b[0m"
+    echo -e "\u001b[7m Installing Packages..... \u001b[0m"
 
     if [[ "$(uname)" == "Linux" ]]; then
         system_kind="Linux"
