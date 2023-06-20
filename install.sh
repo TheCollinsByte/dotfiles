@@ -36,8 +36,14 @@ com
 # Distro specific package installs
 function install_arch {
     sudo pacman -S \
-        curl git vim neovim tmux openssh htop unzip
+        curl git vim neovim tmux openssh htop unzip bat
 }
+
+function install_debian {
+    sudo apt install \
+        curl git vim neovim tmux openssh htop unzip bat
+}
+
 
 
 function install_packages {
