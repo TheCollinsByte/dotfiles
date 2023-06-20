@@ -45,6 +45,13 @@ function install_debian {
 }
 
 
+function install_linux {
+    # identify the Linux distribution
+    if [[ -f "/etc/os-release" ]]; then
+        source /etc/os-release
+    fi
+}
+
 
 function install_packages {
     echo -e "\u001b[7m Installing Packages.... \u001b[0m"
