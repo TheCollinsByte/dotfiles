@@ -80,9 +80,21 @@ function install_linux {
 
 
 function install_packages {
-    echo -e "\u001b[7m Installing Packages.... \u001b[0m"
+    echo -e "\u001b[7m Installing Packages for $system_kind \u001b[0m"
 
-    echo -e "\u001b[7m Done! \u001b[0m"
+    if [[ "$(uname)" == "Linux" ]]; then
+        system_kind="Linux"
+        install_linux
+    # Check if the system is running Windows
+    elif [[ "$(uname -s)" == "CYGWIN" ]]; then
+        system_kind="Windows_Cygwin"
+    elif [[ "$(uname -r)" == "Microsoft" ]]; then
+        system_kind="Windows_WSL"
+    else 
+        system_kind="Unknown"
+    fi
+
+    echo -e "\u001b[7m Done! Installing packages for $system_kind \u001b[0m"
 }
 
 
