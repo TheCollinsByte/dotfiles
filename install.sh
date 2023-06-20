@@ -59,10 +59,19 @@ function install_linux {
         elif [[ "$ID" == "debian" || "$ID_LIKE" == "debian" ]]; then
             system_kind="Linux_Debian"
             install_debian
+            if [[ "$ID" == "ubuntu" ]]; then
+                system_kind="Linux_Debian_Ubuntu"
+            fi
+            if [[ "$ID" == "linuxmint" ]]; then
+                system_kind="Linux_Debian_Mint"
+            fi
+            if [[ "$ID" == "popos" ]]; then
+                system_kind="Linux_Debian_Pop"
+            fi
         elif [[ "$ID" == "fedora" ]]; then
-            system_kind="Linux_Arch"
+            system_kind="Linux_Fedora"
         elif [[ "$ID" == "centos" ]]; then
-            system_kind="Linux_Arch"
+            system_kind="Linux_CentOS"
         fi
     else
         system_kind="Linux_Unknown"
