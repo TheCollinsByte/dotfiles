@@ -33,6 +33,10 @@ done
 com
 
 
+# global scope definition
+system_kind=""
+
+
 # Distro specific package installs
 function install_arch {
     sudo pacman -S \
