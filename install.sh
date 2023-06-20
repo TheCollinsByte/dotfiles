@@ -33,6 +33,12 @@ done
 com
 
 
+# Distro specific package installs
+function install_arch {
+    sudo pacman -S \
+        curl git vim neovim tmux openssh htop unzip
+}
+
 
 function install_packages {
     echo -e "\u001b[7m Installing Packages.... \u001b[0m"
