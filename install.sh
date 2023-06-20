@@ -53,6 +53,19 @@ function install_linux {
     # identify the Linux distribution
     if [[ -f "/etc/os-release" ]]; then
         source /etc/os-release
+        if [[ "$ID" == "arch" ]]; then
+            system_kind="Linux_Arch"
+            install_arch
+        elif [[ "$ID" == "debian" || "$ID_LIKE" == "debian" ]]; then
+            system_kind="Linux_Debian"
+            install_debian
+        elif [[ "$ID" == "fedora" ]]; then
+            system_kind="Linux_Arch"
+        elif [[ "$ID" == "centos" ]]; then
+            system_kind="Linux_Arch"
+        fi
+    else
+        system_kind="Linux_Unknown"
     fi
 }
 
