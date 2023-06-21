@@ -117,7 +117,7 @@ function install_vim_plugins {
 function install_tmux_plugins {
     echo -e "\u001b[7m Installing tmux plugin \u001b[0m"
 
-    
+    git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 
     echo -e "\u001b[7m Done... \u001b[0m"
 }
