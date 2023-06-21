@@ -118,6 +118,7 @@ function install_tmux_plugins {
     echo -e "\u001b[7m Installing tmux plugin \u001b[0m"
 
     git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+    tmux start-server           # Start tmux server, If not running, without creating any session
 
     echo -e "\u001b[7m Done... \u001b[0m"
 }
