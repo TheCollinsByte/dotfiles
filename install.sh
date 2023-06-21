@@ -119,6 +119,9 @@ function install_tmux_plugins {
 
     git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
     tmux start-server           # Start tmux server, If not running, without creating any session
+    tmux new-session -d
+    ~/.tmux/plugins/tpm/scripts/install_plugins.sh
+    tmux kill-server
 
     echo -e "\u001b[7m Done... \u001b[0m"
 }
