@@ -114,6 +114,10 @@ function install_vim_plugins {
 }
 
 
+function install_tmux_plugins {
+
+}
+
 << required
     vim plugins, tmux plugins, bash plugins
 required
