@@ -115,7 +115,11 @@ function install_vim_plugins {
 
 
 function install_tmux_plugins {
+    echo -e "\u001b[7m Installing tmux plugin \u001b[0m"
 
+    
+
+    echo -e "\u001b[7m Done... \u001b[0m"
 }
 
 << required
