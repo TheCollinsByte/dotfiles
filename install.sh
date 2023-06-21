@@ -131,7 +131,8 @@ function install_tmux_plugins {
 required
 function install_extras {
     echo -e "\u001b[7m Installing Extras.... \u001b[0m"
-
+    install_vim_plugins
+    install_tmux_plugins
     echo -e "\u001b[7m Done! \u001b[0m"
 }
 
