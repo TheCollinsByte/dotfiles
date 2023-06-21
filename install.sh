@@ -98,6 +98,11 @@ function install_packages {
 }
 
 
+function install_vim_plugins {
+
+}
+
+
 << required
     vim plugins, tmux plugins, bash plugins
 required
