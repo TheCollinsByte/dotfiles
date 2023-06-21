@@ -106,6 +106,11 @@ function install_vim_plugins {
 
     echo -e "\u001b[7m Installing plugins for vim and nvim \u001b[0m"
 
+    vim +PlugUpdate +qall # Update and Quit several windows at a time.
+
+    pip install neovim
+
+    nvim -c UpdateRemotePlugins
 }
 
 
