@@ -180,18 +180,18 @@ function setup_dotfiles {
 
 
 # Command-Line parameters
-if ["$1" = "--all"] || ["$1" = "-a"]; then
+if [ "$1" = "--all" ] || [ "$1" = "-a" ]; then
    setup_dotfiles 
    exit 0
 fi
 
-if ["$1" = "--install"] || ["$1" = "-i"]; then
+if [ "$1" = "--install" ] || [ "$1" = "-i" ]; then
     install_packages 
     install_extras
     exit 0
 fi
 
-if ["$1" = "--symlinks"] || ["$1" = "-s"]; then
+if [ "$1" = "--symlinks" ] || [ "$1" = "-s" ]; then
     setup_symlinks
     exit 0
 fi
