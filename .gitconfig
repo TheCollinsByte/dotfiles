@@ -1,0 +1,12 @@
+[user]
+	name = colspan
+	email = collin@collindigm.com
+[init]
+	defaultBranch = main
+[core]
+	editor = vim
+[merge]
+	tool = vimdiff
+	conflictstyle = diff3
+[mergetool]
+	prompt = false
