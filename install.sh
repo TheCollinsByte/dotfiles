@@ -153,6 +153,7 @@ function setup_symlinks {
     ln -sfnv "$PWD/.config/shell" ~/.config/
     ln -sfnv "$PWD/.bashrc" ~/
     ln -sfnv "$PWD/.dmenurc" ~/
+    ln -sfnv "$PWD/.dircolors" ~/
     ln -sfnv "$PWD/.vimrc" ~/
     ln -sfnv "$PWD/.gitconfig" ~/
     ln -sfnv "$PWD/.tmux.conf" ~/
