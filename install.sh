@@ -145,7 +145,6 @@ function backup_configs {
 function setup_symlinks {
     echo -e "\u001b[7m Setting up symlinks... \u001b[0m"
 
-<< valid
     ln -sfnv "$PWD/.config/fontconfig" ~/.config/
     ln -sfnv "$PWD/.config/bat" ~/.config/
     ln -sfnv "$PWD/.config/htop" ~/.config/
@@ -157,9 +156,6 @@ function setup_symlinks {
     ln -sfnv "$PWD/.vimrc" ~/
     ln -sfnv "$PWD/.gitconfig" ~/
     ln -sfnv "$PWD/.tmux.conf" ~/
-valid
-
-    ln -sfnv "$PWD/dummy/README.md" ~/dummy/README.md
 
     echo -e "\u001b[7m Done! \u001b[0m"
 }
