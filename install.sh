@@ -146,10 +146,13 @@ function setup_symlinks {
     echo -e "\u001b[7m Setting up symlinks... \u001b[0m"
 
 << valid
+    ln -sfnv "$PWD/.config/fontconfig" ~/.config/
+    ln -sfnv "$PWD/.config/bat" ~/.config/
     ln -sfnv "$PWD/.config/htop" ~/.config/
     ln -sfnv "$PWD/.config/nvim" ~/.config/
     ln -sfnv "$PWD/.config/shell" ~/.config/
     ln -sfnv "$PWD/.bashrc" ~/
+    ln -sfnv "$PWD/.dmenurc" ~/
     ln -sfnv "$PWD/.vimrc" ~/
     ln -sfnv "$PWD/.gitconfig" ~/
     ln -sfnv "$PWD/.tmux.conf" ~/
