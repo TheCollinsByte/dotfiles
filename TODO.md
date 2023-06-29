@@ -24,3 +24,7 @@
         - [ ] bash prompt
         - [ ] bash functions
 
+- [ ] submodules
+    - [ ] dwm
+    - [ ] tmux
+    - [ ] neovim
