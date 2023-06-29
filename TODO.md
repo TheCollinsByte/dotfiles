@@ -16,3 +16,11 @@
     - [ ] whois
     - [ ] tcpdump
     - [ ] wireshark
+
+- [ ] Software Configuration
+    - [ ] curl
+    - [ ] git
+    - [ ] bash
+        - [ ] bash prompt
+        - [ ] bash functions
+
