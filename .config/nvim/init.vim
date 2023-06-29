@@ -1,1 +1,1 @@
-set hlsearch                        # Highligh search results
+set hlsearch                        " Highligh search results
