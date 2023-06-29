@@ -1,1 +1,1 @@
-/home/devops/dotfiles/nvim/init.vim
+set hlsearch                        # Highligh search results
