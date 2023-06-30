@@ -20,8 +20,6 @@ export PATH=$PATH:/opt/flutter/bin
 export PATH=$PATH:/opt/bin/
 
 # Shell Aliase's
-alias intellij='wmname LG3D ; /opt/idea-IC-222.4167.29/bin/idea.sh'
-alias aside='wmname LG3D ; /opt/android-studio/bin/studio.sh'
 alias ls='ls --color=auto'
 alias df='df -h -x squashfs -x tmpfs -x devtmpfs'
 alias lsmount='mount | column -t'
