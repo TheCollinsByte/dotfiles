@@ -29,11 +29,6 @@ alias extip='curl icanhazip.com'
 alias mem5='ps auxf | sort -nr -k 4 | head -5' # Top 5 process using the most memory
 alias cpu5='ps auxf | sort -nr -k 4 | head -5' # Top 5 CPU hungry process
 alias c='clear'
-alias pupgrade='sudo pacman -Syu'   # Upgrade the System
-alias pclean='sudo pacman -Scc'     # Clean the cache 
-alias yupgrade='yay -Syu'           # Fetch the database from the official repositories, update all your official packages and the packages from the AUR
-alias yclean='yay -Sc --aur'        # Clean AUR Cache
-alias pyclean='yay -Sc'             # Clean both the pacman and yay caches
 alias py='python3'
 alias cat='bat --paging=never'
 
