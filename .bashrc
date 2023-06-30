@@ -19,16 +19,6 @@ export PATH=$PATH:/opt/flutter/bin
 # Exercism
 export PATH=$PATH:/opt/bin/
 
-# Shell Aliase's
-alias c='clear'
-alias cat='bat --paging=never'
-
-
-# To Work on the System maintenance
-#alias i='sudo pacman -S' # i or install
-#alias update='sudo pacman -Syy'
-
-
 # Node Version Manager (NVM)
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
