@@ -14,3 +14,9 @@ alias pyclean='yay -Sc'             # Clean both the pacman and yay caches
 
 
 alias py='python3'
+
+alias df='df -h -x squashfs -x tmpfs -x devtmpfs'
+alias lsmount='mount | column -t'
+alias extip='curl icanhazip.com'
+alias mem5='ps auxf | sort -nr -k 4 | head -5' # Top 5 process using the most memory
+alias cpu5='ps auxf | sort -nr -k 4 | head -5' # Top 5 CPU hungry process
