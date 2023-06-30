@@ -20,7 +20,6 @@ export PATH=$PATH:/opt/flutter/bin
 export PATH=$PATH:/opt/bin/
 
 # Shell Aliase's
-alias ls='ls --color=auto'
 alias c='clear'
 alias cat='bat --paging=never'
 
