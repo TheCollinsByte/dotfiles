@@ -1,6 +1,8 @@
 #!/bin/bash
 
 # Aliases
+alias ls='ls --color=auto'
+
 alias intellij='wmname LG3D ; /opt/idea-IC-222.4167.29/bin/idea.sh'
 alias aside='wmname LG3D ; /opt/android-studio/bin/studio.sh'
 
