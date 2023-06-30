@@ -1,6 +1,9 @@
 #!/bin/bash
 
 # Aliases
+alias intellij='wmname LG3D ; /opt/idea-IC-222.4167.29/bin/idea.sh'
+alias aside='wmname LG3D ; /opt/android-studio/bin/studio.sh'
+
 alias lock='xtrlock -b'
 
 alias pupgrade='sudo pacman -Syu'   # Upgrade the System
