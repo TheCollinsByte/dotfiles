@@ -28,3 +28,4 @@ alias c='clear'
 alias cat='bat --paging=never'
 
 alias vimrc="vim ~/.vimrc"
+alias nvimrc="nvim ~/.config/nvim/init.vim"
