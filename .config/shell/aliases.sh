@@ -26,3 +26,5 @@ alias cpu5='ps auxf | sort -nr -k 4 | head -5' # Top 5 CPU hungry process
 
 alias c='clear'
 alias cat='bat --paging=never'
+
+alias vimrc="vim ~/.vimrc"
