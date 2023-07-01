@@ -30,3 +30,6 @@ export NVM_DIR="$HOME/.nvm"
 
 # Common aliases (Checking if the file exists and Evaluate the aliases script)
 [ -f ~/.config/shell/aliases.sh ] && source ~/.config/shell/aliases.sh
+
+# Common Environment Variables (Checking if the file exists and Evaluate the aliases script)
+[ -f ~/.config/shell/envars.sh ] && source ~/.config/shell/envars.sh
