@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # Aliases
+alias q="exit"
 alias ls='ls --color=auto'
 
 alias intellij='wmname LG3D ; /opt/idea-IC-222.4167.29/bin/idea.sh'
