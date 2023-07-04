@@ -1,1 +1,2 @@
-set hlsearch                        " Highligh search results
+-- nvimc51 as the namespace
+require('nvimc51') 
