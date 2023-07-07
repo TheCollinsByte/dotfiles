@@ -60,3 +60,4 @@ screen:I/O=PID USER IO_PRIORITY IO_RATE IO_READ_RATE IO_WRITE_RATE PERCENT_SWAP_
 .sort_direction=-1
 .tree_sort_direction=1
 .all_branches_collapsed=0
+left_meter=AllCPUs CPU Memory
