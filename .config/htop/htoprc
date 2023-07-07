@@ -62,3 +62,4 @@ screen:I/O=PID USER IO_PRIORITY IO_RATE IO_READ_RATE IO_WRITE_RATE PERCENT_SWAP_
 .all_branches_collapsed=0
 left_meter=AllCPUs CPU Memory
 right_meters=Tasks LoadAverage Uptime Battery Clock Hostname
+right_meter_modes=2 2 2 2 2 2
