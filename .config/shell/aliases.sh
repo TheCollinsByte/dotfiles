@@ -33,3 +33,5 @@ alias nvimrc="nvim ~/.config/nvim/init.vim"
 alias bashrc="$EDITOR ~/.bashrc"
 alias alia="$EDITOR ~/.config/shell/aliases.sh"
 alias enva="$EDITOR ~/.config/shell/envars.sh"
+
+alias k="kubectl" 
