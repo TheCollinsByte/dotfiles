@@ -42,6 +42,9 @@ xrandr --output Virtual-1 --mode 1920x1080 &
 # compositor
 picom -f &
 
+# redshift
+redshift -l -6:34 -t 5500:2500 &
+
 # slstatus While be changed to dmenu
 slstatus &
 
