@@ -147,6 +147,7 @@ function backup_configs {
 function setup_symlinks {
     echo -e "\u001b[7m Setting up symlinks... \u001b[0m"
 
+    ln -sfnv "$PWD/.config/cmus" ~/.config/
     ln -sfnv "$PWD/.xinitrc" ~/
     ln -sfnv "$PWD/.config/ranger" ~/.config/
     ln -sfnv "$PWD/.config/fontconfig" ~/.config/
