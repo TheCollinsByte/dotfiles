@@ -5,6 +5,9 @@
     - [ ] Lua Interpreter, 
     - [ ] GoLang
     - [ ] Java (Openjdk)
+    - [ ] Gradle
+    - [ ] Intellij
+    - [ ] C/C++ Compilers
 
 - [ ] Containerization Software's
     - [ ] Docker
@@ -27,4 +30,5 @@
 - [ ] submodules
     - [ ] dwm
     - [ ] tmux
-    - [ ] neovim
+    - [ ] Vim
+    - [ ] Neovim
