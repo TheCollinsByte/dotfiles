@@ -1,12 +1,13 @@
 - [ ] Dev Software to be installed (Compile. Interpreters and Libraries)
-    - [ ] Node (React, Angular, Vue), 
+    - [ ] Node (React, Angular, Vue)
     - [ ] python3
-    - [ ] Rust, 
-    - [ ] Lua Interpreter, 
+    - [ ] Rust
+    - [ ] Lua Interpreter
     - [ ] GoLang
-    - [ ] Java (Openjdk)
+    - [ ] Java (OpenJDK)
     - [ ] Gradle
-    - [ ] Intellij
+    - [ ] Intellij/Android-Studion
+    - [ ] Dart/Flutter
     - [ ] C/C++ Compilers
 
 - [ ] Containerization Software's
