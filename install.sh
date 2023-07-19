@@ -47,7 +47,7 @@ function install_arch {
 function install_debian {
     sudo apt install \
         curl git vim neovim tmux openssh htop unzip bat lsd \
-        cmus
+        cmus fzf
 }
 
 
