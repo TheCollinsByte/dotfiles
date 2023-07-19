@@ -33,3 +33,6 @@
     - [ ] tmux
     - [ ] Vim
     - [ ] Neovim
+
+- [ ] IRC (Internet Relay Chat)
+    - [ ] weechat
