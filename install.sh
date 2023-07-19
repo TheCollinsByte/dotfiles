@@ -41,7 +41,7 @@ system_kind=""
 function install_arch {
     sudo pacman -S \
         curl git vim neovim tmux openssh htop unzip bat lsd \
-        bluez bluez-utils cmus
+        bluez bluez-utils cmus fzf
 }
 
 function install_debian {
