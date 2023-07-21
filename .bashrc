@@ -9,6 +9,8 @@ PROMPT_COMMAND='echo -ne "\033]0;${USER}@${HOSTNAME%%.*}:${PWD/#$HOME/\~}\007"'
 
 PS1='[\u@\h \W]\$ '
 
+alias reload="source ~/.bashrc"
+
 # Overriding $TERM 
 TERM=xterm-256color
 
