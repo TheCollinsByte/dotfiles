@@ -41,12 +41,13 @@ export NVM_DIR="$HOME/.nvm"
 
 # bash completions
 
+
 # Common Environment Variables (Checking if the file exists and Evaluate the aliases script)
 [ -f ~/.config/shell/envars.sh ] && source ~/.config/shell/envars.sh
 
 
 # Common functions
-
+[ -f ~/.config/shell/functions.sh ] && source ~/.config/shell/functions.sh
 
 
 # Common aliases (Checking if the file exists and Evaluate the aliases script)
