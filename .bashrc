@@ -45,5 +45,9 @@ export NVM_DIR="$HOME/.nvm"
 [ -f ~/.config/shell/envars.sh ] && source ~/.config/shell/envars.sh
 
 
+# Common functions
+
+
+
 # Common aliases (Checking if the file exists and Evaluate the aliases script)
 [ -f ~/.config/shell/aliases.sh ] && source ~/.config/shell/aliases.sh
