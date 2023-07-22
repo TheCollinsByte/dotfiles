@@ -39,6 +39,8 @@ export NVM_DIR="$HOME/.nvm"
 . "$HOME/.cargo/env" 
 
 
+# bash completions
+
 # Common Environment Variables (Checking if the file exists and Evaluate the aliases script)
 [ -f ~/.config/shell/envars.sh ] && source ~/.config/shell/envars.sh
 
