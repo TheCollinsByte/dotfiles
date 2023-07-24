@@ -7,7 +7,7 @@ alias ls='ls --color=auto'
 alias intellij='wmname LG3D ; /opt/idea-IC-222.4167.29/bin/idea.sh'
 alias aside='wmname LG3D ; /opt/android-studio/bin/studio.sh'
 
-alias lock='xtrlock -b'
+alias l='xtrlock -b'
 
 alias pupgrade='sudo pacman -Syu'   # Upgrade the System
 alias pclean='sudo pacman -Scc'     # Clean the cache
