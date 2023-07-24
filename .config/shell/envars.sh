@@ -17,3 +17,5 @@ export FZF_DEFAULT_OPTS="
 --bind 'ctrl-y:execute-silent(echo {+} | clipcopy)'
 --bind 'ctrl-e:execute(nvim-qt {+})'
 --bind 'ctrl-v:execute(code {+})'"
+
+export FZF_CTRL_T_COMMAND='fd -t f -HF -E=.git -E=node_modules'
