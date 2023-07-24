@@ -41,7 +41,7 @@ system_kind=""
 function install_arch {
     sudo pacman -S \
         curl git vim neovim tmux openssh htop unzip bat lsd \
-        bluez bluez-utils cmus fzf xtrlock
+        bluez bluez-utils cmus fzf xtrlock fd
 }
 
 function install_debian {
