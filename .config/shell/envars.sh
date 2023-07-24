@@ -19,3 +19,4 @@ export FZF_DEFAULT_OPTS="
 --bind 'ctrl-v:execute(code {+})'"
 
 export FZF_CTRL_T_COMMAND='fd -t f -HF -E=.git -E=node_modules'
+export FZF_TMUX_OPTS='-p 90%'
