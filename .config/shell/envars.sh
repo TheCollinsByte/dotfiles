@@ -3,3 +3,4 @@
 export EDITOR=vim
 
 # FZF (Fuzzy Finder)
+export FZF_DEFAULT_COMMAND='fd --hidden --follow --exclude=.git --exclude=node_modules'
