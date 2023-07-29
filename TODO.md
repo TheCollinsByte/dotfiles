@@ -23,6 +23,7 @@
 
 - [ ] Software Configuration
     - [ ] curl
+    - [ ] Browser (Chrome, Firefox, Suckless Browser(Surf))
     - [ ] git
     - [ ] bash
         - [ ] bash prompt
@@ -36,3 +37,19 @@
 
 - [ ] IRC (Internet Relay Chat)
     - [ ] weechat
+
+- [ ] Terminal/Emulator
+
+- [ ] Wallpaper Script
+
+- [ ] Suckless Software Configurations
+
+- [ ] Intellij Plugins:
+    - sequence Diagram
+    - Material Icon
+    - Protocol Buffer
+    - IdeaVim
+    - Indent Rainbow 
+    - Key Promoter X 
+    - Mario Progress Bar 
+    - Google-Java-Format
