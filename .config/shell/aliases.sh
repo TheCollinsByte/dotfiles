@@ -5,6 +5,7 @@ alias q="exit"
 alias ls='ls --color=auto'
 
 alias intellijc='wmname LG3D ; /opt/intellij/idea-IC-231.9225.16/bin/idea.sh'
+alias intelliju='wmname LG3D ; /opt/intellij/idea-IU-232.8660.185/bin/idea.sh'
 
 alias l='xtrlock -b'
 
