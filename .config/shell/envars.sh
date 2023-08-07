@@ -23,3 +23,7 @@ export FZF_TMUX_OPTS='-p 90%'
 
 # Go Bin
 export PATH="$HOME/go/bin:$PATH"
+
+# Gradle (Build Tool)
+export PATH=$PATH:/opt/gradle/gradle-7.6.1/bin
+
