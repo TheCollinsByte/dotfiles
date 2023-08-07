@@ -29,9 +29,6 @@ export PATH=$PATH:/opt/flutter/bin
 # Exercism
 export PATH=$PATH:/opt/bin/
 
-# Go Bin
-export PATH="$HOME/go/bin:$PATH"
-
 # Node Version Manager (NVM)
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
