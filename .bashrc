@@ -20,9 +20,6 @@ alias reload="source ~/.bashrc"
 # Overriding $TERM 
 TERM=xterm-256color
 
-# Gradle (Build Tool)
-export PATH=$PATH:/opt/gradle/gradle-7.6.1/bin
-
 # Flutter SDK
 export PATH=$PATH:/opt/flutter/bin
 
