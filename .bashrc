@@ -20,9 +20,6 @@ alias reload="source ~/.bashrc"
 # Overriding $TERM 
 TERM=xterm-256color
 
-# Exercism
-export PATH=$PATH:/opt/bin/
-
 # Node Version Manager (NVM)
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
