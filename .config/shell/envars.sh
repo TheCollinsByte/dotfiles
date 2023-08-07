@@ -27,3 +27,5 @@ export PATH="$HOME/go/bin:$PATH"
 # Gradle (Build Tool)
 export PATH=$PATH:/opt/gradle/gradle-7.6.1/bin
 
+# Flutter SDK
+export PATH=$PATH:/opt/flutter/bin

@@ -20,9 +20,6 @@ alias reload="source ~/.bashrc"
 # Overriding $TERM 
 TERM=xterm-256color
 
-# Flutter SDK
-export PATH=$PATH:/opt/flutter/bin
-
 # Exercism
 export PATH=$PATH:/opt/bin/
 
