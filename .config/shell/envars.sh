@@ -20,3 +20,6 @@ export FZF_DEFAULT_OPTS="
 
 export FZF_CTRL_T_COMMAND='fd -t f -HF -E=.git -E=node_modules'
 export FZF_TMUX_OPTS='-p 90%'
+
+# Go Bin
+export PATH="$HOME/go/bin:$PATH"
