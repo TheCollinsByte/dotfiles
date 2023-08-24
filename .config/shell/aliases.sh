@@ -16,6 +16,8 @@ alias yupgrade='yay -Syu'           # Fetch the database from the official repos
 alias yclean='yay -Sc --aur'        # Clean AUR Cache
 alias pyclean='yay -Sc'             # Clean both the pacman and yay caches
 
+alias tmux="tmux -u"
+
 
 alias py='python3'
 
