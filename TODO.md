@@ -42,6 +42,11 @@
 
 - [ ] Wallpaper Script
 
+- [ ] Brightness:
+    * brillo
+    - Up: brillo -A 40
+    - Low: brillo -U 40
+
 - [ ] Suckless Software Configurations
 
 - [ ] Intellij Plugins:
