@@ -52,9 +52,8 @@ redshift -l -6:34 -t 5500:2500 &
 # slstatus While be changed to dmenu
 slstatus &
 
-
 # Load Wallpaper with (FEH)
-feh --bg-scale $HOME/Desktop/navy.jpg
+~/.fehbg &
 
 # DWM Loop
 # dwm &
