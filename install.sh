@@ -41,13 +41,13 @@ system_kind=""
 function install_arch {
     sudo pacman -S \
         curl git vim neovim tmux openssh htop unzip bat lsd \
-        bluez bluez-utils cmus fzf xtrlock fd
+        bluez bluez-utils cmus fzf xtrlock fd feh
 }
 
 function install_debian {
     sudo apt install \
         curl git vim neovim tmux openssh htop unzip bat lsd \
-        cmus fzf xtrlock fd-find
+        cmus fzf xtrlock fd-find feh
     sudo ln -sfnv /usr/bin/fdfind /usr/bin/fd
     sudo ln -sfnv /usr/bin/batcat /usr/bin/bat
 }
