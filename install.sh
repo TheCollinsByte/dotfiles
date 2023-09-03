@@ -165,6 +165,7 @@ function setup_symlinks {
     ln -sfnv "$PWD/.tmux.conf" ~/
     ln -sfnv "$PWD/.scripts" ~/.scripts/
     ln -sfnv "$PWD/.bash_profile" ~/.bash_profile
+    ln -sfnv "$PWD/suckless" ~/.config/suckless
 
     echo -e "\u001b[7m Done! \u001b[0m"
 }
