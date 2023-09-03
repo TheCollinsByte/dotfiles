@@ -58,3 +58,8 @@
     - Key Promoter X 
     - Mario Progress Bar 
     - Google-Java-Format
+
+- [ ] Color Scheme
+    - gruvbox dark
+    - Monokai Pro
+    - Tomorrow Night
