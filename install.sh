@@ -163,6 +163,7 @@ function setup_symlinks {
     ln -sfnv "$PWD/.vimrc" ~/
     ln -sfnv "$PWD/.gitconfig" ~/
     ln -sfnv "$PWD/.tmux.conf" ~/
+    ln -sfnv "$PWD/.scripts" ~/.scripts/
 
     echo -e "\u001b[7m Done! \u001b[0m"
 }
