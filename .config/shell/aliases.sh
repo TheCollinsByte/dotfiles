@@ -38,3 +38,5 @@ alias alia="$EDITOR ~/.config/shell/aliases.sh"
 alias enva="$EDITOR ~/.config/shell/envars.sh"
 
 alias k="kubectl" 
+
+alias lt='ls --human-readable --size -1 -S --classify'      # Sort by file size
