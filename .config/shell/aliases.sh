@@ -40,3 +40,4 @@ alias enva="$EDITOR ~/.config/shell/envars.sh"
 alias k="kubectl" 
 
 alias lt='ls --human-readable --size -1 -S --classify'      # Sort by file size
+alias mnt="mount | awk -F' ' '{ printf \"%s\t%s\n\",\$1,\$3; }' | column -t | egrep ^/dev/ | sort"      # View only mounted drives
