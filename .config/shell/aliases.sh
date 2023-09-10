@@ -45,3 +45,7 @@ alias left='ls -t -1'   # Sort By modification time
 alias gh='history|grep'     # Find a command in your grep history
 alias count='find . -type f | wc -l'
 alias cpv='rsync -ah --info=progress2'      # A Copy progress bar
+
+# Create a Python  Virtual Environment
+alias ve='python3 -m venv ./venv'
+alias va='source ./venv/bin/activate'
