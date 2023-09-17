@@ -49,3 +49,5 @@ alias cpv='rsync -ah --info=progress2'      # A Copy progress bar
 # Create a Python  Virtual Environment
 alias ve='python3 -m venv ./venv'
 alias va='source ./venv/bin/activate'
+
+alias tcn='mv --force -t ~/.local/share/Trash '
