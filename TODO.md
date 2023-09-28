@@ -63,3 +63,10 @@
     - gruvbox dark
     - Monokai Pro
     - Tomorrow Night
+
+- [ ] Distro 
+    - Arch Linux
+        * AUR Support
+    - Ubuntu 
+        * snap
+        * apt
