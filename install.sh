@@ -39,9 +39,10 @@ system_kind=""
 
 # Distro specific package installs
 function install_arch {
+    # AUR Support
     sudo pacman -S \
         curl git vim neovim tmux openssh htop unzip bat lsd \
-        bluez bluez-utils cmus fzf xtrlock fd feh
+        bluez bluez-utils cmus fzf xtrlock fd feh aws-cli yay
 }
 
 function install_debian {
