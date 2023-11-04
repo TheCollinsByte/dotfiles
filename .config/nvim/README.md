@@ -32,3 +32,39 @@ keymaps
 * Comment.nvim
 * Indent-blankline.nvim
 * Treesitter (Syntax Highlighting)
+* Autotags
+* Web-Devicons
+
+### Illuminate Word Under Cursor
+
+### Highlight Yanked Text
+
+### Nicer Command Line, Search and Notification UI
+
+### Lualine Custom Statusline
+
+### Language Servers with Mason
+
+### Setting-up Mason Lspconfig
+
+### Getting Started with LspConfig with Lua (incl: Linting & Formatting)
+
+### Formatting on Save
+
+### LspSaga & Diagnostics Keymaps
+
+### Clean up our project Lua Settings
+
+### Configuring LspConfig and efm for Python LSP, Linting and Formatting
+
+### Setting Up Auto-Completion
+
+### Configuring LspConfig and efm for TypeScript LSP, Linting & Formatting
+
+### A Closer look at efm-Langserver
+
+### Cleaning up LspConfig & Adding autocmds
+
+### Setting Up Transparency
+
+### Integration NeoVim With TMUX
