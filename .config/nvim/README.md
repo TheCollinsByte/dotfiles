@@ -31,3 +31,4 @@ keymaps
 ### Set-up Standard (General Plugins)
 * Comment.nvim
 * Indent-blankline.nvim
+* Treesitter (Syntax Highlighting)
