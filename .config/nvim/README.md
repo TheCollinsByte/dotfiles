@@ -5,3 +5,6 @@
 
 ### Plugin Manager (Lazy NVIM)
 ** https://github.com/folke/lazy.nvim **
+
+### Color Scheme
+** https://github.com/EdenEast/nightfox.nvim **
