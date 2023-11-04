@@ -11,10 +11,18 @@
 
 ### Sourcing Plugins & Lazy nvim Configurations
 
-
 ### Configuring NeoVim Options
 :set all
 :options
 
 ### Nvim Tree File Explorer
 nvim-tree
+
+### Nerdfont
+install script
+** https://www.nerdfonts.com/ ** 
+
+### Custom Shortcuts
+keymaps
+
+### Telescope Fuzzy Finder
