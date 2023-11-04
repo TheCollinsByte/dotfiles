@@ -26,3 +26,8 @@ install script
 keymaps
 
 ### Telescope Fuzzy Finder
+** https://github.com/nvim-telescope/telescope.nvim **
+
+### Set-up Standard (General Plugins)
+* Comment.nvim
+* Indent-blankline.nvim
