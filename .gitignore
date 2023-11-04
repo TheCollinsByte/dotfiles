@@ -1,3 +1,4 @@
 #cmus
 .config/cmus/*
 !.config/cmus/darkwind.theme
+suckless
