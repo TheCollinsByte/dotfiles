@@ -2,7 +2,7 @@ local on_attach = require("util.lsp").on_attach
 
 local config = function()
 	require("neoconf").setup({})
-
+  local cmp_nvim_lsp = require("cmp_nvim_lsp")
 	local lspconfig = require("lspconfig")
 
 	local signs = { Error = " ", Warn = " ", Hint = "", Info = "" }
@@ -12,9 +12,11 @@ local config = function()
 		vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
 	end
 
+  local capabilities = cmp_nvim_lsp.default_capabilities()
+
 	-- lua
 	lspconfig.lua_ls.setup({
-		-- capabilities = capabilities,
+		capabilities = capabilities,
 		on_attach = on_attach,
 		settings = { -- Custom settings for lua
 			Lua = {
@@ -35,7 +37,7 @@ local config = function()
 
 	-- python
 	lspconfig.pyright.setup({
-		-- capabilities = capabilities,
+		capabilities = capabilities,
 		on_attach = on_attach,
 		settings = {
 			pyright = {
@@ -101,5 +103,8 @@ return {
 		"windwp/nvim-autopairs",
 		"williamboman/mason.nvim",
 		"creativenull/efmls-configs-nvim",
+    "hrsh7th/nvim-cmp",
+		"hrsh7th/cmp-buffer",
+		"hrsh7th/cmp-nvim-lsp",
 	},
 }
