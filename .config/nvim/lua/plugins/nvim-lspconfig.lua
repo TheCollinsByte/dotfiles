@@ -1,3 +1,5 @@
+local on_attach = require("util.lsp").on_attach
+
 local config = function()
 	require("neoconf").setup({})
 
@@ -10,31 +12,9 @@ local config = function()
 		vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
 	end
 
-	-- Enable keybinds only for when lsp server available
-	local on_attach = function(client, bufnr)
-		-- keybind options
-		local opts = { noremap = true, silent = true, buffer = bufnr }
-
-		-- set keybinds
-		vim.keymap.set("n", "gf", "<cmd>Lspsaga lsp_finder<CR>", opts) -- show definition, references
-		vim.keymap.set("n", "gD", "<cmd>lua vim.lsp.buf.declaration()<CR>", opts) -- go to definition
-		vim.keymap.set("n", "gd", "<cmd>Lspsaga peek_definition<CR>", opts) -- peak definition
-		vim.keymap.set("n", "gi", "<cmd>lua vim.lsp.buf.implementation()<CR>", opts) -- go to implementation
-		vim.keymap.set("n", "<leader>ca", "<cmd>Lspsaga code_action<CR>", opts) -- See available code actions
-		vim.keymap.set("n", "<leader>rn", "<cmd>Lspsaga rename<CR>", opts) -- Smart rename
-		vim.keymap.set("n", "<leader>D", "<cmd>Lspsaga show_line_diagnostics<CR>", opts) -- Show diagnostics for line
-		vim.keymap.set("n", "<leader>d", "<cmd>Lspsaga show_cursor_diagnostics<CR>", opts) -- Show diagnostics for cursor
-		vim.keymap.set("n", "<leader>pd", "<cmd>Lspsaga diagnostic_jump_prev<CR>", opts) -- Jump to next diagnostic in buffer
-		vim.keymap.set("n", "<leader>nd", "<cmd>Lspsaga diagnostic_jump_next<CR>", opts) -- Jump to next diagnostic in buffer
-		vim.keymap.set("n", "K", "<cmd>Lspsaga hover_doc<CR>", opts) -- show Documentation for what is under cursor
-		vim.keymap.set("n", "<leader>lo", "<cmd>LSoutlineToggle<CR>", opts)
-
-		-- typescript specific vim.keymaps (e.g. rename file and update)
-	end
-
 	-- lua
 	lspconfig.lua_ls.setup({
-		capabilities = capabilities,
+		-- capabilities = capabilities,
 		on_attach = on_attach,
 		settings = { -- Custom settings for lua
 			Lua = {
@@ -53,13 +33,33 @@ local config = function()
 		},
 	})
 
+	-- python
+	lspconfig.pyright.setup({
+		-- capabilities = capabilities,
+		on_attach = on_attach,
+		settings = {
+			pyright = {
+				disableOrganizeImports = false,
+				analysis = {
+					useLibraryCodeForTypes = true,
+					autoSearchPaths = true,
+					diagnosticMode = "workspace",
+					autoImportCompletions = true,
+				},
+			},
+		},
+	})
+
 	local luacheck = require("efmls-configs.linters.luacheck")
 	local stylua = require("efmls-configs.formatters.stylua")
+	local flake8 = require("efmls-configs.linters.flake8")
+	local black = require("efmls-configs.formatters.black")
 
 	-- configure efm server
 	lspconfig.efm.setup({
 		filetypes = {
 			"lua",
+			"python",
 		},
 		init_options = {
 			documentFormatting = true,
@@ -72,6 +72,7 @@ local config = function()
 		settings = {
 			languages = {
 				lua = { luacheck, stylua },
+				python = { flake8, black },
 			},
 		},
 	})
