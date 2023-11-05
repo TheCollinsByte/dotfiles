@@ -52,6 +52,7 @@ keymaps
 ### Formatting on Save
 
 ### LspSaga & Diagnostics Keymaps
+* TSInstall markdown markdown_inline
 
 ### Clean up our project Lua Settings
 

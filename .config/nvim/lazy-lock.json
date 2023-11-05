@@ -3,6 +3,7 @@
   "efmls-configs-nvim": { "branch": "main", "commit": "7db13d3f609640e9f12d7d6f1251e6a8f964f579" },
   "indent-blankline.nvim": { "branch": "master", "commit": "29be0919b91fb59eca9e90690d76014233392bef" },
   "lazy.nvim": { "branch": "main", "commit": "96584866b9c5e998cbae300594d0ccfd0c464627" },
+  "lspsaga.nvim": { "branch": "main", "commit": "7ebd0cc5923c81516c1c050fc9aea70bec23fd02" },
   "lualine.nvim": { "branch": "master", "commit": "2248ef254d0a1488a72041cfb45ca9caada6d994" },
   "mason-lspconfig.nvim": { "branch": "main", "commit": "40301e1c74bc0946eece13edf2b1c561cc497491" },
   "mason.nvim": { "branch": "main", "commit": "eabf6d347fdb75be360d4c0ced1145670a171453" },
