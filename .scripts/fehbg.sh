@@ -1,6 +1,9 @@
 #!/bin/sh
 
 # Wallpaper Shuffle
+exec > >(tee -ia "$(readlink -f "$(dirname "$0")/wallpaper-shuffle.log")
+exec 2>&1
+
 DIR="/home/$USER/.config/wallpapers/"
 
 if [ ! -e "$DIR"/*.png ]; then
@@ -11,6 +14,7 @@ fi
 while true; do
     WAL="$(ls "$DIR"/*.png | shuf -n1)"
 
+    echo "Checking $WAL"
     if [ -s "$WAL" ] && file --mime-type -b "$WAL" | grep -q '^image/'; then
         break
     else
