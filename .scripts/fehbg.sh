@@ -1,10 +1,24 @@
 #!/bin/sh
 
 # Wallpaper Shuffle
-DIR="/home/$USER/./.config/wallpapers/"
+DIR="/home/$USER/.config/wallpapers/"
 
-WAL="$(ls $DIR/*.png | shuf -n1)"
+if [ ! -e "$DIR"/*.png ]; then
+    echo "FEH Script: No PNG files found in $DIR. Exiting."
+    exit 1
+fi
 
-cat $WAL > /home/$USER/.config/wallpapers/wallpaper.png
+while true; do
+    WAL="$(ls "$DIR"/*.png | shuf -n1)"
 
-feh --no-fehbg --bg-scale /home/$USER/.config/wallpapers/wallpaper.png
+    if [ -s "$WAL" ] && file --mime-type -b "$WAL" | grep -q '^image/'; then
+        break
+    else
+        echo "FEH Script: Wallpaper File is empty or not a valid image. Shuffling again..."
+    fi
+done
+
+cp "$WAL" "/home/$USER/.config/wallpapers/wallpaper.png"
+
+feh --no-fehbg --bg-scale "/home/$USER/.config/wallpapers/wallpaper.png"
+
