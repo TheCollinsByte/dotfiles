@@ -11,6 +11,15 @@ return {
         vim.g.onedark_term_colors = false -- Change terminal color as per the selected theme style
         vim.g.onedark_ending_tildes = false -- Show the end-of-buffer tildes. By default they are hidden
         vim.g.onedark_cmp_itemkind_reverse = false -- Reverse item kind highlights in cmp menu
+
+        -- Change code style options --
+        vim.g.onedark_code_style = {
+            comments = 'italic',
+            keywords = 'none',
+            functions = 'none',
+            strings = 'none',
+            variables = 'none',
+        }
     end,
 }
 
