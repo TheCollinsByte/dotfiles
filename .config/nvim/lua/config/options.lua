@@ -1,12 +1,13 @@
 local opt = vim.opt
 
 -- Tab / Indentation
-opt.tabstop = 2
-opt.shiftwidth = 2
-opt.softtabstop = 2
-opt.expandtab = true
+opt.tabstop = 4 
+opt.shiftwidth = 4 
+opt.softtabstop = 4 
+opt.showtabline = 0 
+opt.expandtab = true  -- Convert tabs to spaces
 opt.smartindent = true
-opt.wrap = false
+opt.wrap = false    -- display lines as one long line
 
 -- Search
 opt.incsearch = true
@@ -15,19 +16,30 @@ opt.smartcase = true
 opt.hlsearch = false
 
 -- Appearance
-opt.relativenumber = true
+opt.relativenumber = true -- Set relative numbered lines
+opt.number = true  -- set numbered lines
 opt.termguicolors = true
 opt.colorcolumn = '100'
 opt.signcolumn = "yes"
 opt.cmdheight = 1
 opt.scrolloff = 10
+opt.sessionoptions = 'blank,buffers,curdir,folds,help,tabpages,winsize,winpos,terminal'
+opt.sidescrolloff = 8
 opt.completeopt = "menuone,noinsert,noselect"
+opt.pumheight = 10  -- pop up menu height
+opt.conceallevel = 0 -- so that `` is visible in markdown files
+opt.wildmenu = true
+opt.wildmenu = true -- wildmenu
+opt.wildmode = 'longest:full,full' -- Command-line completion mode
+opt.list = true
+opt.listchars = { trail = '', tab = '', nbsp = '_', extends = '>', precedes = '<' } -- highlight
 
 -- Behaviour
 opt.hidden = true
 opt.errorbells = true
 opt.swapfile = false
-opt.backup = false
+opt.backup = false    -- creates a backup file
+opt.writebackup = false    -- do not edit backups
 opt.undodir = vim.fn.expand("~/.vim/undodir")
 opt.undofile = true
 opt.backspace = "indent,eol,start"
@@ -36,8 +48,16 @@ opt.splitbelow = true
 opt.autochdir = false
 opt.iskeyword:append("-")
 opt.mouse:append('a')
-opt.clipboard:append("unnamedplus")
+opt.clipboard:append("unnamedplus")   -- allows neovim to access the system clipboard
 opt.modifiable = true
 opt.guicursor = "n-v-c:block,i-ci-ve:block,r-cr:hor20,o:hor50,a:blinkwait700-blinkoff400-blinkon250-Cursor/lCursor,sm:block-blinkwait175-blinkoff150-blinkon175"
+opt.cursorline = false
 opt.encoding = "UTF-8"
+opt.fileencoding = "UTF-8"
+opt.laststatus = 3
+opt.showmode = false
+opt.showcmd = false
+opt.updatetime = 50 -- faster completion (4000ms default)
+opt.shell = bash
+opt.confirm = true -- Confirm to save changes before exiting modified buffer
 
