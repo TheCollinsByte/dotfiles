@@ -20,14 +20,15 @@ alias reload="source ~/.bashrc"
 # Overriding $TERM 
 TERM=xterm-256color
 
+
+# Rust Bin
+. "$HOME/.cargo/env"
+
+
 # Node Version Manager (NVM)
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-
-
-# Rust Bin
-. "$HOME/.cargo/env" 
 
 
 # bash completions
@@ -43,3 +44,4 @@ export NVM_DIR="$HOME/.nvm"
 
 # Common aliases (Checking if the file exists and Evaluate the aliases script)
 [ -f ~/.config/shell/aliases.sh ] && source ~/.config/shell/aliases.sh
+
