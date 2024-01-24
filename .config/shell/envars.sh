@@ -22,7 +22,7 @@ export FZF_CTRL_T_COMMAND='fd -t f -HF -E=.git -E=node_modules'
 export FZF_TMUX_OPTS='-p 90%'
 
 # Go Bin
-export PATH="$HOME/go/bin:$PATH"
+export PATH=$PATH:/usr/local/go/bin
 
 # Gradle (Build Tool)
 export PATH=$PATH:/opt/gradle/gradle-8.5/bin
@@ -31,4 +31,4 @@ export PATH=$PATH:/opt/gradle/gradle-8.5/bin
 export PATH=$PATH:/opt/flutter/bin
 
 # Exercism
-export PATH=$PATH:/opt/bin/
+export PATH=$PATH:/opt/exercism/
