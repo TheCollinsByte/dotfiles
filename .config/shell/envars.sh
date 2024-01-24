@@ -25,7 +25,7 @@ export FZF_TMUX_OPTS='-p 90%'
 export PATH="$HOME/go/bin:$PATH"
 
 # Gradle (Build Tool)
-export PATH=$PATH:/opt/gradle/gradle-8.4/bin
+export PATH=$PATH:/opt/gradle/gradle-8.5/bin
 
 # Flutter SDK
 export PATH=$PATH:/opt/flutter/bin
