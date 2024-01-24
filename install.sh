@@ -55,9 +55,21 @@ function install_arch {
 }
 
 function install_debian {
-    sudo apt install \
-        curl git vim neovim tmux openssh htop unzip bat lsd \
+    packages_to_install=(
+        curl git vim neovim tmux openssh htop unzip bat lsd
         cmus fzf xtrlock fd-find feh awscli ripgrep calibre okular
+   )
+
+   for package in "${packages_to_install[@]}"; do
+        if ! dpkg -l "$package" > /dev/null; then
+            echo "Installing $package..."
+            sudo apt install "$package"
+        else
+            echo "$package is already installed. Skipping..."
+        fi
+    done
+
+    # Create symbolic links
     sudo ln -sfnv /usr/bin/fdfind /usr/bin/fd
     sudo ln -sfnv /usr/bin/batcat /usr/bin/bat
 }
