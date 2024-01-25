@@ -41,14 +41,14 @@ system_kind=""
 function install_arch {
     # AUR Support
     sudo pacman -S \
-        curl git vim neovim tmux openssh htop unzip bat lsd calibre \
+        curl git vim neovim tmux openssh htop unzip bat lsd calibre okular \
         bluez bluez-utils cmus fzf xtrlock fd feh aws-cli yay ripgrep
 }
 
 function install_debian {
     sudo apt install \
         curl git vim neovim tmux openssh htop unzip bat lsd \
-        cmus fzf xtrlock fd-find feh awscli ripgrep calibre
+        cmus fzf xtrlock fd-find feh awscli ripgrep calibre okular
     sudo ln -sfnv /usr/bin/fdfind /usr/bin/fd
     sudo ln -sfnv /usr/bin/batcat /usr/bin/bat
 }
