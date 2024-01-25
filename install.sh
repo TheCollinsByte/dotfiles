@@ -39,10 +39,19 @@ system_kind=""
 
 # Distro specific package installs
 function install_arch {
-    # AUR Support
-    sudo pacman -S \
-        curl git vim neovim tmux openssh htop unzip bat lsd calibre okular \
+    packages_to_install=(
+        curl git vim neovim tmux openssh htop unzip bat lsd calibre okular
         bluez bluez-utils cmus fzf xtrlock fd feh aws-cli yay ripgrep
+   )
+
+   for package in "${packages_to_install[@]}"; do
+        if ! pacman -Qs "$package" > /dev/null; then
+            echo "Installing $package..."
+            sudo pacman -S "$package"
+        else
+            echo "$package is already installed. Skipping..."
+        fi
+    done
 }
 
 function install_debian {
