@@ -34,7 +34,7 @@ fi
 
 
 # Keyboard Layout
-setxkbmap us &
+setxkbmap uk &
 
 
 # Display Resolution
