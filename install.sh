@@ -175,28 +175,26 @@ function setup_symlinks {
     echo -e "\u001b[7m Setting up symlinks... \u001b[0m"
 
     declare -a symlinks=(
-        ".config/cmus"
-        ".xinitrc"
-        ".config/ranger"
-        ".config/fontconfig"
-        ".config/bat"
-        ".config/htop"
-        ".config/nvim"
-        ".config/shell"
-        ".bashrc"
-        ".dmenurc"
-        ".dircolors"
-        ".vimrc"
-        ".gitconfig"
-        ".tmux.conf"
-        ".scripts"
-        ".bash_profile"
-        "suckless"
+        "$PWD/.config/cmus:$HOME/.config/cmus"
+        "$PWD/.xinitrc:$HOME/.xinitrc"
+        "$PWD/.config/ranger:$HOME/.config/ranger"
+        "$PWD/.config/fontconfig:$HOME/.config/fontconfig"
+        "$PWD/.config/bat:$HOME/.config/bat"
+        "$PWD/.config/htop:$HOME/.config/htop"
+        "$PWD/.config/nvim:$HOME/.config/nvim"
+        "$PWD/.config/shell:$HOME/.config/shell"
+        "$PWD/.bashrc:$HOME/.bashrc"
+        "$PWD/.dmenurc:$HOME/.dmenurc"
+        "$PWD/.dircolors:$HOME/.dircolors"
+        "$PWD/.vimrc:$HOME/.vimrc"
+        "$PWD/.gitconfig:$HOME/.gitconfig"
+        "$PWD/.tmux.conf:$HOME/.tmux.conf"
+        "$PWD/.scripts:$HOME/.scripts"
+        "$PWD/.bash_profile:$HOME/.bash_profile"
     )
 
     for link in "${symlinks[@]}"; do
-        source_path="$PWD/$link"
-        destination_path="$(eval echo ~)/$(basename "$link")"
+        IFS=':' read -r source_path destination_path <<< "$link"
 
         if [ -e "$source_path" ]; then
             if [ ! -e "$destination_path" ]; then
@@ -204,7 +202,7 @@ function setup_symlinks {
                 ln -sfnv "$source_path" "$destination_path"
 
                 if [ $? -ne 0 ]; then
-                    echo "Error creating symlink for $link"
+                    echo "Error creating symlink for $source_path"
                 fi
             else
                 read -p "$destination_path already exists. Do you want to overwrite? (y/n): " -n 1 -r
@@ -213,7 +211,7 @@ function setup_symlinks {
                     rm -rf "$destination_path"
                     ln -sfnv "$source_path" "$destination_path"
                     if [ $? -ne 0 ]; then
-                        echo "Error creating symlink for $link"
+                        echo "Error creating symlink for $source_path"
                     fi
                 else
                     echo "Skipping $destination_path"
@@ -226,6 +224,7 @@ function setup_symlinks {
 
     echo -e "\u001b[7m Done! \u001b[0m"
 }
+
 
 
 function distro_tweaks {
