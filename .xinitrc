@@ -53,7 +53,7 @@ redshift -l -6:34 -t 5500:2500 &
 slstatus &
 
 # Load Wallpaper with (FEH)
-~/.scripts/fehbg.sh
+~/.scripts/wallpaper-shuffle.sh
 
 # DWM Loop
 # dwm &
