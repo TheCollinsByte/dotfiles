@@ -170,26 +170,59 @@ function backup_configs {
     echo -e "\u001b[36;1m Remove backups with 'rm -ir ~/.*.old && rm -ir ~/.config/*.old'. \u001b[0m"
 }
 
+
 function setup_symlinks {
     echo -e "\u001b[7m Setting up symlinks... \u001b[0m"
 
-    ln -sfnv "$PWD/.config/cmus" ~/.config/
-    ln -sfnv "$PWD/.xinitrc" ~/
-    ln -sfnv "$PWD/.config/ranger" ~/.config/
-    ln -sfnv "$PWD/.config/fontconfig" ~/.config/
-    ln -sfnv "$PWD/.config/bat" ~/.config/
-    ln -sfnv "$PWD/.config/htop" ~/.config/
-    ln -sfnv "$PWD/.config/nvim" ~/.config/
-    ln -sfnv "$PWD/.config/shell" ~/.config/
-    ln -sfnv "$PWD/.bashrc" ~/
-    ln -sfnv "$PWD/.dmenurc" ~/
-    ln -sfnv "$PWD/.dircolors" ~/
-    ln -sfnv "$PWD/.vimrc" ~/
-    ln -sfnv "$PWD/.gitconfig" ~/
-    ln -sfnv "$PWD/.tmux.conf" ~/
-    ln -sfnv "$PWD/.scripts" ~/.scripts/
-    ln -sfnv "$PWD/.bash_profile" ~/.bash_profile
-    ln -sfnv "$PWD/suckless" ~/.config/suckless
+    declare -a symlinks=(
+        ".config/cmus"
+        ".xinitrc"
+        ".config/ranger"
+        ".config/fontconfig"
+        ".config/bat"
+        ".config/htop"
+        ".config/nvim"
+        ".config/shell"
+        ".bashrc"
+        ".dmenurc"
+        ".dircolors"
+        ".vimrc"
+        ".gitconfig"
+        ".tmux.conf"
+        ".scripts"
+        ".bash_profile"
+        "suckless"
+    )
+
+    for link in "${symlinks[@]}"; do
+        source_path="$PWD/$link"
+        destination_path="$(eval echo ~)/$(basename "$link")"
+
+        if [ -e "$source_path" ]; then
+            if [ ! -e "$destination_path" ]; then
+                mkdir -p "$(dirname "$destination_path")"
+                ln -sfnv "$source_path" "$destination_path"
+
+                if [ $? -ne 0 ]; then
+                    echo "Error creating symlink for $link"
+                fi
+            else
+                read -p "$destination_path already exists. Do you want to overwrite? (y/n): " -n 1 -r
+                echo
+                if [[ $REPLY =~ ^[Yy]$ ]]; then
+                    rm -rf "$destination_path"
+                    ln -sfnv "$source_path" "$destination_path"
+                    if [ $? -ne 0 ]; then
+                        echo "Error creating symlink for $link"
+                    fi
+                else
+                    echo "Skipping $destination_path"
+                fi
+            fi
+        else
+            echo "$source_path does not exist. Skipping symlink creation."
+        fi
+    done
 
     echo -e "\u001b[7m Done! \u001b[0m"
 }
