@@ -1,12 +1,12 @@
 #!/bin/sh
 
 # Wallpaper Shuffle
-exec > >(tee -ia "$(readlink -f "$(dirname "$0")/wallpaper-shuffle.log")
+exec > >(tee -ia "$(readlink -f "$(dirname "$0")")/wallpaper-shuffle.log")
 exec 2>&1
 
-DIR="/home/$USER/.config/wallpapers/"
+DIR="/home/$USER/.config/wallpapers"
 
-if [ ! -e "$DIR"/*.png ]; then
+if [ -z "$(find "$DIR" -name '*.png' -print -quit)" ]; then
     echo "FEH Script: No PNG files found in $DIR. Exiting."
     exit 1
 fi
@@ -22,7 +22,7 @@ while true; do
     fi
 done
 
-cp "$WAL" "/home/$USER/.config/wallpapers/wallpaper.png"
+cp "$WAL" "$DIR/wallpaper.png"
 
-feh --no-fehbg --bg-scale "/home/$USER/.config/wallpapers/wallpaper.png"
+feh --no-fehbg --bg-scale "$DIR/wallpaper.png"
 
