@@ -1,7 +1,9 @@
 - [ ] Dev Software to be installed (Compile. Interpreters and Libraries)
-    - [ ] Node (React, Angular, Vue)
-    - [ ] python3
+    - [ ] Node/nvm (React, Angular, Vue)
+    - [ ] Python
     - [ ] Rust
+    - [ ] OCaml
+    - [ ] Zig
     - [ ] Lua Interpreter
     - [ ] GoLang
     - [ ] Java (OpenJDK)
@@ -15,6 +17,7 @@
     - [ ] Kubernete
     - [ ] kvm ("Type A", "Native", "Bare Metal")
     - [ ] Virtualbox ("Type B", "Hosted")
+    - [ ] LXD
 
 - [ ] Network Softwares (Troubleshooting Network Issues and packet sniffer)
     - [ ] whois
@@ -30,7 +33,7 @@
         - [ ] bash functions
 
 - [ ] submodules
-    - [ ] dwm
+    - [ ] Suckless Softwares
     - [ ] tmux
     - [ ] Vim
     - [ ] Neovim
@@ -40,7 +43,17 @@
 
 - [ ] Terminal/Emulator
 
+
 - [ ] Wallpaper Script
+    - [ ] Wallpaper Shuffle
+    - [ ] Wallpaper Slideshow
+
+- [ ] Fonts (Nerd Font)
+    - [ ] Font Awesome Icons
+    - [ ] Font Formats (ttf, otf, Bitmap)
+    - [ ] fc-list
+    - [ ] fc-cache or fc-cache -r : updates the font config cache
+    - [ ] Path (/usr/share/fonts) (~/.local/share/fonts)
 
 - [ ] Brightness:
     * brillo
@@ -48,6 +61,10 @@
     - Low: brillo -U 40
 
 - [ ] Suckless Software Configurations
+    - [ ] DWM
+    - [ ] st
+    - [ ] dmenu
+    
 
 - [ ] Intellij Plugins:
     - sequence Diagram
