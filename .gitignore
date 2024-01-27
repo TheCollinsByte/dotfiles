@@ -2,3 +2,4 @@
 .config/cmus/*
 !.config/cmus/darkwind.theme
 suckless
+*.log
