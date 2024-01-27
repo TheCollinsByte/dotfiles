@@ -50,7 +50,7 @@ redshift -l -6:34 -t 5500:2500 &
 
 
 # slstatus While be changed to dmenu
-slstatus &
+exec slstatus &
 
 # Load Wallpaper with (FEH)
 ~/.scripts/wallpaper-shuffle.sh
