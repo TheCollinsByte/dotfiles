@@ -3,6 +3,11 @@
     - [ ] Python
     - [ ] Rust
     - [ ] OCaml
+        - Pre-Requists: 
+            * Bubblewrap (bwarp)
+            * rsync - use rsync and local repositories unless you install the rsync command on your system.
+            * hg - use mercurial repositories unless you install the hg command on your system.
+            * darcs - use darcs repositories unless you install the darcs command on your system.
     - [ ] Zig
     - [ ] Lua Interpreter
     - [ ] GoLang
@@ -92,3 +97,4 @@
 - [ ] Tools
     - android-tools (adb)
     - Android SDK
+    - Tree
