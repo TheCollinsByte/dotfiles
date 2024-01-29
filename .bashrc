@@ -25,6 +25,10 @@ TERM=xterm-256color
 . "$HOME/.cargo/env"
 
 
+# OCaml
+eval $(opam env)
+
+
 # Node Version Manager (NVM)
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
