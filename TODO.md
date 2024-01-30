@@ -23,6 +23,7 @@
     - [ ] whois
     - [ ] tcpdump
     - [ ] wireshark
+    - [ ] iftop
 
 - [ ] Software Configuration
     - [ ] curl
@@ -87,3 +88,7 @@
     - Ubuntu 
         * snap
         * apt
+
+- [ ] Tools
+    - android-tools (adb)
+    - Android SDK
