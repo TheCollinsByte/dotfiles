@@ -42,7 +42,7 @@ function install_arch {
     packages_to_install=(
         curl git vim neovim tmux openssh htop unzip lsd calibre okular
         bluez bluez-utils cmus fzf xtrlock fd feh aws-cli yay ripgrep htop man-db
-        wmname redshift bat
+        wmname redshift bat iftop
    )
 
    for package in "${packages_to_install[@]}"; do
@@ -59,7 +59,7 @@ function install_debian {
     packages_to_install=(
         curl git vim neovim tmux openssh htop unzip lsd htop
         cmus fzf xtrlock fd-find feh awscli ripgrep calibre okular man-db
-        wmname redshift bat
+        wmname redshift bat iftop
    )
 
    for package in "${packages_to_install[@]}"; do
