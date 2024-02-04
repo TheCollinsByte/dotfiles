@@ -183,6 +183,7 @@ function setup_symlinks {
         "$PWD/.config/htop:$HOME/.config/htop"
         "$PWD/.config/nvim:$HOME/.config/nvim"
         "$PWD/.config/shell:$HOME/.config/shell"
+        "$PWD/.config/suckless:$HOME/.config/suckless"
         "$PWD/.bashrc:$HOME/.bashrc"
         "$PWD/.dmenurc:$HOME/.dmenurc"
         "$PWD/.dircolors:$HOME/.dircolors"
