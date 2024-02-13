@@ -21,7 +21,7 @@ return {
 		    end
 		end,
 		cmd = 'Dashboard',
-    	},
+		},
 
 	{
 		'rcarriga/nvim-notify',
@@ -65,7 +65,11 @@ return {
 	},
 
 	{
-		'williamboman/mason.nvim',
+		'neovim/nvim-lspconfig',
+		dependencies = {
+				'williamboman/mason.nvim',
+				'williamboman/mason-lspconfig.nvim',
+		},
 		config = load_config('lang.mason'),
 		cmd = 'Mason',
 	},
@@ -92,7 +96,7 @@ return {
 		    'ThePrimeagen/harpoon',
 		},
 		config = load_config('tools.telescope'),
-		cmd = 'Telescope', 
+		cmd = 'Telescope',
 	}
 
 	-- Git

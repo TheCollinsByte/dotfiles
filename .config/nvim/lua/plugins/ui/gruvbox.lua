@@ -23,13 +23,13 @@ gruvbox.setup({
 	inverse = true, -- invert background for search, diffs, statuslines and errors
 	contrast = "", -- can be "hard", "soft" or empty string
 	palette_overrides = {
-		bright_green = '#990000',
+		-- bright_green = '#990000',
 	},
-	overrides = {
+	--[[overrides = {
 		SignColumn = {bg = "#ff9900"},
 		["@lsp.type.method"] = { bg = "#ff9900" },
 		["@comment.lua"] = { bg = "#000000" },
-	},
+	},]]--
 	dim_inactive = false,
 	transparent_mode = false,
 })
