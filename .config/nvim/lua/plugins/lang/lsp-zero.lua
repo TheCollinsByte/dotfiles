@@ -25,6 +25,17 @@ require('mason-lspconfig').setup({
 						}
 						lua_opts.settings.Lua.format = custom_options
 						require('lspconfig').lua_ls.setup(lua_opts)
-				end,
+				vim.diagnostic.config({
+						update_in_insert = true,
+						float = {
+								focusable = false,
+								style = "minimal",
+								border = "rounded",
+								source = "always",
+								header = "",
+								prefix = "",
+						},
+				})
+		end,
 		},
 })
