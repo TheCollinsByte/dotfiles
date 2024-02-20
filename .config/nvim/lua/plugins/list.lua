@@ -45,14 +45,17 @@ return {
 			'rcarriga/nvim-notify'
 		},
 	},
-	
 	-- Language
-	
 
 	-- Treesitter
-	
 
-	-- LSP
+	-- Native LSP
+    {
+			'neovim/nvim-lspconfig',
+			config = load_config('lang.native-lsp'),
+	},
+
+	--[[LSP
 	{
 		'VonHeikemen/lsp-zero.nvim',
 		branch = 'v3.x',
@@ -73,8 +76,9 @@ return {
 		config = load_config('lang.mason'),
 		cmd = 'Mason',
 	},
+	--]]
 
-	-- Completion
+	--[[Completion
     {
 		'hrsh7th/nvim-cmp',
 		dependencies = {
@@ -99,10 +103,10 @@ return {
 			build = "make install_jsregexp",
 			event = "InsertEnter"
 	},
+	--]]
 
 
 	-- Tools
-	 
 
 	-- Telescope
 	{
