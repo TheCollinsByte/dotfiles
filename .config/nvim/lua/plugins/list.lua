@@ -2,6 +2,8 @@ local function load_config(package)
     return function() require('plugins.' .. package) end
 end
 
+local keymap = vim.keymap
+
 return {
 	-- UI
 	{
@@ -14,6 +16,9 @@ return {
 	{
 		'nvimdev/dashboard-nvim',
 		config = load_config('ui.dashboard'),
+		dependencies = {
+				'nvim-tree/nvim-web-devicons',
+		},
 		-- Only load when no arguments
 		event = function()
 		    if vim.fn.argc() == 0 then
@@ -50,47 +55,39 @@ return {
 	-- Treesitter
 
 	-- Native LSP
-    {
-		'neovim/nvim-lspconfig',
-		config = load_config('lang.native-lsp'),
-		lazy = false,
-		priority = 1000,
-	},
-
-	--[[LSP
 	{
-		'VonHeikemen/lsp-zero.nvim',
-		branch = 'v3.x',
+		'williamboman/mason.nvim',
 		dependencies = {
-		    'neovim/nvim-lspconfig',
-		    'williamboman/mason-lspconfig.nvim',
-		},
-		config = load_config('lang.lsp-zero'),
-		event = { 'BufReadPre', 'BufNewFile' },
-	},
-
-	{
-		'neovim/nvim-lspconfig',
-		dependencies = {
-				'williamboman/mason.nvim',
 				'williamboman/mason-lspconfig.nvim',
 		},
 		config = load_config('lang.mason'),
 		cmd = 'Mason',
 	},
-	--]]
+
+	{
+		'neovim/nvim-lspconfig',
+		lazy = false,
+		priority = 1000,
+		dependencies = {
+            'hrsh7th/cmp-nvim-lsp',
+			{"antosha417/nvim-lsp-file-operations", config = true},
+		},
+		config = load_config('lang.lspconfig'),
+		event = { 'BufReadPre', 'BufNewFile' },
+	},
+
 
 	-- Completion
     {
 		'hrsh7th/nvim-cmp',
 		dependencies = {
+		    'hrsh7th/cmp-buffer',	-- source for text in buffer
+            'hrsh7th/cmp-path',		-- source for file system paths
 			'hrsh7th/nvim-cmp',
             'hrsh7th/cmp-nvim-lsp',
-		    'hrsh7th/cmp-buffer',
-            'hrsh7th/cmp-path',
             'hrsh7th/cmp-cmdline',
 
-            -- 'saadparwaiz1/cmp_luasnip',
+            -- 'saadparwaiz1/cmp_luasnip',	-- for autocompletion
             -- 'hrsh7th/cmp-nvim-lsp-signature-help',
             -- 'hrsh7th/cmp-nvim-lua',
 		},
@@ -100,15 +97,24 @@ return {
 
 
 	{
-			'L3MON4D3/LuaSnip',
+			'L3MON4D3/LuaSnip',		-- snippet engine
 			version = "v2.*",
-			dependencies = { 'rafamadriz/friendly-snippets' },
+			dependencies = { 'rafamadriz/friendly-snippets' },	-- useful snippets
 			build = "make install_jsregexp",
 			event = "InsertEnter"
 	},
 
 
 	-- Tools
+	{
+        'nvim-tree/nvim-tree.lua',
+        dependencies = {
+            'nvim-tree/nvim-web-devicons',
+        },
+        config = load_config('tools.nvim-tree'),
+        cmd = 'NvimTreeToggle',
+    },
+
 	{
 		'epwalsh/obsidian.nvim',
 		version = "*",
@@ -117,15 +123,15 @@ return {
 		dependencies = {
 				'nvim-lua/plenary.nvim',
 		},
-		opts = {
-		},
-	},
+		config = load_config('tools.obsidian'),
+    },
 
 
 	-- Telescope
 	{
 		'nvim-telescope/telescope.nvim',
 		branch = '0.1.x',
+		lazy = false,
 		dependencies = {
 		    'nvim-lua/plenary.nvim',
 		    {
@@ -139,6 +145,14 @@ return {
 		},
 		config = load_config('tools.telescope'),
 		cmd = 'Telescope',
+		keys = {
+				keymap.set("n", "<leader>fk", "<Cmd>Telescope keymaps<CR>"),
+				keymap.set("n", "<leader>fh", "<Cmd>Telescope help_tags<CR>"),
+				keymap.set("n", "<leader>ff", "<Cmd>Telescope find_files<CR>"),
+				keymap.set("n", "<leader>fa", "<Cmd>Telescope <CR>"),
+				keymap.set("n", "<leader>fg", "<Cmd>Telescope live_grep<CR>"),
+				keymap.set("n", "<leader>fb", "<Cmd>Telescope buffers<CR>"),
+		}
 	}
 
 	-- Git
