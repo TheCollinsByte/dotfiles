@@ -3,8 +3,6 @@ if not status_ok then
 		return
 end
 
-local capabilities = require('cmp_nvim_lsp').default_capabilities()
-
 cmp.setup({
     snippet = {
       expand = function(args)
@@ -16,17 +14,19 @@ cmp.setup({
       -- documentation = cmp.config.window.bordered(),
     },
     mapping = cmp.mapping.preset.insert({
+      ['<C-k>'] = cmp.mapping.select_prev_item(),	-- previous suggestion
+      ['<C-j>'] = cmp.mapping.select_next_item(),	-- next suggestion
       ['<C-b>'] = cmp.mapping.scroll_docs(-4),
       ['<C-f>'] = cmp.mapping.scroll_docs(4),
-      ['<C-Space>'] = cmp.mapping.complete(),
-      ['<C-e>'] = cmp.mapping.abort(),
+      ['<C-Space>'] = cmp.mapping.complete(),	-- show completion suggestions
+      ['<C-e>'] = cmp.mapping.abort(),		-- close completion window
       ['<CR>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
     }),
     sources = cmp.config.sources({
+      { name = 'luasnip' }, -- snippets
       { name = 'nvim_lsp' },
-      { name = 'luasnip' }, -- For luasnip users.
     }, {
-      { name = 'buffer' },
+      { name = 'buffer' },	-- text within current buffer
     })
   })
 
