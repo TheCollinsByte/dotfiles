@@ -162,7 +162,7 @@ require('mason-lspconfig').setup({
 				-- Web Development
 				'html',				-- HTML Language Server
 				'cssls',			-- CSS Language Server
-				'tailwind',			-- Taiwind Language Server
+				'tailwindcss',			-- Taiwind Language Server
 				'graphql',			-- Graphql Language Server
 				'emmet_ls',			-- Emmet Language Server
 		},
