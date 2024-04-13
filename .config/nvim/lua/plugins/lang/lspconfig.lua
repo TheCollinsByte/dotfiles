@@ -93,6 +93,12 @@ lspconfig["pyright"].setup({
 		on_attach = on_attach,
 })
 
+-- configure Gleam server
+lspconfig["gleam"].setup({
+		capabilities = capabilities,
+		on_attach = on_attach,
+})
+
 -- configure typescript server
 lspconfig["tsserver"].setup({
 		capabilities = capabilities,
