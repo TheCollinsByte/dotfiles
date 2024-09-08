@@ -129,6 +129,25 @@ lspconfig["tailwindcss"].setup({
 		on_attach = on_attach,
 })
 
+-- configure Dart Server
+lspconfig.dartls.setup({
+    cmd = { 'dart', 'language-server', '--protocol=lsp' },
+    filetypes = { 'dart' },
+    init_options = {
+      onlyAnalyzeProjectsWithOpenFiles = true,
+      suggestFromUnimportedLibraries = true,
+      closingLabels = true,
+      outline = true,
+      flutterOutline = true,
+    },
+    settings = {
+      dart = {
+        completeFunctionCalls = true,
+        showTodos = true,
+      },
+    },
+})
+
 -- configure emmet server
 lspconfig["emmet_ls"].setup({
 		capabilities = capabilities,
@@ -158,7 +177,6 @@ require('mason-lspconfig').setup({
 				'rust_analyzer', 	-- Rust Langugae Server
 				'jdtls', 			-- Java Langugae Server
 				'tsserver', 		-- Typescript Langugae Server
-				'dartls', 			-- Dart Langugae Server
 				'lua_ls',			-- Lua Language Server
 				'pyright',			-- Python Language Server
 				'clangd',			-- C/C++ Language Server
@@ -168,7 +186,7 @@ require('mason-lspconfig').setup({
 				-- Web Development
 				'html',				-- HTML Language Server
 				'cssls',			-- CSS Language Server
-				'tailwindcss',			-- Taiwind Language Server
+				'tailwindcss',      -- Taiwind Language Server
 				'graphql',			-- Graphql Language Server
 				'emmet_ls',			-- Emmet Language Server
 		},
