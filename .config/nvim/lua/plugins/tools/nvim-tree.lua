@@ -1,10 +1,6 @@
-local status_ok, nvim_tree = pcall(require, 'nvim-tree')
-
-if not status_ok then
-	return
-end
-
+local nvim_tree = require('nvim-tree')
 local icons = require('lib.icons')
+local keymap = vim.keymap
 
 local function on_attach(bufnr)
     local api = require('nvim-tree.api')
@@ -20,14 +16,13 @@ local function on_attach(bufnr)
     end
 
     api.config.mappings.default_on_attach(bufnr)
-    vim.keymap.set('n', 'Y', api.fs.copy.filename, opts('Copy Name'))
-    vim.keymap.set('n', 'y', api.fs.copy.relative_path, opts('Copy Relative Path'))
-    vim.keymap.set('n', 'l', api.node.open.edit, opts('Open'))
-    vim.keymap.set('n', '<CR>', api.node.open.edit, opts('Open'))
-    vim.keymap.set('n', 'h', api.node.navigate.parent_close, opts('Close Directory'))
-    vim.keymap.set('n', 'v', api.node.open.vertical, opts('Open: Vertical Split'))
-    vim.keymap.set('n', 'o', api.node.open.horizontal, opts('Open: Horizontal Split'))
-    vim.keymap.set('n', '<leader>e>', ':NvimTreeToggle<CR>', { noremap = true, silent = true, desc = 'Toggle NvimTree' })
+    keymap.set('n', 'Y', api.fs.copy.filename, opts('Copy Name'))
+    keymap.set('n', 'y', api.fs.copy.relative_path, opts('Copy Relative Path'))
+    keymap.set('n', 'l', api.node.open.edit, opts('Open'))
+    keymap.set('n', '<CR>', api.node.open.edit, opts('Open'))
+    keymap.set('n', 'h', api.node.navigate.parent_close, opts('Close Directory'))
+    keymap.set('n', 'v', api.node.open.vertical, opts('Open: Vertical Split'))
+    keymap.set('n', 'o', api.node.open.horizontal, opts('Open: Horizontal Split'))
 end
 
 nvim_tree.setup({
@@ -55,8 +50,8 @@ nvim_tree.setup({
                 default = icons.documents.File,
                 symlink = icons.documents.SymLink,
                 folder = {
-                    arrow_open = icons.ui.ArrowOpen,
-                    arrow_closed = icons.ui.ArrowClosed,
+                    arrow_open = icons.ui.ArrowClosed,
+                    arrow_closed = icons.ui.ArrowOpen,
                     default = icons.documents.Folder,
                     open = icons.documents.OpenFolder,
                     empty = icons.documents.FolderEmpty,
@@ -88,10 +83,14 @@ nvim_tree.setup({
     update_focused_file = { enable = true, update_cwd = true, ignore_list = {} },
     git = { enable = true, ignore = true, timeout = 500 },
     view = {
-        width = 40,
+        width = 50,
         side = 'left',
         adaptive_size = true,
         number = false,
         relativenumber = false,
     },
 })
+
+keymap.set("n", "<leader>m", ":NvimTreeFocus<CR>", { noremap = true, silent = true })
+keymap.set("n", "<leader>f", ":NvimTreeToggle<CR>", { noremap = true, silent = true })
+keymap.set("n", "<leader>c", ":NvimTreeClose<CR>", { noremap = true, silent = true })
