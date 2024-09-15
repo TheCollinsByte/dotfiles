@@ -2,16 +2,14 @@ local keymap = vim.keymap
 
 local opts = { noremap = true, silent = true }
 
-
 -- Modes
 -- normal_mode = 'n', insert_mode = 'i', visual_mode = 'v',
 -- visual_block_mode = 'x', term_mode = 't', command_mode = 'c',
 
--- Directory Navigation
-keymap.set("n", "<leader>m", ":NvimTreeFocus<CR>", { noremap = true, silent = true })
-keymap.set("n", "<leader>f", ":NvimTreeToggle<CR>", { noremap = true, silent = true })
-
-
+-- Space as leader
+keymap.set('n', '<Space>', '', opts)
+vim.g.mapleader = ' '
+vim.g.maplocalleader = ' '
 
 -- Disable netrw
 vim.g.loaded_netrw = 1
@@ -40,12 +38,9 @@ keymap.set("n", "<leader>sv", ":vsplit<CR>", opts) -- Split Vertically
 keymap.set("n", "<leader>sh", ":split<CR>", opts) -- Split Horizontally
 keymap.set("n", "<leader>sm", ":MaximizerToggle<CR>", opts) -- Toggle Minimize
 
-
-
 -- Indenting
 keymap.set('v', '<', '<gv')
 keymap.set('v', '>', '>gv')
-
 
 -- Comments
 vim.api.nvim_set_keymap("n", "<C-_>", "gcc", { noremap = false })
