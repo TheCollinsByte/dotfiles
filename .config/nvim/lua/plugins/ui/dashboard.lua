@@ -18,7 +18,7 @@ dashboard.setup({
     config = {
         week_header = {
             enable = true,
-            append = { '', icons.ui.Circle .. ' TheOddagen: There is always one more bug to fix. ' .. icons.ui.Circle },
+            append = { '', icons.ui.Circle .. ' TheCollinsByte: There is always one more bug to fix. ' .. icons.ui.Circle },
         },
         packages = { enable = true },
         project = { enable = true, limit = 8 },
@@ -48,12 +48,12 @@ dashboard.setup({
                 action = 'lua require("telescope").extensions.menufacture.live_grep()',
                 key = 'g',
             },
-            {
+            --[[{
                 desc = icons.ui.Note .. 'Todo',
                 group = 'Label',
                 action = 'Tdo',
                 key = 'd',
-            },
+            },]]--
             {
                 desc = icons.ui.Power,
                 group = 'Action',
