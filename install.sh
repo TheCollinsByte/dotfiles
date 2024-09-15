@@ -42,7 +42,7 @@ function install_arch {
     packages_to_install=(
         curl git vim neovim tmux openssh htop unzip lsd calibre okular
         bluez bluez-utils cmus fzf xtrlock fd feh aws-cli yay ripgrep htop man-db
-        wmname redshift bat iftop
+        wmname redshift bat iftop exa
    )
 
    for package in "${packages_to_install[@]}"; do
