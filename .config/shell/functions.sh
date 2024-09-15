@@ -75,3 +75,10 @@ _fzf_comprun() {
     *) fzf "$@" ;;
     esac
 }
+
+# Function to run fzf and update history without line numbers
+fzf-history() {
+  BUFFER=$(history | sed 's/ *[0-9]* *//' | fzf --tac --query="$READLINE_LINE" --preview="echo {}")
+  READLINE_LINE=$BUFFER
+  READLINE_POINT=${#READLINE_LINE}
+}

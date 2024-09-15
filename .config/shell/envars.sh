@@ -1,6 +1,6 @@
 #!/bin/bash
 # Environment Variables
-export EDITOR=vim
+export EDITOR=nvim
 
 # FZF (Fuzzy Finder)
 export FZF_DEFAULT_COMMAND='fd --hidden --follow --exclude=.git --exclude=node_modules'
