@@ -5,6 +5,12 @@ end
 
 local icons = require('lib.icons')
 
+local function codeium_status()
+  local status = vim.fn['codeium#GetStatus']()
+  return status or 'Codeium Off'
+end
+
+
 local colors = {
     bg       = '#202328',
     fg       = '#bbc2cf',
@@ -194,7 +200,7 @@ local config = {
         lualine_a = {},
         lualine_b = {},
         lualine_c = { separator, mode(icons.ui.Heart), 'location', progress, filename },
-        lualine_x = { diagnostics, lsp, filetype, filesize, fileformat, encoding, separator },
+        lualine_x = { codeium_status, diagnostics, lsp, filetype, filesize, fileformat, encoding, separator },
         lualine_y = {},
         lualine_z = {},
     },
