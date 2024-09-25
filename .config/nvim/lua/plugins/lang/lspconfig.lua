@@ -100,7 +100,7 @@ lspconfig["gleam"].setup({
 })
 
 -- configure typescript server
-lspconfig["tsserver"].setup({
+lspconfig["ts_ls"].setup({
 		capabilities = capabilities,
 		on_attach = on_attach,
 })
@@ -176,12 +176,11 @@ require('mason-lspconfig').setup({
 				'gopls', 			-- GoLang Langugae Server
 				'rust_analyzer', 	-- Rust Langugae Server
 				'jdtls', 			-- Java Langugae Server
-				'tsserver', 		-- Typescript Langugae Server
+				'ts_ls', 		    -- Typescript Langugae Server
 				'lua_ls',			-- Lua Language Server
 				'pyright',			-- Python Language Server
 				'clangd',			-- C/C++ Language Server
 				'sqls',				-- SQL Language Server
-				'gleam',			-- gleam Language Server
 
 				-- Web Development
 				'html',				-- HTML Language Server
