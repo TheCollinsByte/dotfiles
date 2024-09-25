@@ -29,10 +29,12 @@ nvim_tree.setup({
     on_attach = on_attach,
     hijack_directories = { enable = true },
     update_cwd = true,
-    filters = {},
+    filters = {
+        dotfiles = false,
+    },
     renderer = {
         add_trailing = false,
-        group_empty = false,
+        group_empty = true,
         highlight_git = false,
         highlight_opened_files = 'none',
         root_folder_modifier = ':t',
