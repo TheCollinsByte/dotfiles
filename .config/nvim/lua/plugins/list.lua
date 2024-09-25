@@ -150,6 +150,14 @@ return {
 		config = load_config('tools.obsidian'),
     },
 
+    {
+        'Exafunction/codeium.vim',
+        lazy = true,
+        config = load_config('tools.codeium'),
+        event = "BufEnter",
+        codeium_enabled = true,
+    },
+
 
 	-- Telescope
 	{
