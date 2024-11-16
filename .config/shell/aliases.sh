@@ -4,8 +4,8 @@
 alias q="exit"
 alias ls='ls --color=auto'
 
-alias intellijc='wmname LG3D ; /opt/intellij/idea-IC-233.14015.106/bin/idea.sh'
-alias intelliju='wmname LG3D ; /opt/intellij/idea-IU-233.13135.103/bin/idea.sh'
+alias intelliju='wmname LG3D ; /opt/intellij/idea-IU-242.21829.142/bin/idea.sh'
+alias intellijc='wmname LG3D ; /opt/intellij/idea-IC-243.21565.193/bin/idea.sh'
 alias e='/opt/electrum/Electrum-4.5.2/run_electrum'
 
 alias l='xtrlock -b'
