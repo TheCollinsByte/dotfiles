@@ -1,0 +1,12 @@
+[submodule "suckless/dwm"]
+	path = suckless/dwm
+	url = https://github.com/TheCollinsByte/dwm
+[submodule "suckless/st"]
+	path = suckless/st
+	url = https://github.com/TheCollinsByte/st
+[submodule "suckless/dmenu"]
+	path = suckless/dmenu
+	url = https://github.com/TheCollinsByte/dmenu
+[submodule "config/nvim"]
+	path = config/nvim
+	url = https://github.com/TheCollinsByte/init.nvim
