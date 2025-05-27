@@ -9,18 +9,20 @@ else
 fi
 
 # Bind Ctrl+R to run the fzf-history function
-bind -x '"\C-r": fzf-history'
+#bind -x '"\C-r": fzf-history'
 
 alias reload="source ~/.bashrc"
 
-# Overriding $TERM 
-TERM=xterm-256color
+# Overriding $TERM
+TERM=screen-256color
 
 # Rust Bin
 . "$HOME/.cargo/env"
 
 # OCaml
 eval $(opam env)
+
+export PATH="$PATH:"$HOME"/.pub-cache/bin"
 
 # Node Version Manager (NVM)
 export NVM_DIR="$HOME/.nvm"

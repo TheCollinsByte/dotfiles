@@ -1,5 +1,6 @@
 #cmus
-.config/cmus/*
-!.config/cmus/darkwind.theme
-suckless
+config/cmus/*
+!config/cmus/darkwind.theme
+
+.idea/
 *.log
