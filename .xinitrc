@@ -23,7 +23,6 @@ if [ -f "$usermodmap" ]; then
     xmodmap "$usermodmap"
 fi
 
-
 # start some nice programs
 if [ -d /etc/X11/xinit/xinitrc.d ] ; then
  for f in /etc/X11/xinit/xinitrc.d/?*.sh ; do
@@ -32,34 +31,21 @@ if [ -d /etc/X11/xinit/xinitrc.d ] ; then
  unset f
 fi
 
-
 # Keyboard Layout
 setxkbmap uk &
-
 
 # Display Resolution
 xrandr --output Virtual-1 --mode 1920x1080 &
 
-
 # compositor
 picom -f &
-
 
 # redshift
 redshift -l -6:34 -t 5500:2500 &
 
-
-# slstatus While be changed to dmenu
-exec slstatus &
-
 # Load Wallpaper with (FEH)
 ~/.scripts/wallpaper-shuffle.sh
 
-# DWM Loop
-# dwm &
-# while true; do
-	# dwm >/dev/null 2>&1
-# done
+dwmblocks &
 
-# Execute DWM
 exec dwm
