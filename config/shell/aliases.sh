@@ -6,9 +6,12 @@ alias ls='ls --color=auto'
 
 alias intelliju='wmname LG3D ; /opt/intellij/idea-IU-242.21829.142/bin/idea.sh'
 alias intellijc='wmname LG3D ; /opt/intellij/idea-IC-243.21565.193/bin/idea.sh'
+alias webstorm='wmname LG3D ; /opt/intellij/WebStorm-243.22562.112/bin/webstorm'
 alias e='/opt/electrum/Electrum-4.5.2/run_electrum'
 
 alias l='xtrlock -b'
+
+alias scs="cd $HOME/.local/bin/statusbar/"
 
 alias pupgrade='sudo pacman -Syu'   # Upgrade the System
 alias pclean='sudo pacman -Scc'     # Clean the cache

@@ -25,10 +25,16 @@ export FZF_TMUX_OPTS='-p 90%'
 export PATH=$PATH:/usr/local/go/bin
 
 # Gradle (Build Tool)
-export PATH=$PATH:/opt/gradle/gradle-8.7/bin
+export PATH=$PATH:/opt/gradle/gradle-8.13/bin
 
 # Flutter SDK
 export PATH=$PATH:/opt/flutter/bin
 
 # Exercism
 export PATH=$PATH:/opt/exercism/
+
+# Add user's local bin directory to PATH to run custom scripts without specifying the full path
+export PATH="$HOME/.local/bin:$PATH"
+
+# Add statusbar scripts to PATH
+export PATH="$HOME/.local/bin/statusbar:$PATH"
