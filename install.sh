@@ -230,23 +230,23 @@ setup_dotfiles() {
     # Format: "source:destination"
     local dotfiles=(
         # Home directory dotfiles
-        "$PWD/.bashrc:$HOME/.bashrc"
-        "$PWD/.bash_profile:$HOME/.bash_profile"
-        "$PWD/.vimrc:$HOME/.vimrc"
-        "$PWD/.gitconfig:$HOME/.gitconfig"
-        "$PWD/.tmux.conf:$HOME/.tmux.conf"
-        "$PWD/.xinitrc:$HOME/.xinitrc"
-        "$PWD/.Xresources:$HOME/.Xresources"
-        "$PWD/.dmenurc:$HOME/.dmenurc"
+        "$DOTFILES_DIR/.bashrc:$HOME/.bashrc"
+        "$DOTFILES_DIR/.bash_profile:$HOME/.bash_profile"
+        "$DOTFILES_DIR/.vimrc:$HOME/.vimrc"
+        "$DOTFILES_DIR/.gitconfig:$HOME/.gitconfig"
+        "$DOTFILES_DIR/.tmux.conf:$HOME/.tmux.conf"
+        "$DOTFILES_DIR/.xinitrc:$HOME/.xinitrc"
+        "$DOTFILES_DIR/.Xresources:$HOME/.Xresources"
+        "$DOTFILES_DIR/.dmenurc:$HOME/.dmenurc"
 
         # System configuration directories
-        "$PWD/config/cmus:$HOME/.config/cmus"
-        "$PWD/config/fontconfig:$HOME/.config/fontconfig"
-        "$PWD/config/bat:$HOME/.config/bat"
-        "$PWD/config/htop:$HOME/.config/htop"
-        "$PWD/config/nvim:$HOME/.config/nvim"
-        "$PWD/config/shell:$HOME/.config/shell"
-        "$PWD/suckless:$HOME/.config/suckless"
+        "$DOTFILES_DIR/config/cmus:$HOME/.config/cmus"
+        "$DOTFILES_DIR/config/fontconfig:$HOME/.config/fontconfig"
+        "$DOTFILES_DIR/config/bat:$HOME/.config/bat"
+        "$DOTFILES_DIR/config/htop:$HOME/.config/htop"
+        "$DOTFILES_DIR/config/nvim:$HOME/.config/nvim"
+        "$DOTFILES_DIR/config/shell:$HOME/.config/shell"
+        "$DOTFILES_DIR/suckless:$HOME/.config/suckless"
     )
     
     # Create symlinks
@@ -257,9 +257,33 @@ setup_dotfiles() {
     done
     
     # Handle special cases
+    
+    # Link bin scripts to ~/.local/bin
+    if [ -d "$DOTFILES_DIR/bin" ]; then
+        print_status "Linking bin scripts..."
+        mkdir -p "$HOME/.local/bin"
+        for script in "$DOTFILES_DIR/bin"/*; do
+            if [ -f "$script" ] || [ -d "$script" ]; then
+                local script_name=$(basename "$script")
+                create_symlink "$script" "$HOME/.local/bin/$script_name"
+            fi
+        done
+    fi
+    
+    # Create .gitconfig.local if it doesn't exist
     if [ ! -f "$HOME/.gitconfig.local" ]; then
-        print_status "Creating ~/.gitconfig.local"
-        cp "$DOTFILES_DIR/config/git/.gitconfig.local.example" "$HOME/.gitconfig.local"
+        print_status "Creating ~/.gitconfig.local template"
+        cat > "$HOME/.gitconfig.local" <<EOF
+# Local Git Configuration
+# Add your personal git settings here
+
+[user]
+	name = Your Name
+	email = your.email@example.com
+
+# Add any machine-specific git configuration below
+EOF
+        print_warn "Please edit ~/.gitconfig.local with your personal information"
     fi
     
     # Install TMUX plugins
@@ -337,8 +361,10 @@ build_suckless() {
     
     # Make sure dependencies are installed
     if ! command -v make >/dev/null 2>&1 || ! command -v gcc >/dev/null 2>&1; then
-        print_status "Installing build dependencies..."
-        install_packages "make gcc libx11-dev libxft-dev libxinerama-dev"
+        print_warn "Build tools (make/gcc) not found. Please install them manually."
+        print_status "For Arch: sudo pacman -S base-devel libx11 libxft libxinerama"
+        print_status "For Debian/Ubuntu: sudo apt install build-essential libx11-dev libxft-dev libxinerama-dev"
+        return 1
     fi
     
     local suckless_dir="$DOTFILES_DIR/suckless"

@@ -32,11 +32,23 @@ export NVM_DIR="$HOME/.nvm"
 # bash completions
 [ -r /usr/share/bash-completion/bash_completion ] && source /usr/share/bash-completion/bash_completion
 
-# Common Environment Variables (Checking if the file exists and Evaluate the aliases script)
-[ -f ~/.config/shell/envars.sh ] && source ~/.config/shell/envars.sh
+# Common Environment Variables
+if [ -f ~/.config/shell/envars.sh ]; then
+    source ~/.config/shell/envars.sh
+else
+    echo "Warning: ~/.config/shell/envars.sh not found" >&2
+fi
 
 # Common functions
-[ -f ~/.config/shell/functions.sh ] && source ~/.config/shell/functions.sh
+if [ -f ~/.config/shell/functions.sh ]; then
+    source ~/.config/shell/functions.sh
+else
+    echo "Warning: ~/.config/shell/functions.sh not found" >&2
+fi
 
-# Common aliases (Checking if the file exists and Evaluate the aliases script)
-[ -f ~/.config/shell/aliases.sh ] && source ~/.config/shell/aliases.sh
+# Common aliases
+if [ -f ~/.config/shell/aliases.sh ]; then
+    source ~/.config/shell/aliases.sh
+else
+    echo "Warning: ~/.config/shell/aliases.sh not found" >&2
+fi

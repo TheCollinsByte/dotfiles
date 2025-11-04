@@ -4,10 +4,16 @@
 alias q="exit"
 alias ls='ls --color=auto'
 
-alias intelliju='wmname LG3D ; /opt/intellij/idea-IU-242.21829.142/bin/idea.sh'
-alias intellijc='wmname LG3D ; /opt/intellij/idea-IC-243.21565.193/bin/idea.sh'
-alias webstorm='wmname LG3D ; /opt/intellij/WebStorm-243.22562.112/bin/webstorm'
-alias e='/opt/electrum/Electrum-4.5.2/run_electrum'
+# IntelliJ IDEA - finds the latest version automatically
+# Note: Update base paths if your installations are elsewhere
+if [ -d "/opt/intellij" ]; then
+    alias intelliju='wmname LG3D; $(find /opt/intellij/idea-IU-*/bin/idea.sh 2>/dev/null | sort -V | tail -1)'
+    alias intellijc='wmname LG3D; $(find /opt/intellij/idea-IC-*/bin/idea.sh 2>/dev/null | sort -V | tail -1)'
+    alias webstorm='wmname LG3D; $(find /opt/intellij/WebStorm-*/bin/webstorm.sh 2>/dev/null | sort -V | tail -1)'
+fi
+
+# Electrum - finds the latest version automatically
+[ -d "/opt/electrum" ] && alias e='$(find /opt/electrum/Electrum-*/run_electrum 2>/dev/null | sort -V | tail -1)'
 
 alias l='xtrlock -b'
 
