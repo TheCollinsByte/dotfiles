@@ -174,7 +174,7 @@ install_packages() {
     print_section "Installing Packages"
     
     if [ -z "$PACKAGE_MANAGER" ]; then
-        print_warning "Package manager not detected. Skipping package installation."
+        print_warn "Package manager not detected. Skipping package installation."
         return 1
     fi
     
@@ -200,7 +200,7 @@ install_packages() {
             brew install "${base_packages[@]}"
             ;;
         *)
-            print_warning "Unsupported package manager: $PACKAGE_MANAGER"
+            print_warn "Unsupported package manager: $PACKAGE_MANAGER"
             return 1
             ;;
     esac

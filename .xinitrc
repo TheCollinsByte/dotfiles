@@ -44,7 +44,7 @@ picom -f &
 redshift -l -6:34 -t 5500:2500 &
 
 # Load Wallpaper with (FEH)
-~/.scripts/wallpaper-shuffle.sh
+~/.local/bin/wallpaper-shuffle.sh
 
 dwmblocks &
 

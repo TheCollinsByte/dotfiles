@@ -17,10 +17,10 @@ alias reload="source ~/.bashrc"
 TERM=screen-256color
 
 # Rust Bin
-. "$HOME/.cargo/env"
+[ -f "$HOME/.cargo/env" ] && . "$HOME/.cargo/env"
 
 # OCaml
-eval $(opam env)
+command -v opam >/dev/null 2>&1 && eval $(opam env)
 
 export PATH="$PATH:"$HOME"/.pub-cache/bin"
 
