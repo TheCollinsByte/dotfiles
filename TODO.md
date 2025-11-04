@@ -38,11 +38,11 @@
         - [ ] bash prompt
         - [ ] bash functions
 
-- [ ] submodules
-    - [ ] Suckless Softwares
-    - [ ] tmux
-    - [ ] Vim
-    - [ ] Neovim
+- [X] submodules
+    - [X] Suckless Softwares
+    - [X] tmux
+    - [X] Vim
+    - [X] Neovim
 
 - [ ] IRC (Internet Relay Chat)
     - [ ] weechat
@@ -98,3 +98,33 @@
     - android-tools (adb)
     - Android SDK
     - Tree
+
+
+- [ ] Functionality
+    - [ ] Add dry-run mode to install.sh
+      - Add --dry-run flag to preview changes
+
+    - [ ] Improve backup strategy
+      - Add option to restore from backup
+      - List existing backups before creating new ones
+       
+    - [ ] Add validation
+      - Verify symlinks after creation
+      - Check if required dependencies exist before building suckless tools
+      
+    - [ ] Better package management
+      - Create separate package lists per distro
+      - Handle package name differences (e.g., fd-find vs fd)
+
+- [ ] Documentation
+  - [ ] Add comments to complex sections
+    - Document the symlink creation logic
+    - Explain submodule handling
+     
+  - [ ] Create CONTRIBUTING.md 
+    - Document how to add new dotfiles
+    - Explain the structure
+     
+  - [ ] Add troubleshooting section to README
+    - Common issues and solutions
+    - How to rollback changes
