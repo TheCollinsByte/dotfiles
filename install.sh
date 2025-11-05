@@ -181,7 +181,7 @@ install_packages() {
     # Base packages that are common across most systems
     local base_packages=(
         git curl wget tmux htop vim neovim ripgrep fd-find
-        fzf bat exa stow
+        fzf bat eza stow
     )
     
     # Install packages based on package manager
@@ -264,7 +264,8 @@ setup_dotfiles() {
         mkdir -p "$HOME/.local/bin"
         for script in "$DOTFILES_DIR/bin"/*; do
             if [ -f "$script" ] || [ -d "$script" ]; then
-                local script_name=$(basename "$script")
+                local script_name
+                script_name=$(basename "$script")
                 create_symlink "$script" "$HOME/.local/bin/$script_name"
             fi
         done
@@ -332,7 +333,7 @@ setup_suckless_repos() {
         
         if [[ ! -d "$module_path" || ! -d "$module_path/.git" ]]; then
             print_status "Adding $module as a submodule..."
-            git submodule add -f "$repo" "$module_path"
+            git submodule add -f "$repo" "$module_path" || true
         fi
     done
     

@@ -2,14 +2,14 @@
 
 # Change directory and view the contents at the same time
 function cl() {
-	DIR="$*";
-		# if no DIR given, go home
-		if [ $# -lt 1 ]; then 
-			DIR=$HOME;
-		fi;
-		builtin cd "${DIR}" && \
-		# preferred ls command
-		ls -F --color=auto
+	local DIR="$*"
+	# if no DIR given, go home
+	if [ $# -lt 1 ]; then 
+		DIR="$HOME"
+	fi
+	builtin cd "${DIR}" && \
+	# preferred ls command
+	ls -F --color=auto
 }
 
 # show colors and codes
@@ -43,19 +43,19 @@ color() {
 
 # ex - archive extractor
 ex() {
-    if [ -f $1 ]; then
-        case $1 in
-        *.tar.bz2) tar xjf $1 ;;
-        *.tar.gz) tar xzf $1 ;;
-        *.bz2) bunzip2 $1 ;;
-        *.rar) unrar x $1 ;;
-        *.gz) gunzip $1 ;;
-        *.tar) tar xf $1 ;;
-        *.tbz2) tar xjf $1 ;;
-        *.tgz) tar xzf $1 ;;
-        *.zip) unzip $1 ;;
-        *.Z) uncompress $1 ;;
-        *.7z) 7z x $1 ;;
+    if [ -f "$1" ]; then
+        case "$1" in
+        *.tar.bz2) tar xjf "$1" ;;
+        *.tar.gz) tar xzf "$1" ;;
+        *.bz2) bunzip2 "$1" ;;
+        *.rar) unrar x "$1" ;;
+        *.gz) gunzip "$1" ;;
+        *.tar) tar xf "$1" ;;
+        *.tbz2) tar xjf "$1" ;;
+        *.tgz) tar xzf "$1" ;;
+        *.zip) unzip "$1" ;;
+        *.Z) uncompress "$1" ;;
+        *.7z) 7z x "$1" ;;
         *) echo "'$1' cannot be extracted via ex()" ;;
         esac
     else
@@ -69,7 +69,7 @@ _fzf_comprun() {
     shift
 
     case "$command" in
-    cd) fzf "$@" --preview 'exa -TFl --group-directories-first --icons --git -L 2 --no-user {}' ;;
+    cd) fzf "$@" --preview 'eza -TFl --group-directories-first --icons --git -L 2 --no-user {}' ;;
     nvim) fzf --preview 'bat --color=always --style=numbers --line-range=:500 {}' ;;
     vim) fzf --preview 'bat --color=always --style=numbers --line-range=:500 {}' ;;
     *) fzf "$@" ;;

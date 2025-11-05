@@ -19,10 +19,13 @@ TERM=screen-256color
 # Rust Bin
 [ -f "$HOME/.cargo/env" ] && . "$HOME/.cargo/env"
 
-# OCaml
-command -v opam >/dev/null 2>&1 && eval $(opam env)
+# OCaml - safer than eval
+if command -v opam >/dev/null 2>&1; then
+    # Generate opam environment and source it safely
+    opam env --shell=bash --set-switch > /dev/null 2>&1 && eval "$(opam env --shell=bash --set-switch)"
+fi
 
-export PATH="$PATH:"$HOME"/.pub-cache/bin"
+export PATH="$PATH:$HOME/.pub-cache/bin"
 
 # Node Version Manager (NVM)
 export NVM_DIR="$HOME/.nvm"

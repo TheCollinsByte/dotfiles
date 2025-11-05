@@ -35,7 +35,7 @@ alias df='df -h -x squashfs -x tmpfs -x devtmpfs'
 alias lsmount='mount | column -t'
 alias extip='curl icanhazip.com'
 alias mem5='ps auxf | sort -nr -k 4 | head -5' # Top 5 process using the most memory
-alias cpu5='ps auxf | sort -nr -k 4 | head -5' # Top 5 CPU hungry process
+alias cpu5='ps auxf | sort -nr -k 3 | head -5' # Top 5 CPU hungry process
 
 
 alias c='clear'
