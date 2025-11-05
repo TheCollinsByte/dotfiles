@@ -1,21 +1,21 @@
 <div align="center">
 
-<h1><a href="https://github.com/paradigm-lab">Dotfiles</a></h1>
+<h1><a href="https://github.com/TheCollinsByte">Dotfiles</a></h1>
 
-<a href="https://github.com/paradigm-lab/dotfiles/graphs/contributors">
-<img alt="People" src="https://img.shields.io/github/contributors/paradigm-lab/dotfiles?style=flat&color=ffaaf2&label=People"> </a>
+<a href="https://github.com/TheCollinsByte/dotfiles/graphs/contributors">
+<img alt="People" src="https://img.shields.io/github/contributors/TheCollinsByte/dotfiles?style=flat&color=ffaaf2&label=People"> </a>
 
-<a href="https://github.com/paradigm-lab/dotfiles/stargazers">
-<img alt="Stars" src="https://img.shields.io/github/stars/paradigm-lab/dotfiles?style=flat&color=98c379&label=Stars"> </a>
+<a href="https://github.com/TheCollinsByte/dotfiles/stargazers">
+<img alt="Stars" src="https://img.shields.io/github/stars/TheCollinsByte/dotfiles?style=flat&color=98c379&label=Stars"> </a>
 
-<a href="https://github.com/paradigm-lab/dotfiles/network/members">
-<img alt="Forks" src="https://img.shields.io/github/forks/paradigm-lab/dotfiles?style=flat&color=66a8e0&label=Forks"> </a>
+<a href="https://github.com/TheCollinsByte/dotfiles/network/members">
+<img alt="Forks" src="https://img.shields.io/github/forks/TheCollinsByte/dotfiles?style=flat&color=66a8e0&label=Forks"> </a>
 
-<a href="https://github.com/paradigm-lab/dotfiles/watchers">
-<img alt="Watches" src="https://img.shields.io/github/watchers/paradigm-lab/dotfiles?style=flat&color=f5d08b&label=Watches"> </a>
+<a href="https://github.com/TheCollinsByte/dotfiles/watchers">
+<img alt="Watches" src="https://img.shields.io/github/watchers/TheCollinsByte/dotfiles?style=flat&color=f5d08b&label=Watches"> </a>
 
-<a href="https://github.com/paradigm-lab/dotfiles/pulse">
-<img alt="Last Updated" src="https://img.shields.io/github/last-commit/paradigm-lab/dotfiles?style=flat&color=e06c75&label="> </a>
+<a href="https://github.com/TheCollinsByte/dotfiles/pulse">
+<img alt="Last Updated" src="https://img.shields.io/github/last-commit/TheCollinsByte/dotfiles?style=flat&color=e06c75&label="> </a>
 
 </div>
 
@@ -96,17 +96,39 @@ cd dotfiles
 Usage: ./install.sh [options]
 
 Options:
+  --dry-run, --dry     Preview changes without making them
+  -c, --check          Check system dependencies
+  -u, --update         Update dotfiles and submodules
   -p, --packages       Install system packages
   -d, --dotfiles       Set up dotfiles
   -r, --suckless-repos Set up Suckless repositories
   -b, --suckless-build Build and install Suckless tools
   -a, --all            Run all setup steps
   -h, --help           Show this help message
+
+Examples:
+  ./install.sh --check           Check if system is ready
+  ./install.sh --update          Update to latest version
+  ./install.sh --dry-run --all   Preview all changes
+  ./install.sh --dotfiles        Install dotfiles only
 ```
 
 ## Updating
 
-To update all submodules:
+The easiest way to update:
+
+```bash
+./install.sh --update
+```
+
+This will:
+- Check for uncommitted changes
+- Show what will be updated
+- Pull latest changes
+- Update all submodules
+- Ask for confirmation before applying
+
+Or manually:
 
 ```bash
 git pull
