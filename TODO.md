@@ -27,9 +27,9 @@
   - Ensure required commands available
   - Check submodules are up to date
 
-- [X] ✅ **Dependency Checker** (Completed)
-- [X] ✅ **Update Command** (Completed)
-- [X] ✅ **Dry-run Mode** (Completed)
+- [X] **Dependency Checker** (Completed)
+- [X] **Update Command** (Completed)
+- [X] **Dry-run Mode** (Completed)
 
 ### Documentation
 - [ ] 🔥 **Create CONTRIBUTING.md** (30 min)
@@ -46,8 +46,8 @@
   - Symlink issues
   - Build failures
 
-- [X] ✅ **Add comments to complex sections** (Completed)
-- [X] ✅ **Create CHANGELOG.md** (Completed)
+- [X] **Add comments to complex sections** (Completed)
+- [X] **Create CHANGELOG.md** (Completed)
 
 ---
 
@@ -243,19 +243,19 @@
 ## 🎨 Configuration & Customization
 
 ### Suckless Software
-- [X] ✅ **DWM** (configured via submodule)
-- [X] ✅ **st** (configured via submodule)
-- [X] ✅ **dmenu** (configured via submodule)
-- [X] ✅ **dwmblocks** (configured via submodule)
+- [X] **DWM** (configured via submodule)
+- [X] **st** (configured via submodule)
+- [X] **dmenu** (configured via submodule)
+- [X] **dwmblocks** (configured via submodule)
 
 ### Shell Configuration
-- [X] ✅ **bash prompt** (configured)
-- [X] ✅ **bash functions** (configured)
+- [X] **bash prompt** (configured)
+- [X] **bash functions** (configured)
 - [ ] **zsh configuration** (optional)
 - [ ] **fish configuration** (optional)
 
 ### Wallpaper Management
-- [X] ✅ **Wallpaper Shuffle** (implemented)
+- [X] **Wallpaper Shuffle** (implemented)
 - [ ] **Wallpaper Slideshow**
 - [ ] **Dynamic wallpaper based on time**
 
@@ -291,15 +291,15 @@
 ## 🏗️ Infrastructure
 
 ### Distribution Support
-- [X] ✅ **Arch Linux**
+- [X] **Arch Linux**
   - [X] pacman support
   - [ ] AUR support (yay/paru)
-- [X] ✅ **Ubuntu/Debian**
+- [X] **Ubuntu/Debian**
   - [X] apt support
   - [ ] snap support
-- [X] ✅ **Fedora/RHEL**
+- [X] **Fedora/RHEL**
   - [X] dnf support
-- [X] ✅ **macOS**
+- [X] **macOS**
   - [X] Homebrew support
 
 ### Git Submodules
@@ -341,21 +341,21 @@
 
 These can be done quickly and provide immediate value:
 
-1. ✅ Add shellcheck to packages (Done!)
-2. ✅ Add --update command (Done!)
-3. ✅ Add --check command (Done!)
-4. [ ] Add logging (1 hour)
-5. [ ] Create CONTRIBUTING.md (30 min)
-6. [ ] Add troubleshooting to README (30 min)
-7. [ ] Add cleanup command (1 hour)
-8. [ ] Add health check (1 hour)
+1. [X] Add shellcheck to packages (Done!)
+2. [X] Add --update command (Done!)
+3. [X] Add --check command (Done!)
+4. [ ] Add logging
+5. [ ] Create CONTRIBUTING.md
+6. [ ] Add troubleshooting to README
+7. [ ] Add cleanup command
+8. [ ] Add health check
 
 ---
 
 ## 📝 Notes
 
 - Keep this file updated as tasks are completed
-- Mark items with ✅ when done
+- Mark items with [X] when done
 - Add new items as they come up
 - Review quarterly to reprioritize
 
