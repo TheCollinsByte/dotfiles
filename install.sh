@@ -31,6 +31,9 @@ SYSTEM_TYPE=""
 DISTRO=""
 PACKAGE_MANAGER=""
 
+# Dry-run mode flag
+DRY_RUN=false
+
 # ========================
 # Utility Functions
 # ========================
@@ -49,49 +52,94 @@ print_error()  { echo -e "${RED}[✗] ERROR:${NC} $1" >&2; }
 # Check if command exists
 command_exists() { command -v "$1" >/dev/null 2>&1; }
 
+# Validate symlink after creation
+validate_symlink() {
+    local dst="$1"
+    local expected_src="$2"
+    
+    if [[ ! -L "$dst" ]]; then
+        print_error "Validation failed: $dst is not a symlink"
+        return 1
+    fi
+    
+    local actual_src
+    actual_src=$(readlink -f "$dst" 2>/dev/null)
+    local expected_full
+    expected_full=$(readlink -f "$expected_src" 2>/dev/null)
+    
+    if [[ "$actual_src" != "$expected_full" ]]; then
+        print_error "Validation failed: $dst points to $actual_src instead of $expected_full"
+        return 1
+    fi
+    
+    return 0
+}
+
 # Create backup of existing file/directory
 backup_file() {
     local file="$1"
     if [[ -e "$file" || -L "$file" ]]; then
-        print_status "Backing up ${file} to ${BACKUP_DIR}"
-        mkdir -p "${BACKUP_DIR}/$(dirname "${file#$HOME/}")"
-        mv -v "$file" "${BACKUP_DIR}/${file#$HOME/}" 2>/dev/null || true
+        if [[ "$DRY_RUN" == true ]]; then
+            print_status "[DRY-RUN] Would backup ${file} to ${BACKUP_DIR}"
+        else
+            print_status "Backing up ${file} to ${BACKUP_DIR}"
+            mkdir -p "${BACKUP_DIR}/$(dirname "${file#$HOME/}")"
+            mv -v "$file" "${BACKUP_DIR}/${file#$HOME/}" 2>/dev/null || true
+        fi
     fi
 }
 
 # Create or update symlink
+# This function safely creates symlinks with the following features:
+# - Converts relative paths to absolute paths
+# - Validates source file exists
+# - Creates parent directories as needed
+# - Backs up existing files/symlinks before replacing
+# - Validates symlink after creation
+# - Supports dry-run mode
 create_symlink() {
-    local src="$1"
-    local dst="$2"
+    local src="$1"  # Source file/directory to link from
+    local dst="$2"  # Destination path where symlink will be created
     
-    # Convert to absolute path if not already
+    # Convert to absolute path if not already (handles relative paths)
     [[ $src == /* ]] || src="${DOTFILES_DIR}/${src}"
     
-    # Skip if source doesn't exist
+    # Skip if source doesn't exist (prevents broken symlinks)
     if [[ ! -e "$src" ]]; then
         print_warn "Source not found: $src"
         return 1
     fi
     
-    # Create parent directory if needed
+    # Create parent directory if needed (e.g., ~/.config/nvim for ~/.config/nvim/init.vim)
     mkdir -p "$(dirname "$dst")"
     
-    # Handle existing destination
+    # Handle existing destination (file, directory, or symlink)
     if [[ -e "$dst" || -L "$dst" ]]; then
-        # Skip if already linked to the same file
+        # Skip if already linked to the same file (idempotent operation)
         if [[ "$(readlink -f "$dst" 2>/dev/null)" == "$(readlink -f "$src" 2>/dev/null)" ]]; then
             print_status "Symlink already exists: $dst"
             return 0
         fi
+        # Backup existing file/directory before replacing
         backup_file "$dst"
     fi
     
     # Create the symlink
-    if ln -sfn "$src" "$dst"; then
-        print_ok "Created symlink: $dst → $src"
+    if [[ "$DRY_RUN" == true ]]; then
+        print_ok "[DRY-RUN] Would create symlink: $dst → $src"
     else
-        print_error "Failed to create symlink: $dst"
-        return 1
+        if ln -sfn "$src" "$dst"; then
+            # Validate the symlink was created correctly
+            if validate_symlink "$dst" "$src"; then
+                print_ok "Created symlink: $dst → $src"
+            else
+                print_warn "Symlink created but validation failed: $dst"
+                return 1
+            fi
+        else
+            print_error "Failed to create symlink: $dst"
+            return 1
+        fi
     fi
 }
 
@@ -178,26 +226,52 @@ install_packages() {
         return 1
     fi
     
-    # Base packages that are common across most systems
-    local base_packages=(
-        git curl wget tmux htop vim neovim ripgrep fd-find
-        fzf bat eza stow
-    )
+    # Common packages across all distros
+    local common_packages=(git curl wget tmux htop vim neovim ripgrep fzf stow)
     
-    # Install packages based on package manager
+    # Distro-specific package lists (handles naming differences)
+    local packages=()
+    
     case $PACKAGE_MANAGER in
         pacman)
-            sudo pacman -S --noconfirm --needed "${base_packages[@]}"
+            # Arch Linux package names
+            packages=(
+                "${common_packages[@]}"
+                fd bat eza
+                base-devel
+                libx11 libxft libxinerama  # For suckless builds
+            )
             ;;
         apt)
-            sudo apt update
-            sudo apt install -y "${base_packages[@]}"
+            # Debian/Ubuntu package names
+            packages=(
+                "${common_packages[@]}"
+                fd-find bat  # Note: bat might be 'batcat' on older versions
+                build-essential
+                libx11-dev libxft-dev libxinerama-dev  # For suckless builds
+            )
+            # Try to install eza from newer repos, fallback gracefully
+            if apt-cache search eza | grep -q "^eza "; then
+                packages+=(eza)
+            else
+                print_warn "eza not available in repos, skipping"
+            fi
             ;;
         dnf)
-            sudo dnf install -y "${base_packages[@]}"
+            # Fedora/RHEL package names
+            packages=(
+                "${common_packages[@]}"
+                fd-find bat eza
+                @development-tools
+                libX11-devel libXft-devel libXinerama-devel  # For suckless builds
+            )
             ;;
         brew)
-            brew install "${base_packages[@]}"
+            # macOS Homebrew package names
+            packages=(
+                "${common_packages[@]}"
+                fd bat eza
+            )
             ;;
         *)
             print_warn "Unsupported package manager: $PACKAGE_MANAGER"
@@ -205,7 +279,33 @@ install_packages() {
             ;;
     esac
     
-    # Additional tools that might need special handling
+    # Show what will be installed
+    print_status "Packages to install: ${packages[*]}"
+    
+    # Install packages based on package manager
+    if [[ "$DRY_RUN" == true ]]; then
+        print_status "[DRY-RUN] Would install ${#packages[@]} packages"
+        print_status "[DRY-RUN] Using package manager: $PACKAGE_MANAGER"
+        return 0
+    fi
+    
+    case $PACKAGE_MANAGER in
+        pacman)
+            sudo pacman -S --noconfirm --needed "${packages[@]}"
+            ;;
+        apt)
+            sudo apt update
+            sudo apt install -y "${packages[@]}"
+            ;;
+        dnf)
+            sudo dnf install -y "${packages[@]}"
+            ;;
+        brew)
+            brew install "${packages[@]}"
+            ;;
+    esac
+    
+    print_ok "Package installation completed"
 }
 
 # ========================
@@ -249,20 +349,25 @@ setup_dotfiles() {
         "$DOTFILES_DIR/suckless:$HOME/.config/suckless"
     )
     
-    # Create symlinks
+    # Create symlinks for all dotfiles
+    # Uses bash parameter expansion to split "source:destination" format
+    # ${dotfile%%:*} extracts everything before the first colon (source)
+    # ${dotfile#*:} extracts everything after the first colon (destination)
     for dotfile in "${dotfiles[@]}"; do
-        local src="${dotfile%%:*}"
-        local dst="${dotfile#*:}"
+        local src="${dotfile%%:*}"  # Extract source path
+        local dst="${dotfile#*:}"   # Extract destination path
         create_symlink "$src" "$dst"
     done
     
     # Handle special cases
     
     # Link bin scripts to ~/.local/bin
+    # This makes custom scripts available in PATH without modifying the bin directory structure
     if [ -d "$DOTFILES_DIR/bin" ]; then
         print_status "Linking bin scripts..."
         mkdir -p "$HOME/.local/bin"
         for script in "$DOTFILES_DIR/bin"/*; do
+            # Link both files and directories (e.g., statusbar/)
             if [ -f "$script" ] || [ -d "$script" ]; then
                 local script_name
                 script_name=$(basename "$script")
@@ -301,23 +406,41 @@ EOF
 setup_suckless_repos() {
     print_section "Setting Up Suckless Repositories"
     
-    # Initialize/update submodules for suckless programs
+    # Git Submodule Management
+    # ------------------------
+    # This function manages external repositories as git submodules.
+    # Submodules allow tracking specific commits of external repos within this dotfiles repo.
+    # Benefits: version control, easy updates, clean separation of concerns
+    
+    # Dry-run mode: show what would be done
+    if [[ "$DRY_RUN" == true ]]; then
+        print_status "[DRY-RUN] Would initialize and update Git submodules"
+        print_status "[DRY-RUN] Would ensure suckless programs (dwm, st, dmenu, dwmblocks) are registered"
+        print_status "[DRY-RUN] Would ensure Neovim configuration is registered as submodule"
+        return 0
+    fi
+    
     print_status "Initializing and updating Git submodules..."
     cd "$DOTFILES_DIR" || { print_error "Failed to change to dotfiles directory"; return 1; }
     
-    # Initialize and update all submodules
+    # Initialize and update all submodules defined in .gitmodules
+    # --init: Initialize submodules that haven't been initialized yet
+    # --recursive: Handle nested submodules (submodules within submodules)
     if git submodule update --init --recursive; then
         print_ok "Git submodules initialized and updated successfully"
     else
         print_error "Failed to initialize and update Git submodules"
         print_status "Attempting to fix submodule issues..."
         
-        # Try to fix submodule issues
+        # Recovery strategy for submodule issues
+        # sync: Update submodule URLs from .gitmodules to .git/config
+        # --force: Override local changes if necessary
         git submodule sync
         git submodule update --init --recursive --force
     fi
     
-    # Check for each suckless submodule
+    # Ensure all suckless programs are registered as submodules
+    # Using parallel arrays to map module names to their repository URLs
     local suckless_modules=("dwm" "st" "dmenu" "dwmblocks")
     local suckless_repos=(
         "https://github.com/TheCollinsByte/dwm"
@@ -326,21 +449,29 @@ setup_suckless_repos() {
         "https://github.com/TheCollinsByte/dwmblocks"
     )
     
+    # Loop through indices to access both arrays simultaneously
+    # ${!suckless_modules[@]} expands to array indices (0, 1, 2, 3)
     for i in "${!suckless_modules[@]}"; do
         local module="${suckless_modules[$i]}"
         local repo="${suckless_repos[$i]}"
         local module_path="suckless/$module"
         
+        # Check if submodule directory exists and contains a .git directory
+        # Missing .git means it's not properly initialized as a submodule
         if [[ ! -d "$module_path" || ! -d "$module_path/.git" ]]; then
             print_status "Adding $module as a submodule..."
+            # -f flag forces addition even if directory exists
+            # || true prevents script exit on error (set -e is active)
             git submodule add -f "$repo" "$module_path" || true
         fi
     done
     
     # Handle Neovim configuration as a submodule
+    # Neovim config is kept separate to allow independent version control
     if [[ ! -d "config/nvim/.git" ]]; then
         print_status "Adding Neovim configuration as a submodule..."
         # Save current nvim config if it exists but is not a submodule
+        # This prevents data loss if user has existing config
         if [[ -d "config/nvim" ]]; then
             print_status "Backing up existing Neovim configuration..."
             mv "config/nvim" "config/nvim.bak.$(date +%Y%m%d%H%M%S)"
@@ -376,6 +507,20 @@ build_suckless() {
     
     # Build each component
     local components=("dwm" "st" "dmenu" "dwmblocks")
+    
+    # Dry-run mode: just show what would be built
+    if [[ "$DRY_RUN" == true ]]; then
+        print_status "[DRY-RUN] Would build and install the following components:"
+        for component in "${components[@]}"; do
+            local component_dir="$suckless_dir/$component"
+            if [[ -d "$component_dir" ]]; then
+                print_ok "[DRY-RUN] Would build and install: $component"
+            else
+                print_warn "[DRY-RUN] Would skip $component: directory not found"
+            fi
+        done
+        return 0
+    fi
     
     for component in "${components[@]}"; do
         local component_dir="$suckless_dir/$component"
@@ -483,6 +628,11 @@ main() {
     if [[ $# -gt 0 ]]; then
         while [[ $# -gt 0 ]]; do
             case $1 in
+                --dry-run|--dry)
+                    DRY_RUN=true
+                    print_warn "DRY-RUN MODE: No changes will be made"
+                    shift
+                    ;;
                 --packages|-p) install_packages ; shift ;;
                 --dotfiles|-d) setup_dotfiles ; shift ;;
                 --suckless-repos|-r) setup_suckless_repos ; shift ;;
@@ -534,12 +684,16 @@ main() {
 show_usage() {
     echo -e "${BLUE}Usage:${NC} $0 [options]"
     echo -e "\nOptions:"
+    echo -e "  --dry-run, --dry     Preview changes without making them"
     echo -e "  -p, --packages       Install system packages"
     echo -e "  -d, --dotfiles       Set up dotfiles"
     echo -e "  -r, --suckless-repos Set up Suckless repositories"
     echo -e "  -b, --suckless-build Build and install Suckless tools"
     echo -e "  -a, --all            Run all setup steps"
     echo -e "  -h, --help           Show this help message"
+    echo -e "\nExamples:"
+    echo -e "  $0 --dry-run --all   Preview all changes"
+    echo -e "  $0 --dotfiles        Install dotfiles only"
 }
 
 # Show system information
