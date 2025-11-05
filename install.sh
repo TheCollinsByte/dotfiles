@@ -52,6 +52,73 @@ print_error()  { echo -e "${RED}[✗] ERROR:${NC} $1" >&2; }
 # Check if command exists
 command_exists() { command -v "$1" >/dev/null 2>&1; }
 
+# Check system dependencies before installation
+check_dependencies() {
+    print_section "Checking Dependencies"
+    
+    local all_ok=true
+    
+    # Check git
+    if command_exists git; then
+        local git_version=$(git --version | awk '{print $3}')
+        print_ok "Git installed (v${git_version})"
+    else
+        print_error "Git not installed (required)"
+        all_ok=false
+    fi
+    
+    # Check disk space (need at least 1GB)
+    local available_space=$(df -BG "$HOME" | awk 'NR==2 {print $4}' | sed 's/G//')
+    if [[ $available_space -gt 1 ]]; then
+        print_ok "Sufficient disk space (${available_space}GB available)"
+    else
+        print_warn "Low disk space (${available_space}GB available)"
+    fi
+    
+    # Check network connectivity
+    if ping -c 1 github.com >/dev/null 2>&1; then
+        print_ok "Network connectivity OK"
+    else
+        print_warn "Network connectivity issue (may affect submodule updates)"
+    fi
+    
+    # Check for conflicting dotfiles
+    local conflicts=()
+    for file in .bashrc .vimrc .tmux.conf; do
+        if [[ -f "$HOME/$file" && ! -L "$HOME/$file" ]]; then
+            conflicts+=("$HOME/$file")
+        fi
+    done
+    
+    if [[ ${#conflicts[@]} -gt 0 ]]; then
+        print_warn "Found ${#conflicts[@]} existing config files (will be backed up):"
+        for conflict in "${conflicts[@]}"; do
+            echo "    - $conflict"
+        done
+    else
+        print_ok "No conflicting files found"
+    fi
+    
+    # Optional tools
+    echo ""
+    print_status "Optional tools:"
+    for tool in shellcheck bat eza fd fzf; do
+        if command_exists "$tool"; then
+            echo "  ✓ $tool"
+        else
+            echo "  ✗ $tool (will be installed)"
+        fi
+    done
+    
+    if [[ "$all_ok" == false ]]; then
+        print_error "Some required dependencies are missing"
+        return 1
+    fi
+    
+    print_ok "All required dependencies satisfied"
+    return 0
+}
+
 # Validate symlink after creation
 validate_symlink() {
     local dst="$1"
@@ -227,7 +294,7 @@ install_packages() {
     fi
     
     # Common packages across all distros
-    local common_packages=(git curl wget tmux htop vim neovim ripgrep fzf stow)
+    local common_packages=(git curl wget tmux htop vim neovim ripgrep fzf stow shellcheck)
     
     # Distro-specific package lists (handles naming differences)
     local packages=()
@@ -589,6 +656,86 @@ EOL
 }
 
 # ========================
+# Update System
+# ========================
+
+update_dotfiles() {
+    print_section "Updating Dotfiles"
+    
+    cd "$DOTFILES_DIR" || { print_error "Failed to change to dotfiles directory"; return 1; }
+    
+    # Check if we're in a git repository
+    if [[ ! -d ".git" ]]; then
+        print_error "Not a git repository. Cannot update."
+        return 1
+    fi
+    
+    # Check for uncommitted changes
+    if ! git diff-index --quiet HEAD --; then
+        print_warn "You have uncommitted changes:"
+        git status --short
+        echo ""
+        read -rp "Continue with update? (y/N): " response
+        if [[ ! "$response" =~ ^[Yy]$ ]]; then
+            print_status "Update cancelled"
+            return 0
+        fi
+    fi
+    
+    # Fetch latest changes
+    print_status "Fetching latest changes..."
+    if ! git fetch origin; then
+        print_error "Failed to fetch from origin"
+        return 1
+    fi
+    
+    # Show what will be updated
+    local behind=$(git rev-list --count HEAD..origin/$(git branch --show-current))
+    if [[ $behind -eq 0 ]]; then
+        print_ok "Already up to date!"
+        
+        # Still update submodules
+        print_status "Checking submodules..."
+        if git submodule update --remote --merge; then
+            print_ok "Submodules updated"
+        fi
+        return 0
+    fi
+    
+    print_status "Your branch is $behind commit(s) behind origin"
+    echo ""
+    print_status "Changes to be applied:"
+    git log --oneline HEAD..origin/$(git branch --show-current) | head -10
+    echo ""
+    
+    read -rp "Apply these updates? (y/N): " response
+    if [[ ! "$response" =~ ^[Yy]$ ]]; then
+        print_status "Update cancelled"
+        return 0
+    fi
+    
+    # Pull changes
+    print_status "Pulling changes..."
+    if git pull origin $(git branch --show-current); then
+        print_ok "Successfully updated dotfiles"
+    else
+        print_error "Failed to pull changes"
+        return 1
+    fi
+    
+    # Update submodules
+    print_status "Updating submodules..."
+    if git submodule update --init --recursive --remote --merge; then
+        print_ok "Submodules updated successfully"
+    else
+        print_warn "Some submodules failed to update"
+    fi
+    
+    print_ok "Update complete!"
+    print_status "Run './install.sh --dotfiles' to apply any new configuration changes"
+}
+
+# ========================
 # Interactive Menu
 # ========================
 
@@ -633,6 +780,8 @@ main() {
                     print_warn "DRY-RUN MODE: No changes will be made"
                     shift
                     ;;
+                --check|-c) check_dependencies ; shift ;;
+                --update|-u) update_dotfiles ; shift ;;
                 --packages|-p) install_packages ; shift ;;
                 --dotfiles|-d) setup_dotfiles ; shift ;;
                 --suckless-repos|-r) setup_suckless_repos ; shift ;;
@@ -685,6 +834,8 @@ show_usage() {
     echo -e "${BLUE}Usage:${NC} $0 [options]"
     echo -e "\nOptions:"
     echo -e "  --dry-run, --dry     Preview changes without making them"
+    echo -e "  -c, --check          Check system dependencies"
+    echo -e "  -u, --update         Update dotfiles and submodules"
     echo -e "  -p, --packages       Install system packages"
     echo -e "  -d, --dotfiles       Set up dotfiles"
     echo -e "  -r, --suckless-repos Set up Suckless repositories"
@@ -692,6 +843,8 @@ show_usage() {
     echo -e "  -a, --all            Run all setup steps"
     echo -e "  -h, --help           Show this help message"
     echo -e "\nExamples:"
+    echo -e "  $0 --check           Check if system is ready"
+    echo -e "  $0 --update          Update to latest version"
     echo -e "  $0 --dry-run --all   Preview all changes"
     echo -e "  $0 --dotfiles        Install dotfiles only"
 }
