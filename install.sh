@@ -23,16 +23,19 @@ readonly BLUE='\033[0;34m'
 readonly NC='\033[0m' # No Color
 
 # Global paths
-readonly DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-readonly BACKUP_DIR="${HOME}/.dotfiles_backup_$(date +%Y%m%d_%H%M%S)"
+DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+BACKUP_DIR="${HOME}/.dotfiles_backup_$(date +%Y%m%d_%H%M%S)"
 
 # System info
 SYSTEM_TYPE=""
 DISTRO=""
 PACKAGE_MANAGER=""
 
-# Dry-run mode flag
+# Installation mode flags
 DRY_RUN=false
+SERVER_MODE=false
+MINIMAL_MODE=false
+CUSTOM_LOCATION=false
 
 # ========================
 # Utility Functions
@@ -51,6 +54,175 @@ print_error()  { echo -e "${RED}[✗] ERROR:${NC} $1" >&2; }
 
 # Check if command exists
 command_exists() { command -v "$1" >/dev/null 2>&1; }
+
+# Prompt user for dotfiles location
+prompt_dotfiles_location() {
+    print_section "Dotfiles Location Setup"
+    
+    local current_location="$DOTFILES_DIR"
+    
+    echo -e "${BLUE}Current location:${NC} $current_location"
+    echo ""
+    echo "Common locations:"
+    echo "  1) $HOME/.dotfiles         (hidden, popular convention)"
+    echo "  2) $HOME/dotfiles          (visible, simple)"
+    echo "  3) $HOME/.config/dotfiles  (XDG compliant)"
+    echo "  4) $HOME/org/dotfiles      (organized, current default)"
+    echo "  5) Custom location"
+    echo "  6) Keep current location"
+    echo ""
+    
+    read -rp "Select location (1-6) [6]: " choice
+    choice=${choice:-6}
+    
+    local new_location=""
+    
+    case $choice in
+        1) new_location="$HOME/.dotfiles" ;;
+        2) new_location="$HOME/dotfiles" ;;
+        3) new_location="$HOME/.config/dotfiles" ;;
+        4) new_location="$HOME/org/dotfiles" ;;
+        5)
+            read -rp "Enter custom path: " new_location
+            new_location="${new_location/#\~/$HOME}"  # Expand ~
+            ;;
+        6)
+            print_ok "Keeping current location: $current_location"
+            return 0
+            ;;
+        *)
+            print_warn "Invalid choice, keeping current location"
+            return 0
+            ;;
+    esac
+    
+    # Validate and move if needed
+    if [[ -n "$new_location" ]]; then
+        new_location=$(realpath -m "$new_location")  # Normalize path
+        
+        if [[ "$new_location" == "$current_location" ]]; then
+            print_ok "Location unchanged: $current_location"
+            return 0
+        fi
+        
+        echo ""
+        print_status "New location: $new_location"
+        
+        if [[ -e "$new_location" ]]; then
+            print_error "Location already exists: $new_location"
+            read -rp "Merge with existing location? (y/N): " merge
+            if [[ ! "$merge" =~ ^[Yy]$ ]]; then
+                print_warn "Keeping current location"
+                return 1
+            fi
+        fi
+        
+        read -rp "Move dotfiles to $new_location? (y/N): " confirm
+        if [[ "$confirm" =~ ^[Yy]$ ]]; then
+            move_dotfiles "$new_location"
+        else
+            print_warn "Keeping current location"
+        fi
+    fi
+}
+
+# Move dotfiles to new location
+move_dotfiles() {
+    local new_location="$1"
+    local old_location="$DOTFILES_DIR"
+    
+    print_status "Moving dotfiles from $old_location to $new_location..."
+    
+    # Create parent directory
+    mkdir -p "$(dirname "$new_location")"
+    
+    # Move the directory
+    if mv "$old_location" "$new_location"; then
+        DOTFILES_DIR="$new_location"
+        CUSTOM_LOCATION=true
+        print_ok "Dotfiles moved to: $new_location"
+        
+        # Update symlinks to point to new location
+        print_status "Updating existing symlinks..."
+        update_symlinks_location "$old_location" "$new_location"
+        
+        # Save location preference
+        save_location_preference "$new_location"
+    else
+        print_error "Failed to move dotfiles"
+        return 1
+    fi
+}
+
+# Update existing symlinks to new location
+update_symlinks_location() {
+    local old_location="$1"
+    local new_location="$2"
+    
+    # Find all symlinks pointing to old location
+    local symlinks=(
+        "$HOME/.bashrc"
+        "$HOME/.bash_profile"
+        "$HOME/.vimrc"
+        "$HOME/.gitconfig"
+        "$HOME/.tmux.conf"
+        "$HOME/.xinitrc"
+        "$HOME/.Xresources"
+        "$HOME/.dmenurc"
+    )
+    
+    local updated=0
+    for link in "${symlinks[@]}"; do
+        if [[ -L "$link" ]]; then
+            local target=$(readlink "$link")
+            if [[ "$target" == "$old_location"* ]]; then
+                local new_target="${target/$old_location/$new_location}"
+                ln -sfn "$new_target" "$link"
+                ((updated++))
+            fi
+        fi
+    done
+    
+    # Update config directory symlinks
+    if [[ -d "$HOME/.config" ]]; then
+        for link in "$HOME/.config"/*; do
+            if [[ -L "$link" ]]; then
+                local target=$(readlink "$link")
+                if [[ "$target" == "$old_location"* ]]; then
+                    local new_target="${target/$old_location/$new_location}"
+                    ln -sfn "$new_target" "$link"
+                    ((updated++))
+                fi
+            fi
+        done
+    fi
+    
+    if [[ $updated -gt 0 ]]; then
+        print_ok "Updated $updated symlink(s)"
+    fi
+}
+
+# Save location preference for future use
+save_location_preference() {
+    local location="$1"
+    local pref_file="$HOME/.dotfiles_location"
+    
+    echo "$location" > "$pref_file"
+    print_status "Location preference saved to $pref_file"
+}
+
+# Load saved location preference
+load_location_preference() {
+    local pref_file="$HOME/.dotfiles_location"
+    
+    if [[ -f "$pref_file" ]]; then
+        local saved_location=$(cat "$pref_file")
+        if [[ -d "$saved_location" ]]; then
+            DOTFILES_DIR="$saved_location"
+            print_status "Using saved location: $DOTFILES_DIR"
+        fi
+    fi
+}
 
 # Check system dependencies before installation
 check_dependencies() {
@@ -274,10 +446,21 @@ detect_system() {
             ;;
     esac
     
+    # Detect if running on a server (no display server)
+    if [[ -z "$DISPLAY" ]] && [[ -z "$WAYLAND_DISPLAY" ]] && [[ ! -d /tmp/.X11-unix ]]; then
+        if [[ "$SERVER_MODE" == false ]] && [[ "$MINIMAL_MODE" == false ]]; then
+            print_status "No display server detected - appears to be a server environment"
+            print_status "Tip: Use --server or --minimal for server-optimized installation"
+        fi
+    fi
+    
     if [[ "$PACKAGE_MANAGER" == "unknown" ]]; then
         print_warn "Unsupported system or package manager detected"
     else
-        print_ok "Detected: $SYSTEM_TYPE ($DISTRO) with package manager: $PACKAGE_MANAGER"
+        local mode_info=""
+        [[ "$SERVER_MODE" == true ]] && mode_info=" [SERVER MODE]"
+        [[ "$MINIMAL_MODE" == true ]] && mode_info=" [MINIMAL MODE]"
+        print_ok "Detected: $SYSTEM_TYPE ($DISTRO) with package manager: $PACKAGE_MANAGER${mode_info}"
     fi
 }
 
@@ -296,6 +479,14 @@ install_packages() {
     # Common packages across all distros
     local common_packages=(git curl wget tmux htop vim neovim ripgrep fzf stow shellcheck)
     
+    # Server/minimal mode: skip GUI-related packages
+    local gui_packages=()
+    if [[ "$SERVER_MODE" == false ]] && [[ "$MINIMAL_MODE" == false ]]; then
+        gui_packages=(libx11 libxft libxinerama)  # For suckless builds
+    else
+        print_status "Server/Minimal mode: Skipping GUI packages"
+    fi
+    
     # Distro-specific package lists (handles naming differences)
     local packages=()
     
@@ -305,20 +496,32 @@ install_packages() {
             packages=(
                 "${common_packages[@]}"
                 fd bat eza
-                base-devel
-                libx11 libxft libxinerama  # For suckless builds
             )
+            # Add build tools
+            if [[ "$MINIMAL_MODE" == false ]]; then
+                packages+=(base-devel)
+            fi
+            # Add GUI packages if not in server mode
+            if [[ "$SERVER_MODE" == false ]] && [[ "$MINIMAL_MODE" == false ]]; then
+                packages+=(libx11 libxft libxinerama)
+            fi
             ;;
         apt)
             # Debian/Ubuntu package names
             packages=(
                 "${common_packages[@]}"
                 fd-find bat  # Note: bat might be 'batcat' on older versions
-                build-essential
-                libx11-dev libxft-dev libxinerama-dev  # For suckless builds
             )
+            # Add build tools
+            if [[ "$MINIMAL_MODE" == false ]]; then
+                packages+=(build-essential)
+            fi
+            # Add GUI packages if not in server mode
+            if [[ "$SERVER_MODE" == false ]] && [[ "$MINIMAL_MODE" == false ]]; then
+                packages+=(libx11-dev libxft-dev libxinerama-dev)
+            fi
             # Try to install eza from newer repos, fallback gracefully
-            if apt-cache search eza | grep -q "^eza "; then
+            if apt-cache search eza 2>/dev/null | grep -q "^eza "; then
                 packages+=(eza)
             else
                 print_warn "eza not available in repos, skipping"
@@ -329,9 +532,15 @@ install_packages() {
             packages=(
                 "${common_packages[@]}"
                 fd-find bat eza
-                @development-tools
-                libX11-devel libXft-devel libXinerama-devel  # For suckless builds
             )
+            # Add build tools
+            if [[ "$MINIMAL_MODE" == false ]]; then
+                packages+=(@development-tools)
+            fi
+            # Add GUI packages if not in server mode
+            if [[ "$SERVER_MODE" == false ]] && [[ "$MINIMAL_MODE" == false ]]; then
+                packages+=(libX11-devel libXft-devel libXinerama-devel)
+            fi
             ;;
         brew)
             # macOS Homebrew package names
@@ -396,25 +605,33 @@ setup_dotfiles() {
     # List of dotfiles to symlink
     # Format: "source:destination"
     local dotfiles=(
-        # Home directory dotfiles
+        # Core dotfiles (always installed)
         "$DOTFILES_DIR/.bashrc:$HOME/.bashrc"
         "$DOTFILES_DIR/.bash_profile:$HOME/.bash_profile"
         "$DOTFILES_DIR/.vimrc:$HOME/.vimrc"
         "$DOTFILES_DIR/.gitconfig:$HOME/.gitconfig"
         "$DOTFILES_DIR/.tmux.conf:$HOME/.tmux.conf"
-        "$DOTFILES_DIR/.xinitrc:$HOME/.xinitrc"
-        "$DOTFILES_DIR/.Xresources:$HOME/.Xresources"
-        "$DOTFILES_DIR/.dmenurc:$HOME/.dmenurc"
-
-        # System configuration directories
-        "$DOTFILES_DIR/config/cmus:$HOME/.config/cmus"
-        "$DOTFILES_DIR/config/fontconfig:$HOME/.config/fontconfig"
+        
+        # System configuration directories (always installed)
         "$DOTFILES_DIR/config/bat:$HOME/.config/bat"
         "$DOTFILES_DIR/config/htop:$HOME/.config/htop"
         "$DOTFILES_DIR/config/nvim:$HOME/.config/nvim"
         "$DOTFILES_DIR/config/shell:$HOME/.config/shell"
-        "$DOTFILES_DIR/suckless:$HOME/.config/suckless"
     )
+    
+    # GUI-related dotfiles (skip in server/minimal mode)
+    if [[ "$SERVER_MODE" == false ]] && [[ "$MINIMAL_MODE" == false ]]; then
+        dotfiles+=(
+            "$DOTFILES_DIR/.xinitrc:$HOME/.xinitrc"
+            "$DOTFILES_DIR/.Xresources:$HOME/.Xresources"
+            "$DOTFILES_DIR/.dmenurc:$HOME/.dmenurc"
+            "$DOTFILES_DIR/config/cmus:$HOME/.config/cmus"
+            "$DOTFILES_DIR/config/fontconfig:$HOME/.config/fontconfig"
+            "$DOTFILES_DIR/suckless:$HOME/.config/suckless"
+        )
+    else
+        print_status "Server/Minimal mode: Skipping GUI configuration files"
+    fi
     
     # Create symlinks for all dotfiles
     # Uses bash parameter expansion to split "source:destination" format
@@ -762,6 +979,9 @@ show_menu() {
 # ========================
 
 main() {
+    # Load saved location preference if exists
+    load_location_preference
+    
     # Ensure we're in the dotfiles directory
     cd "$DOTFILES_DIR" || { print_error "Failed to change to dotfiles directory"; exit 1; }
     
@@ -780,17 +1000,60 @@ main() {
                     print_warn "DRY-RUN MODE: No changes will be made"
                     shift
                     ;;
+                --server|-s)
+                    SERVER_MODE=true
+                    print_status "SERVER MODE: Skipping GUI packages and configurations"
+                    shift
+                    ;;
+                --minimal|-m)
+                    MINIMAL_MODE=true
+                    print_status "MINIMAL MODE: Installing only essential packages"
+                    shift
+                    ;;
+                --location|-l)
+                    prompt_dotfiles_location
+                    shift
+                    ;;
+                --set-location)
+                    if [[ -n "${2:-}" ]]; then
+                        local new_loc="${2/#\~/$HOME}"
+                        new_loc=$(realpath -m "$new_loc")
+                        move_dotfiles "$new_loc"
+                        shift 2
+                    else
+                        print_error "--set-location requires a path argument"
+                        exit 1
+                    fi
+                    ;;
                 --check|-c) check_dependencies ; shift ;;
                 --update|-u) update_dotfiles ; shift ;;
                 --packages|-p) install_packages ; shift ;;
                 --dotfiles|-d) setup_dotfiles ; shift ;;
-                --suckless-repos|-r) setup_suckless_repos ; shift ;;
-                --suckless-build|-b) build_suckless ; shift ;;
+                --suckless-repos|-r) 
+                    if [[ "$SERVER_MODE" == false ]] && [[ "$MINIMAL_MODE" == false ]]; then
+                        setup_suckless_repos
+                    else
+                        print_warn "Skipping suckless repos in server/minimal mode"
+                    fi
+                    shift
+                    ;;
+                --suckless-build|-b)
+                    if [[ "$SERVER_MODE" == false ]] && [[ "$MINIMAL_MODE" == false ]]; then
+                        build_suckless
+                    else
+                        print_warn "Skipping suckless build in server/minimal mode"
+                    fi
+                    shift
+                    ;;
                 --all|-a)
                     install_packages
                     setup_dotfiles
-                    setup_suckless_repos
-                    build_suckless
+                    if [[ "$SERVER_MODE" == false ]] && [[ "$MINIMAL_MODE" == false ]]; then
+                        setup_suckless_repos
+                        build_suckless
+                    else
+                        print_status "Skipping suckless tools in server/minimal mode"
+                    fi
                     shift
                     ;;
                 --help|-h) show_usage ; exit 0 ;;
@@ -832,21 +1095,43 @@ main() {
 # Show usage information
 show_usage() {
     echo -e "${BLUE}Usage:${NC} $0 [options]"
-    echo -e "\nOptions:"
-    echo -e "  --dry-run, --dry     Preview changes without making them"
-    echo -e "  -c, --check          Check system dependencies"
-    echo -e "  -u, --update         Update dotfiles and submodules"
-    echo -e "  -p, --packages       Install system packages"
-    echo -e "  -d, --dotfiles       Set up dotfiles"
-    echo -e "  -r, --suckless-repos Set up Suckless repositories"
-    echo -e "  -b, --suckless-build Build and install Suckless tools"
-    echo -e "  -a, --all            Run all setup steps"
-    echo -e "  -h, --help           Show this help message"
+    echo -e "\nModes:"
+    echo -e "  --dry-run, --dry         Preview changes without making them"
+    echo -e "  -s, --server             Server mode (skip GUI packages/configs)"
+    echo -e "  -m, --minimal            Minimal mode (essential packages only)"
+    echo -e "\nLocation:"
+    echo -e "  -l, --location           Choose dotfiles location interactively"
+    echo -e "  --set-location <path>    Set dotfiles location directly"
+    echo -e "\nCommands:"
+    echo -e "  -c, --check              Check system dependencies"
+    echo -e "  -u, --update             Update dotfiles and submodules"
+    echo -e "  -p, --packages           Install system packages"
+    echo -e "  -d, --dotfiles           Set up dotfiles"
+    echo -e "  -r, --suckless-repos     Set up Suckless repositories"
+    echo -e "  -b, --suckless-build     Build and install Suckless tools"
+    echo -e "  -a, --all                Run all setup steps"
+    echo -e "  -h, --help               Show this help message"
     echo -e "\nExamples:"
-    echo -e "  $0 --check           Check if system is ready"
-    echo -e "  $0 --update          Update to latest version"
-    echo -e "  $0 --dry-run --all   Preview all changes"
-    echo -e "  $0 --dotfiles        Install dotfiles only"
+    echo -e "  ${GREEN}# Choose custom location${NC}"
+    echo -e "  $0 --location"
+    echo -e ""
+    echo -e "  ${GREEN}# Set location directly${NC}"
+    echo -e "  $0 --set-location ~/.dotfiles"
+    echo -e ""
+    echo -e "  ${GREEN}# Check if system is ready${NC}"
+    echo -e "  $0 --check"
+    echo -e ""
+    echo -e "  ${GREEN}# Server/VPS installation (no GUI)${NC}"
+    echo -e "  $0 --server --all"
+    echo -e ""
+    echo -e "  ${GREEN}# Minimal installation${NC}"
+    echo -e "  $0 --minimal --dotfiles"
+    echo -e ""
+    echo -e "  ${GREEN}# Preview changes before installing${NC}"
+    echo -e "  $0 --dry-run --all"
+    echo -e ""
+    echo -e "  ${GREEN}# Update existing installation${NC}"
+    echo -e "  $0 --update"
 }
 
 # Show system information
