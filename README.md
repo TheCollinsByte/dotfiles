@@ -34,12 +34,17 @@ dotfiles/
 │   ├── fontconfig/     # Font configuration
 │   ├── htop/           # System monitor config
 │   ├── nvim/           # Neovim configuration (git submodule)
-│   ├── shell/          # Shell configurations
+│   └── shell/          # Shell configurations
+├── docs/               # Documentation
+│   ├── CHANGELOG.md    # Version history and changes
+│   ├── TODO.md         # Planned features and tasks
+│   ├── SERVER_INSTALL.md       # Server/VPS installation guide
+│   └── LOCATION_GUIDE.md       # Location flexibility guide
 ├── suckless/           # Suckless programs as git submodules
 │   ├── dwm/            # Dynamic Window Manager
 │   ├── st/             # Simple Terminal
 │   ├── dmenu/          # Dynamic Menu
-│   ├── dwmblocks/      # Status bar for DWM
+│   └── dwmblocks/      # Status bar for DWM
 ├── .bashrc             # Bash configuration
 ├── .bash_profile       # Bash profile
 ├── .gitconfig          # Git configuration
@@ -64,25 +69,64 @@ dotfiles/
 ### Quick Install
 
 ```bash
+# Clone to any temporary location
 git clone --recursive https://github.com/TheCollinsByte/dotfiles.git
 cd dotfiles
+
+# Choose your preferred location during installation
+./install.sh --location
+
+# Or install directly
 ./install.sh --all
 ```
 
+### Custom Location
+
+The script will help you choose the best location for your dotfiles:
+
+```bash
+# Option 1: Interactive chooser (Recommended)
+./install.sh --location
+# Shows menu with popular locations and lets you choose
+
+# Option 2: Set location directly
+./install.sh --set-location ~/.dotfiles
+# Moves dotfiles to specified location automatically
+
+# Option 3: Clone directly to preferred location
+git clone https://github.com/TheCollinsByte/dotfiles.git ~/.dotfiles
+cd ~/.dotfiles
+./install.sh --all
+```
+
+**Popular locations:**
+- `~/.dotfiles` - Hidden, popular convention
+- `~/dotfiles` - Visible, simple
+- `~/.config/dotfiles` - XDG compliant
+- `~/org/dotfiles` - Organized
+- Or any custom path you prefer!
+
 ### Step-by-Step Installation
 
-1. Clone the repository:
+1. Clone the repository (any location works):
    ```bash
    git clone --recursive https://github.com/TheCollinsByte/dotfiles.git
    cd dotfiles
    ```
 
-2. Run the installation script with your preferred options:
+2. Choose your preferred location:
    ```bash
-   ./install.sh
+   ./install.sh --location
+   ```
+   
+   Or skip this step to use the current location.
+
+3. Install everything:
+   ```bash
+   ./install.sh --all
    ```
 
-3. Choose options from the interactive menu:
+4. Or use the interactive menu:
    - Install System Packages
    - Set Up Dotfiles
    - Setup Suckless Repositories
@@ -95,8 +139,16 @@ cd dotfiles
 ```
 Usage: ./install.sh [options]
 
-Options:
-  --dry-run, --dry     Preview changes without making them
+Modes:
+  --dry-run, --dry         Preview changes without making them
+  -s, --server             Server mode (skip GUI packages/configs)
+  -m, --minimal            Minimal mode (essential packages only)
+
+Location:
+  -l, --location           Choose dotfiles location interactively
+  --set-location <path>    Set dotfiles location directly
+
+Commands:
   -c, --check          Check system dependencies
   -u, --update         Update dotfiles and submodules
   -p, --packages       Install system packages
@@ -107,11 +159,57 @@ Options:
   -h, --help           Show this help message
 
 Examples:
-  ./install.sh --check           Check if system is ready
-  ./install.sh --update          Update to latest version
-  ./install.sh --dry-run --all   Preview all changes
-  ./install.sh --dotfiles        Install dotfiles only
+  # Check if system is ready
+  ./install.sh --check
+  
+  # Server/VPS installation (no GUI)
+  ./install.sh --server --all
+  
+  # Minimal installation
+  ./install.sh --minimal --dotfiles
+  
+  # Preview changes before installing
+  ./install.sh --dry-run --all
+  
+## Server/VPS Installation
+
+Perfect for Linux VPS servers and headless systems!
+
+### Quick Start for Servers
+
+```bash
+# Clone the repository (location doesn't matter)
+git clone https://github.com/TheCollinsByte/dotfiles.git
+cd dotfiles
+
+# Install in server mode (skips GUI packages)
+./install.sh --server --all
 ```
+
+### What Server Mode Does
+
+**Skips:**
+- ❌ X11/GUI packages (libx11, libxft, etc.)
+- ❌ Suckless tools (dwm, st, dmenu, dwmblocks)
+- ❌ GUI configuration files (.xinitrc, .Xresources, etc.)
+- ❌ Font configurations
+- ❌ Audio/video tools
+
+**Installs:**
+- ✅ Core shell configuration (bash, aliases, functions)
+- ✅ Terminal tools (tmux, vim, neovim)
+- ✅ CLI utilities (git, curl, wget, htop, ripgrep, fzf, bat, eza)
+- ✅ Development tools (shellcheck, stow)
+
+### Minimal Mode
+
+For even lighter installations:
+
+```bash
+./install.sh --minimal --dotfiles
+```
+
+Minimal mode skips build tools and only installs essential packages.
 
 ## Updating
 
@@ -138,6 +236,19 @@ git submodule update --init --recursive
 ## Customization
 
 Feel free to modify any configuration files to suit your preferences. The repository structure makes it easy to add or remove components.
+
+## Documentation
+
+Comprehensive documentation is available in the `docs/` directory:
+
+- **[CHANGELOG.md](docs/CHANGELOG.md)** - Version history and detailed changes
+- **[TODO.md](docs/TODO.md)** - Planned features, improvements, and task list
+- **[SERVER_INSTALL.md](docs/SERVER_INSTALL.md)** - Complete guide for server/VPS installations
+- **[LOCATION_GUIDE.md](docs/LOCATION_GUIDE.md)** - Guide for choosing and managing dotfiles location
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## License
 
