@@ -1,0 +1,161 @@
+#!/usr/bin/env bash
+# lib/suckless.sh — Submodule setup and suckless tool builds.
+#
+# shellcheck shell=bash
+
+[[ -n "${DOTFILES_SUCKLESS_SOURCED:-}" ]] && return 0
+readonly DOTFILES_SUCKLESS_SOURCED=1
+
+readonly -a SUCKLESS_COMPONENTS=(dwm st dmenu dwmblocks)
+readonly SUCKLESS_REPO_BASE="https://github.com/TheCollinsByte"
+
+# Initialize/refresh submodules, registering any that are missing.
+setup_suckless_repos() {
+    print_section "Setting Up Repositories"
+
+    if is_dry_run; then
+        print_dry "initialize and update all git submodules"
+        print_dry "register missing suckless submodules (${SUCKLESS_COMPONENTS[*]})"
+        print_dry "register the Neovim configuration submodule"
+        return 0
+    fi
+
+    command_exists git || { print_error "git is required"; return 1; }
+    cd "$DOTFILES_DIR" || { print_error "Cannot enter $DOTFILES_DIR"; return 1; }
+
+    print_status "Initializing and updating git submodules..."
+    if git submodule update --init --recursive; then
+        print_ok "Submodules initialized"
+    else
+        print_warn "Submodule update failed — attempting recovery"
+        # sync rewrites .git/config URLs from .gitmodules, which fixes the
+        # common case of a submodule URL having changed upstream.
+        git submodule sync --recursive
+        git submodule update --init --recursive --force ||
+            { print_error "Submodule recovery failed"; return 1; }
+    fi
+
+    local component path
+    for component in "${SUCKLESS_COMPONENTS[@]}"; do
+        path="suckless/$component"
+        if [[ ! -e "$path/.git" ]]; then
+            print_status "Registering $component as a submodule..."
+            git submodule add -f "${SUCKLESS_REPO_BASE}/${component}" "$path" || true
+        fi
+    done
+
+    if [[ ! -e "config/nvim/.git" ]]; then
+        print_status "Registering Neovim configuration as a submodule..."
+        # Preserve any pre-existing non-submodule config rather than losing it.
+        if [[ -d "config/nvim" ]]; then
+            local backup
+            backup="config/nvim.bak.$(date +%Y%m%d%H%M%S)"
+            print_status "Backing up existing Neovim config to $backup"
+            mv "config/nvim" "$backup"
+        fi
+        git submodule add -f "${SUCKLESS_REPO_BASE}/init.nvim" "config/nvim" || true
+    fi
+
+    print_ok "Repository setup complete"
+}
+
+# Compile and install the suckless tools. Requires root for `make install`.
+build_suckless() {
+    print_section "Building & Installing Suckless Tools"
+
+    local suckless_dir="$DOTFILES_DIR/suckless"
+
+    if [[ ! -d "$suckless_dir" ]]; then
+        print_error "suckless/ not found — run --suckless-repos first"
+        return 1
+    fi
+
+    if is_dry_run; then
+        local component
+        for component in "${SUCKLESS_COMPONENTS[@]}"; do
+            if [[ -d "$suckless_dir/$component" ]]; then
+                print_dry "build and install $component"
+            else
+                print_warn "[DRY-RUN] Would skip $component (directory not found)"
+            fi
+        done
+        return 0
+    fi
+
+    if ! command_exists make || ! command_exists gcc; then
+        print_error "Build tools missing (make/gcc)"
+        print_status "Arch:   sudo pacman -S base-devel libx11 libxft libxinerama"
+        print_status "Debian: sudo apt install build-essential libx11-dev libxft-dev libxinerama-dev"
+        return 1
+    fi
+
+    local failed=0 built=0 component component_dir
+    for component in "${SUCKLESS_COMPONENTS[@]}"; do
+        component_dir="$suckless_dir/$component"
+
+        if [[ ! -d "$component_dir" ]]; then
+            print_warn "Skipping $component (directory not found)"
+            continue
+        fi
+
+        print_status "Building $component..."
+
+        # Run each build in a subshell so a failed `cd` or a Makefile that
+        # changes directory cannot leak state into the next component.
+        if (
+            cd "$component_dir" || exit 1
+            make clean >/dev/null 2>&1 || true
+            make && sudo make install
+        ); then
+            print_ok "Installed $component"
+            built=$((built + 1))
+        else
+            print_error "Failed to build $component"
+            failed=$((failed + 1))
+        fi
+    done
+
+    ensure_xinitrc
+
+    if [[ $failed -gt 0 ]]; then
+        print_warn "Built ${built}, failed ${failed}"
+        return 1
+    fi
+
+    print_ok "All suckless tools installed"
+}
+
+# Provide a working ~/.xinitrc only when one is not already in place.
+# The repo ships its own .xinitrc, which setup_dotfiles symlinks; this
+# generated fallback exists for standalone --suckless-build runs.
+ensure_xinitrc() {
+    if [[ -e "$HOME/.xinitrc" || -L "$HOME/.xinitrc" ]]; then
+        print_ok "$HOME/.xinitrc already present"
+        return 0
+    fi
+
+    print_status "Creating ~/.xinitrc..."
+
+    # POSIX sh only — the shebang is /bin/sh, so `[[ ]]` is not available.
+    cat > "$HOME/.xinitrc" <<'EOF'
+#!/bin/sh
+# Generated by dotfiles install.sh — safe to edit or replace.
+
+[ -f "$HOME/.Xresources" ] && xrdb -merge -I"$HOME" "$HOME/.Xresources"
+
+command -v picom >/dev/null 2>&1 && picom -b
+
+if [ -d "$HOME/.scripts" ]; then
+    for script in "$HOME/.scripts"/*.sh; do
+        [ -x "$script" ] && "$script" &
+    done
+fi
+
+command -v dwmblocks >/dev/null 2>&1 && dwmblocks &
+
+exec dwm
+EOF
+
+    chmod +x "$HOME/.xinitrc"
+    print_ok "Created ~/.xinitrc"
+}

@@ -1,4 +1,11 @@
 #!/bin/bash
+# Interactive shell aliases. Sourced by ~/.bashrc via ~/.config/shell/.
+#
+# SC2139: several aliases intentionally expand $EDITOR/$HOME at definition
+#         time so the alias body is fixed once the shell starts.
+# SC2142: the awk bodies below use escaped \$1/\$3, which the shell does not
+#         expand — these are awk field references, not shell positionals.
+# shellcheck disable=SC2139,SC2142
 
 # Aliases
 alias q="exit"
