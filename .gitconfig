@@ -1,12 +1,49 @@
 [user]
 	name = TheCollinsByte
 	email = collo@fastmail.com
+
 [init]
 	defaultBranch = main
+
 [core]
 	editor = vim
+	excludesfile = ~/.gitignore_global
+
 [merge]
 	tool = vimdiff
 	conflictstyle = diff3
+
 [mergetool]
 	prompt = false
+	keepBackup = false
+
+[diff]
+	algorithm = histogram
+
+[pull]
+	ff = only
+
+[push]
+	default = simple
+	autoSetupRemote = true
+
+[fetch]
+	prune = true
+
+[rerere]
+	enabled = true
+
+[log]
+	date = iso
+
+[alias]
+	st = status --short --branch
+	lg = log --oneline --graph --decorate --all
+	last = log -1 HEAD --stat
+	unstage = restore --staged
+
+# Machine-specific settings (identity, signing keys, work overrides) live in
+# ~/.gitconfig.local, which is never tracked. Values there override the
+# defaults above. install.sh seeds the file if it does not exist.
+[include]
+	path = ~/.gitconfig.local

@@ -1,6 +1,27 @@
-#cmus
+# ---- Runtime state (config dirs that programs write into) ----
+# cmus rewrites its whole config dir at runtime; only the theme is ours.
 config/cmus/*
 !config/cmus/darkwind.theme
 
+# htop persists per-machine history and layout tweaks.
+config/htop/htop_history
+
+# ranger caches bytecode next to its config.
+config/ranger/__pycache__/
+config/ranger/*.pyc
+
+# ---- Editor / IDE ----
 .idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# ---- Install artifacts ----
 *.log
+config/nvim.bak.*
+.dotfiles_backup_*/
+
+# ---- OS noise ----
+.DS_Store
+Thumbs.db
