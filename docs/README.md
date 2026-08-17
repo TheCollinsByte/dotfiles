@@ -18,6 +18,11 @@ Welcome to the dotfiles documentation! This directory contains comprehensive gui
   - Software installation checklist
   - Progress tracking
 
+- **[TROUBLESHOOTING.md](TROUBLESHOOTING.md)** - When something goes wrong
+  - Diagnosing a broken installation
+  - Rolling back with `--restore`
+  - Symlink, shell, and submodule problems
+
 ### Installation Guides
 
 - **[SERVER_INSTALL.md](SERVER_INSTALL.md)** - Server/VPS installation guide

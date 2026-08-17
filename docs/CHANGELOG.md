@@ -6,6 +6,113 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [3.1.0] - 2026-08-17
+
+### Added
+- **Bats test suite** (78 tests) covering symlink creation, idempotency,
+  backup/restore round trips, dry-run purity, profiles, relocation, health
+  checks and argument parsing. Every test runs the real installer against a
+  throwaway `$HOME`. Run with `make test`.
+- **Installation profiles** (`--profile work|home|minimal|full`,
+  `--list-profiles`) — a profile presets the mode flags, contributes extra
+  packages, and skips configs that do not belong on that kind of machine.
+  Profile names are validated against a strict pattern, since profile files
+  are sourced.
+- **Backup cleanup** (`--cleanup`) — deletes old backup directories, keeping
+  the newest 5, and reports how much space is reclaimed.
+- CI now runs the bats suite on every push.
+
+### Fixed
+- **`--health-check` always exited 0**, even when it found broken symlinks, so
+  its result could not be branched on. `--check` and `--health-check` now
+  propagate their status; action commands still do not.
+- **A backup directory was created on every successful install**, even when
+  nothing was displaced, because the run manifest was written eagerly.
+  Manifest entries are now buffered and flushed only if a real backup happens.
+- **Invalid substitution `${#ARRAY[@]:-0}`** in the package builder aborted
+  any `--all` run that had a profile loaded.
+- `cleanup_backups` computed a size total it never displayed.
+
+### Changed
+- `make check` now includes `make test`
+- `make lint` additionally covers `profiles/*.profile`, the bats helper and
+  the pre-commit hook
+
+---
+
+## [3.0.0] - 2026-08-16
+
+Restructures the installer into modules and adds the safety, CI and
+documentation infrastructure the project was missing.
+
+### Added
+- **Modular architecture** — `install.sh` is now a thin entry point; all logic
+  lives in `lib/` (`core`, `location`, `symlinks`, `system`, `packages`,
+  `dotfiles`, `suckless`, `server`, `update`, `ui`)
+- **Backup restoration** (`--restore`) — interactive rollback to any previous
+  backup, driven by a manifest recorded at install time
+- **Health check** (`--health-check`) — verifies symlinks resolve, configs
+  parse, required commands exist and submodules are initialized
+- **Logging system** — timestamped logs under
+  `$XDG_STATE_HOME/dotfiles/logs`, auto-pruned to the last 10, viewable with
+  `--show-log`
+- **Non-interactive mode** (`--yes` / `ASSUME_YES`) — prompts answer with
+  their default when there is no TTY, so the installer never hangs in CI
+- **CI pipeline** — shellcheck, syntax, three dry-run modes, a real
+  containerized install, an idempotency assertion, secret scanning and
+  EditorConfig validation
+- **Pre-commit hook** (`.githooks/pre-commit`, enable with `make hooks`) —
+  lints staged scripts and blocks committed secrets
+- **Makefile** — `make check` runs exactly what CI runs
+- **LICENSE** — MIT, which the README had claimed since 1.0.0 without the file
+  ever existing
+- **CONTRIBUTING.md** — layout, conventions, and how to add a config
+- `.editorconfig`, `.shellcheckrc`, `.gitleaks.toml`, `.ecrc`
+- `NO_COLOR` support and automatic color suppression when not writing to a TTY
+- Support for zypper, apk and xbps distro families
+- `config/ranger` is now symlinked — it was tracked but never installed
+- Git aliases, `fetch.prune`, `rerere`, `pull.ff=only` and other modern
+  defaults in `.gitconfig`
+
+### Fixed
+- **Relocation aborted on the first symlink** — `((updated++))` returns a
+  non-zero status when incrementing from 0, which killed the script under
+  `set -e`. Every `--location` / `--set-location` move was affected.
+- **Empty backup directories on every run** — `mkdir -p "$BACKUP_DIR"` ran
+  unconditionally in `main()`, littering `$HOME` even on `--help`, `--check`
+  and `--dry-run`. Backup directories are now created lazily on first use.
+- **`--update` broke on branches with whitespace** — `$(git branch
+  --show-current)` was interpolated unquoted into several git commands
+- **`--update` failed opaquely with no upstream** — now detected up front with
+  the exact `git branch --set-upstream-to` command to fix it
+- **`/etc/os-release` clobbered script variables** — it was sourced directly
+  into the current scope; now read in a subshell
+- **Generated `~/.xinitrc` used `[[ ]]` under a `/bin/sh` shebang** — broken on
+  dash and other POSIX shells
+- **`~/.gitconfig.local` was dead** — the template was created but
+  `.gitconfig` never included it, so machine-specific settings were ignored
+- **`fail2ban` jail.local was overwritten** on every server run, discarding an
+  operator's tuned configuration
+- **`ufw` was enabled before the SSH rule was added**, which can cut off an
+  active SSH session
+- **Disk-space check could abort the script** when `df` output was
+  non-numeric
+- **`wallpaper-shuffle.sh`** — wrote its log into the repository, used
+  bash-only process substitution under `#!/bin/sh`, could loop forever when
+  every image was invalid, and mishandled filenames containing spaces
+- Suckless builds now run in subshells, so a failed `cd` cannot leak into the
+  next component
+
+### Changed
+- Version bumped to 3.0.0 to reflect the restructure
+- `--help` and `--version` now work without touching any state
+- Mode flags are parsed before commands, so `--all --server` and
+  `--server --all` behave identically
+- Package installation failures are reported instead of silently continuing
+- `.gitignore` expanded to cover editor, install-artifact and OS noise
+
+---
+
 ## [2.0.0] - 2025-11-05
 
 ### Added

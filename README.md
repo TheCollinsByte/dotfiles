@@ -27,42 +27,67 @@ This repository contains my personal dotfiles and configurations for various Lin
 
 ```
 dotfiles/
-├── bin/                # Scripts and binaries
-├── config/             # Configuration files for various programs
+├── install.sh          # Entry point: bootstrap, argument parsing, dispatch
+├── Makefile            # Developer tasks (make check, make test, ...)
+├── tests/              # Bats test suite
+├── profiles/           # Named installation profiles
+├── lib/                # Installer modules — all logic lives here
+│   ├── core.sh         # Output, logging, prompts, shared guards
+│   ├── profiles.sh     # Named installation profiles
+│   ├── location.sh     # Choosing and relocating the dotfiles directory
+│   ├── symlinks.sh     # Backup, symlink creation/validation, restore
+│   ├── system.sh       # Platform detection, dependency & health checks
+│   ├── packages.sh     # Cross-distro package installation
+│   ├── dotfiles.sh     # The symlink map (what lands in $HOME)
+│   ├── suckless.sh     # Submodules and suckless builds
+│   ├── server.sh       # Server/VPS service configuration
+│   ├── update.sh       # Pulling the repo and refreshing submodules
+│   └── ui.sh           # Interactive menu and usage text
+├── bin/                # Scripts linked into ~/.local/bin
+├── config/             # Program configs symlinked into ~/.config
 │   ├── bat/            # Bat syntax highlighter config
 │   ├── cmus/           # Music player config
 │   ├── fontconfig/     # Font configuration
 │   ├── htop/           # System monitor config
 │   ├── nvim/           # Neovim configuration (git submodule)
-│   └── shell/          # Shell configurations
+│   ├── ranger/         # File manager config
+│   └── shell/          # Shell aliases, functions, environment variables
 ├── docs/               # Documentation
-│   ├── CHANGELOG.md    # Version history and changes
-│   ├── TODO.md         # Planned features and tasks
+│   ├── CHANGELOG.md            # Version history
+│   ├── TODO.md                 # Planned features
 │   ├── SERVER_INSTALL.md       # Server/VPS installation guide
-│   └── LOCATION_GUIDE.md       # Location flexibility guide
+│   ├── LOCATION_GUIDE.md       # Location flexibility guide
+│   └── TROUBLESHOOTING.md      # Common problems and rollback
 ├── suckless/           # Suckless programs as git submodules
 │   ├── dwm/            # Dynamic Window Manager
 │   ├── st/             # Simple Terminal
 │   ├── dmenu/          # Dynamic Menu
 │   └── dwmblocks/      # Status bar for DWM
+├── .githooks/          # Repo-managed git hooks (make hooks)
+├── .github/workflows/  # CI pipeline
 ├── .bashrc             # Bash configuration
 ├── .bash_profile       # Bash profile
 ├── .gitconfig          # Git configuration
 ├── .vimrc              # Vim configuration
 ├── .xinitrc            # X initialization
 ├── .tmux.conf          # Tmux configuration
-├── install.sh          # Installation script
 └── README.md           # This file
 ```
 
 ## Features
 
-- Git submodule integration for easier management of external repositories
-- Modular configuration for easy customization
-- Comprehensive installation script
-- Suckless utilities (dwm, st, dmenu, dwmblocks)
-- Shell configuration
-- Neovim configuration
+- **Safe by default** — every change is backed up, validated after creation,
+  and reversible with `--restore`
+- **Preview anything** — `--dry-run` shows exactly what would happen without
+  touching the filesystem
+- **Idempotent** — running the installer twice changes nothing the second time
+- **Works anywhere** — the repo can live at any path; symlinks follow it
+- **Desktop, server and minimal modes** from one script
+- **Health checks** — verify an existing installation at any time
+- **Logged** — every run is recorded and viewable with `--show-log`
+- Multi-distro package handling (pacman, apt, dnf, zypper, apk, brew)
+- Git submodule integration for Neovim and the suckless tools
+- Linted and tested in CI on every push
 
 ## Installation
 
@@ -139,38 +164,110 @@ cd ~/.dotfiles
 ```
 Usage: ./install.sh [options]
 
-Modes:
-  --dry-run, --dry         Preview changes without making them
-  -s, --server             Server mode (skip GUI packages/configs)
-  -m, --minimal            Minimal mode (essential packages only)
+Modes (combine with any command):
+  --dry-run, --dry       Preview every change without touching the filesystem
+  -s, --server           Server mode: skip GUI packages, suckless and X configs
+  -m, --minimal          Minimal mode: essential packages only
+  -y, --yes              Assume yes for all prompts (non-interactive)
+      --profile <name>   Apply a named profile (work, home, minimal, full)
+      --list-profiles    List the available profiles
 
 Location:
-  -l, --location           Choose dotfiles location interactively
-  --set-location <path>    Set dotfiles location directly
+  -l, --location         Choose the dotfiles location interactively
+  --set-location <path>  Move the dotfiles to <path>
 
 Commands:
-  -c, --check          Check system dependencies
-  -u, --update         Update dotfiles and submodules
-  -p, --packages       Install system packages
-  -d, --dotfiles       Set up dotfiles
-  -r, --suckless-repos Set up Suckless repositories
-  -b, --suckless-build Build and install Suckless tools
-  -a, --all            Run all setup steps
-  -h, --help           Show this help message
+  -c, --check            Check system dependencies before installing
+  -H, --health-check     Verify an existing installation
+  -p, --packages         Install system packages
+  -d, --dotfiles         Symlink dotfiles into $HOME
+  -r, --suckless-repos   Initialize and update git submodules
+  -b, --suckless-build   Build and install the suckless tools
+      --server-config    Configure server services (docker, nginx, firewall)
+  -u, --update           Pull the latest dotfiles and update submodules
+      --restore          Restore configs from a previous backup
+      --cleanup          Delete old backups, keeping the newest 5
+      --show-log         Print the most recent install log
+  -a, --all              Run the full installation
+  -h, --help             Show this help
+  -V, --version          Show the version
 
-Examples:
-  # Check if system is ready
-  ./install.sh --check
-  
-  # Server/VPS installation (no GUI)
-  ./install.sh --server --all
-  
-  # Minimal installation
-  ./install.sh --minimal --dotfiles
-  
-  # Preview changes before installing
-  ./install.sh --dry-run --all
-  
+Environment:
+  NO_COLOR=1             Disable colored output
+  ASSUME_YES=true        Same as --yes
+```
+
+**Examples**
+
+```bash
+./install.sh --check                 # is this machine ready?
+./install.sh --dry-run --all         # preview a full install
+./install.sh --all                   # full desktop install
+./install.sh --server --all          # headless VPS install
+./install.sh --minimal --dotfiles    # configs only, nothing else
+./install.sh --health-check          # verify an existing install
+./install.sh --restore               # roll back to a previous backup
+./install.sh --profile work --all    # install using the work profile
+./install.sh --cleanup               # prune old backups
+```
+
+### Profiles
+
+A profile presets the mode flags, adds extra packages, and skips configs that
+do not belong on a given kind of machine — so you do not have to remember
+which combination of flags each machine needs.
+
+```bash
+./install.sh --list-profiles
+./install.sh --profile work --all
+```
+
+| Profile | For |
+|---|---|
+| `full` | Complete desktop workstation (suckless, X, media) |
+| `home` | Personal desktop, plus media tooling |
+| `work` | Work desktop: dev tooling, no personal media |
+| `minimal` | Headless server or container: shell, vim, tmux |
+
+Explicit flags always override a profile, so `--profile full --server` runs in
+server mode. Profiles live in `profiles/*.profile`; copy one to add your own.
+
+### Safety and rollback
+
+Every file the installer replaces is moved to a timestamped backup directory
+at `~/.dotfiles_backup_<timestamp>/`, together with a manifest of everything
+that run created. To undo an installation:
+
+```bash
+./install.sh --restore
+```
+
+This lists the available backups, removes the symlinks that run created, and
+puts your original files back.
+
+Logs for every run are written to
+`${XDG_STATE_HOME:-~/.local/state}/dotfiles/logs` (the last 10 are kept) and
+can be read with `./install.sh --show-log`.
+
+See [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) when something goes
+wrong.
+
+## Development
+
+```bash
+make check     # lint + syntax + dry-run + tests — the same checks CI runs
+make test      # bats test suite (78 tests)
+make hooks     # enable the pre-commit hook (lint + secret scanning)
+make health    # verify the current installation
+make help      # list all targets
+```
+
+Tests run the real installer against a throwaway `$HOME`, so they never touch
+your configuration. Requires [bats](https://github.com/bats-core/bats-core).
+
+Contributions are welcome — see [CONTRIBUTING.md](CONTRIBUTING.md) for the
+repository layout, code style, and how to add a new config.
+
 ## Server/VPS Installation
 
 Perfect for Linux VPS servers and headless systems!
@@ -241,10 +338,12 @@ Feel free to modify any configuration files to suit your preferences. The reposi
 
 Comprehensive documentation is available in the `docs/` directory:
 
-- **[CHANGELOG.md](docs/CHANGELOG.md)** - Version history and detailed changes
-- **[TODO.md](docs/TODO.md)** - Planned features, improvements, and task list
+- **[TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md)** - Common problems, diagnosis, and rollback
 - **[SERVER_INSTALL.md](docs/SERVER_INSTALL.md)** - Complete guide for server/VPS installations
 - **[LOCATION_GUIDE.md](docs/LOCATION_GUIDE.md)** - Guide for choosing and managing dotfiles location
+- **[CHANGELOG.md](docs/CHANGELOG.md)** - Version history and detailed changes
+- **[TODO.md](docs/TODO.md)** - Planned features, improvements, and task list
+- **[CONTRIBUTING.md](CONTRIBUTING.md)** - Repository layout, code style, and how to add a config
 
 ## Contributing
 
@@ -252,4 +351,4 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License - see [LICENSE](LICENSE) for details.

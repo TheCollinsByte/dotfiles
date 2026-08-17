@@ -1,6 +1,6 @@
 # Dotfiles TODO & Future Improvements
 
-> **Last Updated**: 2025-11-05  
+> **Last Updated**: 2026-08-17  
 > **Priority Legend**: 🔥 High | ⭐ Medium | 💡 Low | ✅ Completed
 
 ---
@@ -8,58 +8,50 @@
 ## 🚀 High Priority (Do These First)
 
 ### Installation & Maintenance
-- [ ] 🔥 **Backup Restoration System** (2 hours)
-  - Add `--restore` flag to restore from backups
-  - List available backups with timestamps
-  - Interactive selection of what to restore
-  - Verify backup integrity before restoring
+- [X] **Backup Restoration System** (Completed in 3.0.0)
+  - `--restore` flag, manifest-driven
+  - Lists available backups with timestamps and file counts
+  - Interactive selection; refuses to run without a TTY
+  - Reports backups missing a manifest before proceeding
 
-- [ ] 🔥 **Logging System** (1 hour)
-  - Save installation logs to file
-  - Timestamped logs for each run
-  - `--show-log` to view last log
-  - Auto-cleanup old logs (keep last 10)
+- [X] **Logging System** (Completed in 3.0.0)
+  - Logs under `$XDG_STATE_HOME/dotfiles/logs`
+  - Timestamped per run, ANSI stripped
+  - `--show-log` views the most recent
+  - Auto-pruned to the last 10
 
-- [ ] 🔥 **Health Check Command** (1 hour)
+- [X] **Health Check Command** (Completed in 3.0.0)
   - `./install.sh --health-check`
-  - Verify all symlinks are valid
-  - Check config files are parseable
-  - Ensure required commands available
-  - Check submodules are up to date
+  - Validates symlinks resolve and are not dangling
+  - Parses shell configs with `bash -n`
+  - Checks required commands and submodule initialization
 
 - [X] **Dependency Checker** (Completed)
 - [X] **Update Command** (Completed)
 - [X] **Dry-run Mode** (Completed)
 
 ### Documentation
-- [ ] 🔥 **Create CONTRIBUTING.md** (30 min)
-  - How to add new dotfiles
-  - Code style guidelines
-  - Testing procedures
-  - Pull request process
-  - Directory structure explanation
-
-- [ ] 🔥 **Add Troubleshooting Section to README** (30 min)
-  - Common issues and solutions
-  - How to rollback changes
-  - Package installation failures
-  - Symlink issues
-  - Build failures
+- [X] **Create CONTRIBUTING.md** (Completed in 3.0.0)
+- [X] **Troubleshooting documentation** (Completed in 3.0.0)
+  - `docs/TROUBLESHOOTING.md`, linked from the README
+  - Rollback, package failures, symlink and submodule problems
 
 - [X] **Add comments to complex sections** (Completed)
 - [X] **Create CHANGELOG.md** (Completed)
+- [X] **Add LICENSE file** (Completed in 3.0.0 — the README had claimed MIT
+      since 1.0.0 without the file existing)
 
 ---
 
 ## ⭐ Medium Priority
 
 ### Installation Features
-- [ ] ⭐ **Configuration Profiles** (3 hours)
-  - `./install.sh --profile work|home|minimal|full`
-  - Different setups for different machines
-  - Profile files in `profiles/` directory
-  - Minimal install for servers
-  - Full install for workstations
+- [X] **Configuration Profiles** (Completed in 3.1.0)
+  - `./install.sh --profile work|home|minimal|full`, plus `--list-profiles`
+  - Profile files in `profiles/*.profile`
+  - Presets mode flags, adds packages, skips configs per machine type
+  - Explicit command-line flags override the profile
+  - Profile names validated against traversal (the files are sourced)
 
 - [ ] ⭐ **Modular Installation** (2 hours)
   - `./install.sh --only shell,vim,tmux`
@@ -72,11 +64,13 @@
   - Follow XDG standards
   - Cleaner home directory
 
-- [ ] ⭐ **Testing Framework** (4 hours)
-  - Automated tests for dotfiles
-  - Verify symlinks are correct
-  - Test shell scripts for syntax errors
-  - Test on different distros (Docker)
+- [X] **Testing Framework** (Completed in 3.1.0)
+  - 78 bats tests in `tests/`, run with `make test`
+  - Each test runs the real installer against a throwaway `$HOME`
+  - Covers symlinks, idempotency, backup/restore, dry-run purity, profiles,
+    relocation, health checks and argument parsing
+  - CI runs the suite plus a real containerized install
+  - Still open: matrix testing across more distro containers
 
 ### Package Management
 - [ ] ⭐ **AUR Helper Support** (1 hour)
@@ -125,11 +119,10 @@
   - Apply colors to shell, vim, tmux, terminal
   - Preview themes before applying
 
-- [ ] 💡 **Cleanup Command** (1 hour)
-  - `./install.sh --cleanup`
-  - Remove old backups (keep last 5)
-  - Clean package cache
-  - Remove unused submodules
+- [X] **Cleanup Command** (Completed in 3.1.0)
+  - `./install.sh --cleanup` removes old backups, keeping the newest 5
+  - Reports how much space is reclaimed; honors --dry-run
+  - Still open: cleaning the package cache and unused submodules
 
 ### Advanced Features
 - [ ] 💡 **Plugin System** (8 hours)
@@ -160,10 +153,11 @@
   - iTerm2 profile
 
 ### Automation
-- [ ] 💡 **GitHub Actions CI** (3 hours)
-  - Automated testing on every commit
-  - Run shellcheck automatically
-  - Test installation in containers
+- [X] **GitHub Actions CI** (Completed in 3.0.0)
+  - Runs on every push and pull request
+  - shellcheck, syntax, three dry-run modes
+  - Real install in a Debian container, with an idempotency assertion
+  - Secret scanning (gitleaks) and EditorConfig validation
 
 - [ ] 💡 **Auto-Update Bot** (4 hours)
   - Weekly checks for submodule updates
@@ -329,11 +323,11 @@
 - 🔄 Additional software installation
 
 ### Next Up
-1. Backup restoration system
-2. Logging system
-3. Health check command
-4. CONTRIBUTING.md
-5. Configuration profiles
+1. XDG Base Directory compliance
+2. AUR helper support (yay/paru)
+3. Distro matrix in CI (Arch, Fedora, Alpine containers)
+4. Auto-update bot for submodules
+5. Custom user-defined package lists
 
 ---
 
@@ -344,11 +338,11 @@ These can be done quickly and provide immediate value:
 1. [X] Add shellcheck to packages (Done!)
 2. [X] Add --update command (Done!)
 3. [X] Add --check command (Done!)
-4. [ ] Add logging
-5. [ ] Create CONTRIBUTING.md
-6. [ ] Add troubleshooting to README
-7. [ ] Add cleanup command
-8. [ ] Add health check
+4. [X] Add logging (Done in 3.0.0)
+5. [X] Create CONTRIBUTING.md (Done in 3.0.0)
+6. [X] Add troubleshooting docs (Done in 3.0.0)
+7. [X] Add cleanup command (Done in 3.1.0 — `--cleanup`)
+8. [X] Add health check (Done in 3.0.0)
 
 ---
 
