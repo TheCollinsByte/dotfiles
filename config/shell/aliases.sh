@@ -14,9 +14,7 @@ alias ls='ls --color=auto'
 # IntelliJ IDEA - finds the latest version automatically
 # Note: Update base paths if your installations are elsewhere
 if [ -d "/opt/intellij" ]; then
-    alias intelliju='wmname LG3D; $(find /opt/intellij/idea-IU-*/bin/idea.sh 2>/dev/null | sort -V | tail -1)'
-    alias intellijc='wmname LG3D; $(find /opt/intellij/idea-IC-*/bin/idea.sh 2>/dev/null | sort -V | tail -1)'
-    alias webstorm='wmname LG3D; $(find /opt/intellij/WebStorm-*/bin/webstorm.sh 2>/dev/null | sort -V | tail -1)'
+    alias intellij='wmname LG3D; $(find /opt/intellij/idea-IU-253.29346.240/bin/idea.sh 2>/dev/null | sort -V | tail -1)'
 fi
 
 # Electrum - finds the latest version automatically
@@ -69,3 +67,10 @@ alias ve='python3 -m venv ./venv'
 alias va='source ./venv/bin/activate'
 
 alias tcn='mv --force -t ~/.local/share/Trash '
+
+# Gemini CLI
+alias gemini='npx @google/gemini-cli'
+
+# Claude Desktop
+alias claude-desktop='claude-desktop --no-sandbox'
+

@@ -1,0 +1,20 @@
+# ShellCheck configuration — see https://www.shellcheck.net/wiki/
+#
+# Run locally with:  make lint
+# CI enforces this same configuration.
+
+# Follow `source` directives across lib/ modules.
+external-sources=true
+
+# Default shell for files without a shebang (the lib/*.sh modules).
+shell=bash
+
+# --- Globally disabled checks, with rationale ---
+
+# SC1091: sourced paths are resolved at runtime ($DOTFILES_DIR, /etc/os-release)
+#         and cannot always be followed statically.
+disable=SC1091
+
+# SC2181: "check exit code directly" — the codebase deliberately uses
+#         `if cmd; then` everywhere, so remaining cases are intentional.
+disable=SC2181

@@ -1,0 +1,14 @@
+{
+  "Exclude": [
+    "^suckless/",
+    "^config/nvim/",
+    "^config/cmus/",
+    "^config/ranger/",
+    "\\.lock$",
+    "lock\\.json$",
+    "^LICENSE$"
+  ],
+  "Disable": {
+    "IndentSize": true
+  }
+}

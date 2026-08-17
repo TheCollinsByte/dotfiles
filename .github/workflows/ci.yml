@@ -1,0 +1,164 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+# Cancel superseded runs on the same ref.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    name: ShellCheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install shellcheck
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y shellcheck
+
+      - name: Lint shell scripts
+        run: make lint
+
+      - name: Verify syntax
+        run: make syntax
+
+  test:
+    name: Bats tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install bats
+        run: |
+          git clone --depth 1 https://github.com/bats-core/bats-core.git /tmp/bats-core
+          sudo /tmp/bats-core/install.sh /usr/local
+
+      - name: Run test suite
+        env:
+          NO_COLOR: "1"
+        run: bats --timing tests/*.bats
+
+  smoke:
+    name: Dry-run (${{ matrix.mode }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        mode: [all, server, minimal]
+    steps:
+      # Submodules are private forks; the dry-run never needs their contents.
+      - uses: actions/checkout@v4
+
+      - name: Preview install
+        env:
+          # The installer must never block on a prompt in CI.
+          ASSUME_YES: "true"
+          NO_COLOR: "1"
+        run: |
+          case "${{ matrix.mode }}" in
+            all)     ./install.sh --dry-run --all ;;
+            server)  ./install.sh --dry-run --server --all ;;
+            minimal) ./install.sh --dry-run --minimal --all ;;
+          esac
+
+      - name: Assert the dry-run left no trace
+        run: |
+          # A dry-run that writes anything is a bug: it means some code path
+          # skipped its is_dry_run() guard.
+          if compgen -G "$HOME/.dotfiles_backup_*" > /dev/null; then
+            echo "::error::dry-run created a backup directory"
+            exit 1
+          fi
+          if [ -e "$HOME/.gitconfig.local" ]; then
+            echo "::error::dry-run created ~/.gitconfig.local"
+            exit 1
+          fi
+          echo "dry-run left the filesystem untouched"
+
+      - name: Verify --help and --version work standalone
+        run: |
+          ./install.sh --help    > /dev/null
+          ./install.sh --version > /dev/null
+
+  install:
+    name: Real install (container)
+    runs-on: ubuntu-latest
+    container: debian:stable-slim
+    steps:
+      - name: Install prerequisites
+        run: |
+          apt-get update
+          apt-get install -y --no-install-recommends git ca-certificates make
+
+      - uses: actions/checkout@v4
+
+      # Exercises the actual symlink, backup and health-check paths against a
+      # clean $HOME — the part a dry-run cannot cover.
+      - name: Install dotfiles (minimal, no packages)
+        env:
+          ASSUME_YES: "true"
+          NO_COLOR: "1"
+        run: |
+          git config --global --add safe.directory "$PWD"
+          ./install.sh --minimal --dotfiles
+
+      - name: Verify symlinks resolve
+        run: |
+          for f in .bashrc .bash_profile .vimrc .tmux.conf .gitconfig; do
+            if [ ! -L "$HOME/$f" ]; then
+              echo "::error::$HOME/$f is not a symlink"
+              exit 1
+            fi
+            if [ ! -e "$HOME/$f" ]; then
+              echo "::error::$HOME/$f is a broken symlink"
+              exit 1
+            fi
+          done
+          echo "all symlinks resolve"
+
+      - name: Installing twice must be a no-op
+        env:
+          ASSUME_YES: "true"
+          NO_COLOR: "1"
+        run: |
+          ./install.sh --minimal --dotfiles 2>&1 | tee second-run.log
+          if grep -q "Backed up" second-run.log; then
+            echo "::error::second run backed files up — install is not idempotent"
+            exit 1
+          fi
+          echo "install is idempotent"
+
+  secrets:
+    name: Secret scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_CONFIG: .gitleaks.toml
+
+  editorconfig:
+    name: EditorConfig
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check formatting
+        uses: editorconfig-checker/action-editorconfig-checker@v2

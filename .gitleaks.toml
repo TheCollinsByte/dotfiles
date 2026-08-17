@@ -1,0 +1,45 @@
+# gitleaks configuration — https://github.com/gitleaks/gitleaks
+#
+# Dotfiles are a high-risk place for accidental secrets: API keys pasted into
+# shell exports, tokens in aliases, private keys dropped next to configs.
+# This config keeps the upstream ruleset and narrows the false positives that
+# a config repo naturally produces.
+
+title = "dotfiles secret scan"
+
+[extend]
+# Inherit the full upstream rule set, then layer our allowlist on top.
+useDefault = true
+
+[[rules]]
+id = "shell-exported-secret"
+description = "Secret assigned to an exported shell variable"
+regex = '''(?i)export\s+[A-Z0-9_]*(SECRET|TOKEN|APIKEY|API_KEY|PASSWORD|PASSWD|PRIVATE_KEY|ACCESS_KEY)[A-Z0-9_]*\s*=\s*["']?[A-Za-z0-9/+=_\-]{16,}'''
+tags = ["shell", "secret"]
+
+[[rules]]
+id = "private-key-file"
+description = "Embedded private key material"
+regex = '''-----BEGIN (RSA|OPENSSH|DSA|EC|PGP) PRIVATE KEY( BLOCK)?-----'''
+tags = ["key"]
+
+[allowlist]
+description = "Paths and patterns that are safe in a dotfiles repo"
+
+paths = [
+  # Vendored upstream code — scanned in their own repositories.
+  '''^suckless/''',
+  '''^config/nvim/''',
+  # Plugin lockfiles are commit hashes, which trip generic entropy rules.
+  '''lock\.json$''',
+  # Documentation shows placeholder credentials on purpose.
+  '''^docs/''',
+]
+
+regexes = [
+  # Obvious placeholders used in templates and examples.
+  '''your[._-]?(email|name|token|key|password)''',
+  '''(?i)example\.(com|org|net)''',
+  '''(?i)<(your|insert)[^>]*>''',
+  '''(?i)(changeme|placeholder|dummy|redacted|xxxxx)''',
+]
