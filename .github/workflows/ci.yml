@@ -16,10 +16,11 @@ permissions:
 
 jobs:
   lint:
+    timeout-minutes: 5
     name: ShellCheck
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 
       - name: Install shellcheck
         run: |
@@ -33,16 +34,17 @@ jobs:
         run: make syntax
 
   test:
+    timeout-minutes: 10
     name: Bats tests
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           submodules: recursive
 
       - name: Install bats
         run: |
-          git clone --depth 1 https://github.com/bats-core/bats-core.git /tmp/bats-core
+          git clone --depth 1 --branch v1.14.0 https://github.com/bats-core/bats-core.git /tmp/bats-core
           sudo /tmp/bats-core/install.sh /usr/local
 
       - name: Run test suite
@@ -51,6 +53,7 @@ jobs:
         run: bats --timing tests/*.bats
 
   smoke:
+    timeout-minutes: 5
     name: Dry-run (${{ matrix.mode }})
     runs-on: ubuntu-latest
     strategy:
@@ -59,7 +62,7 @@ jobs:
         mode: [all, server, minimal]
     steps:
       # Submodules are private forks; the dry-run never needs their contents.
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 
       - name: Preview install
         env:
@@ -93,16 +96,29 @@ jobs:
           ./install.sh --version > /dev/null
 
   install:
-    name: Real install (container)
+    timeout-minutes: 10
+    name: Real install (${{ matrix.image }})
     runs-on: ubuntu-latest
-    container: debian:stable-slim
+    container: ${{ matrix.image }}
+    strategy:
+      fail-fast: false
+      matrix:
+        # One image per package manager the installer supports; Arch is the
+        # daily driver.
+        image: ["debian:stable-slim", "archlinux:latest", "fedora:latest"]
     steps:
       - name: Install prerequisites
         run: |
-          apt-get update
-          apt-get install -y --no-install-recommends git ca-certificates make
+          if command -v apt-get >/dev/null; then
+            apt-get update
+            apt-get install -y --no-install-recommends git ca-certificates make
+          elif command -v pacman >/dev/null; then
+            pacman -Syu --noconfirm --needed git make
+          elif command -v dnf >/dev/null; then
+            dnf install -y git make findutils
+          fi
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 
       # Exercises the actual symlink, backup and health-check paths against a
       # clean $HOME — the part a dry-run cannot cover.
@@ -141,24 +157,26 @@ jobs:
           echo "install is idempotent"
 
   secrets:
+    timeout-minutes: 5
     name: Secret scan
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           fetch-depth: 0
 
       - name: Run gitleaks
-        uses: gitleaks/gitleaks-action@v2
+        uses: gitleaks/gitleaks-action@ff98106e4c7b2bc287b24eaf42907196329070c7 # v2.3.9
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITLEAKS_CONFIG: .gitleaks.toml
 
   editorconfig:
+    timeout-minutes: 5
     name: EditorConfig
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 
       - name: Check formatting
-        uses: editorconfig-checker/action-editorconfig-checker@v2
+        uses: editorconfig-checker/action-editorconfig-checker@7b3ae4aa4c2245e1296bfeb7690729093697f5b3 # v2.3.0

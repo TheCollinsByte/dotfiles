@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+# Upstream ranger template: some settings are only read by sections that are
+# commented out by default.
+# shellcheck disable=SC2034
+
 set -o noclobber -o noglob -o nounset -o pipefail
 IFS=$'\n'
 

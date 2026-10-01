@@ -10,7 +10,7 @@ Personal Linux dotfiles. No application build, no package manifest. The delivera
 
 ```bash
 make check                        # lint + syntax + dry-run + tests — what CI runs
-make test                         # bats suite (78 tests)
+make test                         # bats suite (93 tests)
 make lint                         # shellcheck --severity=warning over all scripts
 make hooks                        # enable .githooks/pre-commit
 make health                       # verify the current installation

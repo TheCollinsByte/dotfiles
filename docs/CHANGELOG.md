@@ -6,6 +6,76 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [Unreleased]
+
+### Changed
+- **Shell startup is ~8x faster** (~250ms → ~30ms). nvm is lazy-loaded (the
+  default node's bin goes on PATH directly, so node, npm and global CLIs work
+  immediately), opam runs once instead of twice, and `.bashrc` stops after
+  the environment for non-interactive shells.
+- **All PATH setup lives in `config/shell/envars.sh`** via an idempotent
+  `pathadd`, so entries no longer pile up 3-6 times and `reload` adds
+  nothing. Only existing directories are added. `.bash_profile` is now just
+  a pointer to `.bashrc`.
+- `envars.sh` is POSIX and sourced by `.xinitrc`, so dwmblocks gets PATH and
+  the newly exported `TERMINAL=st`.
+- **CI**: the real install runs in Debian, Arch and Fedora containers; every
+  action is pinned to a commit SHA (kept current by Dependabot); bats is
+  pinned; every job has a timeout. `make lint` now also covers the statusbar
+  scripts, `.bashrc`, `.bash_profile`, `.xinitrc` and ranger's `scope.sh`.
+- `fix-audio.sh` discovers the sound card instead of hardcoding a PCI ID,
+  exits quietly where there is none, and no longer forces Master to 100% on
+  every login (only the Speaker/Headphone pin amps are raised).
+- tmux-continuum is installed (it was configured but missing from the plugin
+  list), autosaving every 15 minutes. Run `prefix + I` once to fetch it.
+
+### Fixed
+- **Relocating into an existing directory nested the repo inside it.**
+  `--location` offered to "merge", and `mv` then produced `target/dotfiles`,
+  leaving every repointed symlink dangling. Relocation now refuses a target
+  that exists and is not an empty directory, and refuses a path inside the
+  repo.
+- **Relocation repointed unrelated symlinks** whose target merely shared the
+  repo path as a string prefix (e.g. `~/dotfiles-old/...`).
+- **`--restore` deleted the live file before copying the backup**, so a failed
+  copy lost both. Each entry is now copied beside the target and swapped in,
+  rolling back if the swap fails.
+- **The server firewall could lock out SSH.** ufw allowed the `ssh` service
+  (port 22) regardless of where sshd listens, then force-enabled. The rules
+  and the fail2ban `sshd` jail now use the ports from `sshd -T` (falling back
+  to `sshd_config`), plus the port of the current SSH session.
+- Server configuration checks for sudo up front instead of failing midway.
+- `alias gh` (history search) shadowed the GitHub CLI; renamed to `hgrep`.
+- The `claude`/`ct` aliases are only defined where their wrappers exist.
+- **The pre-commit fallback secret check missed keys in large diffs**:
+  `grep -q` exiting early made `git diff` die of SIGPIPE, and under
+  `pipefail` the 141 read as "no match".
+- Statusbar click handlers ran an empty `$TERMINAL`.
+- `sb-brightness` crashed on machines without a backlight.
+- `.bashrc` no longer forces `TERM=screen-256color`, which broke terminfo in
+  st outside tmux.
+- `.xinitrc` set the wallpaper before the resolution change finished, and
+  ran the VM-only `xrandr --output Virtual-1` on every machine.
+- fzf `ctrl-y`/`ctrl-e` used tools that are not installed (`clipcopy`,
+  `nvim-qt`); now `xclip` and `nvim`. `ctrl-v` (VS Code) removed.
+- On Debian/Ubuntu, `fd` and `bat` install as `fdfind`/`batcat`, so the fzf
+  config silently failed; the installer now links the upstream names into
+  `~/.local/bin`. apt installs run with `DEBIAN_FRONTEND=noninteractive` so a
+  debconf prompt cannot block an unattended run.
+- `.gitconfig` set `excludesfile` to a file that does not exist, which also
+  disabled git's default global ignore (`~/.config/git/ignore`). Removed.
+- `--update` moved submodules to each fork's latest tip (`--remote --merge`)
+  instead of the pinned commits, installing untested code and dirtying the
+  tree. It now checks out the pinned commits.
+- `tcn` dumped files into the Trash root where file managers cannot see or
+  restore them; it now uses `gio trash`.
+- `sb-iplocate` fetched the public IP over plain HTTP.
+- The IntelliJ alias claimed to find the latest version but hardcoded one.
+- `egrep` (deprecated, warns on every use) replaced with `grep -E`.
+- `.vimrc` errored without opam and hardcoded `/home/collo`.
+
+---
+
 ## [3.1.0] - 2026-08-17
 
 ### Added

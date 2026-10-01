@@ -70,7 +70,7 @@
   - Covers symlinks, idempotency, backup/restore, dry-run purity, profiles,
     relocation, health checks and argument parsing
   - CI runs the suite plus a real containerized install
-  - Still open: matrix testing across more distro containers
+  - CI real install runs in Debian, Arch and Fedora containers (Unreleased)
 
 ### Package Management
 - [ ] ⭐ **AUR Helper Support** (1 hour)
