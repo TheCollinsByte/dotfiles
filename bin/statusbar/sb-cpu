@@ -1,0 +1,34 @@
+#!/bin/sh
+# CPU usage since the previous refresh. Left click: htop by CPU. Right click: help.
+
+case $BLOCK_BUTTON in
+    1) setsid -f "${TERMINAL:-st}" -e htop -s PERCENT_CPU ;;
+    3) notify-send "💻 CPU" "Usage since the last refresh.
+🔥 at 90% or more.
+Left click: htop sorted by CPU" ;;
+esac
+
+proc="${SB_PROCFS:-/proc}"
+state="${XDG_RUNTIME_DIR:-/tmp}/sb-cpu"
+
+# First line of /proc/stat is the aggregate: cpu user nice system idle iowait irq softirq steal ...
+read -r _ user nice system idle iowait irq softirq steal _ < "$proc/stat"
+total=$((user + nice + system + idle + iowait + irq + softirq + steal))
+idle_all=$((idle + iowait))
+
+prev_total=0 prev_idle=0
+[ -r "$state" ] && read -r prev_total prev_idle < "$state"
+printf '%s %s\n' "$total" "$idle_all" > "$state"
+
+dt=$((total - prev_total))
+di=$((idle_all - prev_idle))
+# Counters reset (new boot) or unchanged: use the since-boot average instead.
+if [ "$dt" -le 0 ] || [ "$di" -lt 0 ]; then
+    dt=$total di=$idle_all
+fi
+[ "$dt" -gt 0 ] || exit 0
+
+usage=$(( (100 * (dt - di)) / dt ))
+icon="💻"
+[ "$usage" -ge 90 ] && icon="🔥"
+echo "$icon $usage%"
