@@ -20,7 +20,7 @@ fi
 # Electrum - finds the latest version automatically
 [ -d "/opt/electrum" ] && alias e='$(find /opt/electrum/Electrum-*/run_electrum 2>/dev/null | sort -V | tail -1)'
 
-alias l='xtrlock -b'
+alias l='lock'                      # Lock screen (i3lock-color, falls back to xtrlock)
 
 alias scs="cd $HOME/.local/bin/statusbar/"
 

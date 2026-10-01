@@ -1,0 +1,13 @@
+#!/bin/sh
+# xss-lock notifier: dim the backlight before locking; xss-lock kills this on
+# activity (or when it locks), and the trap restores the previous level.
+
+set -- "${SB_SYSFS:-/sys}"/class/backlight/*
+[ -r "$1/brightness" ] || exit 0
+
+saved=$(brightnessctl get) || exit 0
+trap 'brightnessctl -q set "$saved"; exit 0' TERM INT HUP
+
+brightnessctl -q set 10%
+# Short sleeps so the trap runs promptly.
+while :; do sleep 1; done

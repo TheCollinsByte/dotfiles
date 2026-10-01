@@ -1,0 +1,37 @@
+#!/bin/sh
+# Lock the screen: i3lock-color over the blurred wallpaper (rendered by
+# wallpaper-shuffle.sh), falling back to xtrlock. Blocks until unlocked, so
+# xss-lock can track it. Cosmetic pieces missing never prevent locking.
+
+img="${XDG_CACHE_HOME:-$HOME/.cache}/lock.png"
+
+# i3lock-color installs as `i3lock`; its version string carries a ".c." suffix.
+if command -v i3lock >/dev/null 2>&1 && i3lock --version 2>&1 | grep -q '[0-9]\.c\.'; then
+    if [ -r "$img" ]; then bg="-i $img"; else bg="-c 282828"; fi
+
+    font="FiraCode Nerd Font"
+    # shellcheck disable=SC2086  # $bg is two words by design
+    exec i3lock --nofork $bg \
+        --ignore-empty-password --show-failed-attempts \
+        --clock --indicator \
+        --time-str="%H:%M" --date-str="%A, %d %B" \
+        --time-font="$font" --date-font="$font" \
+        --verif-font="$font" --wrong-font="$font" --layout-font="$font" \
+        --time-size=72 --date-size=20 \
+        --time-color=ebdbb2ff --date-color=ebdbb2ff \
+        --verif-color=ebdbb2ff --wrong-color=ebdbb2ff \
+        --verif-text="checking…" --wrong-text="denied" --noinput-text="empty" \
+        --radius=110 --ring-width=8 \
+        --inside-color=28282888 --ring-color=d79921ff \
+        --insidever-color=28282888 --ringver-color=458588ff \
+        --insidewrong-color=28282888 --ringwrong-color=cc241dff \
+        --keyhl-color=98971aff --bshl-color=cc241dff \
+        --line-uses-inside --separator-color=00000000
+fi
+
+if command -v xtrlock >/dev/null 2>&1; then
+    exec xtrlock -b
+fi
+
+notify-send -u critical "🔒 Lock failed" "Neither i3lock-color nor xtrlock is installed"
+exit 1

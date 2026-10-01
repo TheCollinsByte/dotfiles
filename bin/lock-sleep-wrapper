@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# Run a screen locker from xss-lock without racing suspend.
+#
+# xss-lock passes a sleep-inhibitor fd in XSS_SLEEP_LOCK_FD when locking
+# before suspend; suspend proceeds once every copy is closed. Lockers that
+# never close it (xtrlock, i3lock --nofork) would hold suspend until unlock,
+# and closing it immediately lets the screen show for a moment on resume.
+# Start the locker without the fd, give it time to grab the display, then
+# release. Based on xss-lock's transfer-sleep-lock-generic-delay.sh.
+
+sleep_delay=0.5
+
+trap 'kill %% 2>/dev/null' TERM INT
+
+if [[ -e /dev/fd/${XSS_SLEEP_LOCK_FD:--1} ]]; then
+    "$@" {XSS_SLEEP_LOCK_FD}<&- &
+    sleep "$sleep_delay"
+    exec {XSS_SLEEP_LOCK_FD}<&-
+else
+    "$@" &
+fi
+
+wait
