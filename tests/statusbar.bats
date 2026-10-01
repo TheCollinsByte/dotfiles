@@ -80,3 +80,73 @@ write_meminfo() { printf 'MemTotal: %s kB\nMemFree: 1 kB\nMemAvailable: %s kB\n'
     run_block sb-memory BLOCK_BUTTON=1 TERMINAL=st
     assert_called "setsid -f st -e htop -s PERCENT_MEM"
 }
+
+# --- sb-disk ----------------------------------------------------------------
+
+@test "disk shows root usage" {
+    stub df 'printf "Filesystem 1024-blocks Used Available Capacity Mounted on\n/dev/x 100 61 39 61%% /\n"'
+    run_block sb-disk
+    [ "$output" = "💾 61%" ]
+}
+
+@test "disk warns at 90%" {
+    stub df 'printf "Filesystem 1024-blocks Used Available Capacity Mounted on\n/dev/x 100 93 7 93%% /\n"'
+    run_block sb-disk
+    [ "$output" = "⚠ 93%" ]
+}
+
+@test "disk left click notifies a df summary" {
+    stub df 'printf "Filesystem 1024-blocks Used Available Capacity Mounted on\n/dev/x 100 61 39 61%% /\n"'
+    run_block sb-disk BLOCK_BUTTON=1
+    assert_called "df -h"
+    assert_called "notify-send 💾 Disks"
+}
+
+# --- sb-kbd -----------------------------------------------------------------
+
+@test "keyboard block hides with a single layout" {
+    stub setxkbmap 'echo "layout:     gb"'
+    run_block sb-kbd
+    [ -z "$output" ]
+}
+
+@test "keyboard block shows the active layout of several" {
+    stub setxkbmap 'echo "layout:     us,ru"'
+    run_block sb-kbd
+    [ "$output" = "⌨ us" ]
+}
+
+@test "keyboard click rotates layouts" {
+    stub setxkbmap 'echo "layout:     us,ru"'
+    run_block sb-kbd BLOCK_BUTTON=1
+    assert_called "setxkbmap -layout ru,us"
+}
+
+# --- sb-brightness ----------------------------------------------------------
+
+make_backlight() {   # name brightness max
+    mkdir -p "$SB_SYSFS/class/backlight/$1"
+    echo "$2" > "$SB_SYSFS/class/backlight/$1/brightness"
+    echo "$3" > "$SB_SYSFS/class/backlight/$1/max_brightness"
+}
+
+@test "brightness hides without a backlight" {
+    run_block sb-brightness
+    [ -z "$output" ]
+}
+
+@test "brightness shows percent of the first backlight only" {
+    make_backlight a_intel 70 100
+    make_backlight b_acpi 5 10
+    run_block sb-brightness
+    [ "$output" = "💡 70%" ]
+}
+
+@test "brightness scroll adjusts by 5%" {
+    make_backlight intel 50 100
+    stub brightnessctl
+    run_block sb-brightness BLOCK_BUTTON=4
+    assert_called "brightnessctl -q set 5%+"
+    run_block sb-brightness BLOCK_BUTTON=5
+    assert_called "brightnessctl -q set 5%-"
+}

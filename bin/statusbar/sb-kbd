@@ -1,0 +1,20 @@
+#!/bin/sh
+# Active keyboard layout; hidden with only one. Left click: next layout.
+
+layouts=$(setxkbmap -query 2>/dev/null | awk '/^layout:/ { print $2 }')
+case $layouts in
+    *,*) ;;
+    *) exit 0 ;;
+esac
+
+case $BLOCK_BUTTON in
+    1)
+        # Rotate: the first layout in the list is the active one.
+        layouts="${layouts#*,},${layouts%%,*}"
+        setxkbmap -layout "$layouts"
+        ;;
+    3) notify-send "⌨ Keyboard" "Active layout of: $layouts
+Left click: switch to the next layout" ;;
+esac
+
+echo "⌨ ${layouts%%,*}"

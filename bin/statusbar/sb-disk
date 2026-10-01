@@ -1,0 +1,18 @@
+#!/bin/sh
+# Root filesystem usage. Left click: all disks. Right click: help.
+
+mount="${SB_DISK_MOUNT:-/}"
+
+case $BLOCK_BUTTON in
+    1) notify-send "💾 Disks" "$(df -h -x tmpfs -x devtmpfs -x efivarfs 2>/dev/null)" ;;
+    3) notify-send "💾 Disk" "Usage of $mount.
+⚠ at 90% or more.
+Left click: usage of every disk" ;;
+esac
+
+pct=$(df -P "$mount" 2>/dev/null | awk 'NR == 2 { sub("%", "", $5); print $5 }')
+[ -n "$pct" ] || exit 0
+
+icon="💾"
+[ "$pct" -ge 90 ] && icon="⚠"
+echo "$icon $pct%"
