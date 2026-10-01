@@ -211,8 +211,15 @@ let NERDTreeDirArrows = 1
 
 
 " ## added by OPAM user-setup for vim / base ## 93ee63e278bdfc07d1139a748ed3fff2 ## you can edit, but keep this line
-let s:opam_share_dir = system("opam config var share")
-let s:opam_share_dir = substitute(s:opam_share_dir, '[\r\n]*$', '', '')
+" Skip entirely where opam is absent; prefer the env opam already exported
+" (OPAM_SWITCH_PREFIX) over forking `opam config var share`.
+if executable('opam')
+if !empty($OPAM_SWITCH_PREFIX)
+  let s:opam_share_dir = $OPAM_SWITCH_PREFIX . "/share"
+else
+  let s:opam_share_dir = system("opam config var share")
+  let s:opam_share_dir = substitute(s:opam_share_dir, '[\r\n]*$', '', '')
+endif
 
 let s:opam_configuration = {}
 
@@ -241,9 +248,11 @@ for tool in s:opam_packages
     call s:opam_configuration[tool]()
   endif
 endfor
+endif
 " ## end of OPAM user-setup addition for vim / base ## keep this line
 " ## added by OPAM user-setup for vim / ocp-indent ## 2704622d309be3cce4198679bf33c889 ## you can edit, but keep this line
-if count(s:opam_available_tools,"ocp-indent") == 0
-  source "/home/collo/.opam/default/share/ocp-indent/vim/indent/ocaml.vim"
+if exists("s:opam_share_dir") && count(s:opam_available_tools,"ocp-indent") == 0
+  \ && filereadable(s:opam_share_dir . "/ocp-indent/vim/indent/ocaml.vim")
+  execute "source " . fnameescape(s:opam_share_dir . "/ocp-indent/vim/indent/ocaml.vim")
 endif
 " ## end of OPAM user-setup addition for vim / ocp-indent ## keep this line

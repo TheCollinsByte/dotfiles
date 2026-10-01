@@ -14,7 +14,7 @@ alias ls='ls --color=auto'
 # IntelliJ IDEA - finds the latest version automatically
 # Note: Update base paths if your installations are elsewhere
 if [ -d "/opt/intellij" ]; then
-    alias intellij='wmname LG3D; $(find /opt/intellij/idea-IU-253.29346.240/bin/idea.sh 2>/dev/null | sort -V | tail -1)'
+    alias intellij='wmname LG3D; $(printf "%s\n" /opt/intellij/idea-*/bin/idea.sh | sort -V | tail -1)'
 fi
 
 # Electrum - finds the latest version automatically
@@ -62,9 +62,9 @@ alias enva="$EDITOR ~/.config/shell/envars.sh"
 alias k="kubectl" 
 
 alias lt='ls --human-readable --size -1 -S --classify'      # Sort by file size
-alias mnt="mount | awk -F' ' '{ printf \"%s\t%s\n\",\$1,\$3; }' | column -t | egrep ^/dev/ | sort"      # View only mounted drives
+alias mnt="mount | awk -F' ' '{ printf \"%s\t%s\n\",\$1,\$3; }' | column -t | grep -E ^/dev/ | sort"      # View only mounted drives
 alias left='ls -t -1'   # Sort By modification time
-alias gh='history|grep'     # Find a command in your grep history
+alias hgrep='history | grep'   # Find a command in your shell history (not 'gh': that shadows the GitHub CLI)
 alias count='find . -type f | wc -l'
 alias cpv='rsync -ah --info=progress2'      # A Copy progress bar
 
@@ -72,7 +72,7 @@ alias cpv='rsync -ah --info=progress2'      # A Copy progress bar
 alias ve='python3 -m venv ./venv'
 alias va='source ./venv/bin/activate'
 
-alias tcn='mv --force -t ~/.local/share/Trash '
+alias tcn='gio trash'          # Move to the freedesktop trash (restorable from file managers)
 
 # Gemini CLI
 alias gemini='npx @google/gemini-cli'
