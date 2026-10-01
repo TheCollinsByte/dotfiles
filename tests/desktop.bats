@@ -74,15 +74,15 @@ teardown() { teardown_sandbox; }
     # Line number of the first line starting with the given text.
     line() { grep -n -m1 -- "^$1" "$REPO_ROOT/.xinitrc" | cut -d: -f1; }
     local prev=0 n step
-    for step in "\[ -f \"\$HOME/.config/shell/envars.sh\" \]" "setxkbmap" "xset s" "picom" \
-                "dunst" "xss-lock" "redshift" "~/.local/bin/wallpaper-shuffle" \
-                "dwmblocks" "~/.local/bin/fix-audio" "exec dwm"; do
+    for step in "\[ -f \"\$HOME/.config/shell/envars.sh\" \]" "setxkbmap" "xset s" "start picom" \
+                "start dunst" "start xss-lock" "start redshift" "start wallpaper-shuffle" \
+                "start dwmblocks" "start fix-audio" "exec dwm"; do
         n=$(line "$step")
         [ -n "$n" ] || { echo "missing: $step"; return 1; }
         [ "$n" -gt "$prev" ] || { echo "out of order: $step"; return 1; }
         prev=$n
     done
-    grep -q 'xss-lock .*-n dim-screen .*-- lock-sleep-wrapper lock' "$REPO_ROOT/.xinitrc"
+    grep -q 'start xss-lock .*-n dim-screen .*-- lock-sleep-wrapper lock' "$REPO_ROOT/.xinitrc"
     grep -q 'xset s 570 30' "$REPO_ROOT/.xinitrc"
     grep -q 'xset dpms 0 0 900' "$REPO_ROOT/.xinitrc"
 }
@@ -157,4 +157,23 @@ make_wallpaper_repo() {
     env_line=$(grep -n -m1 'envars.sh' "$REPO_ROOT/.xinitrc" | cut -d: -f1)
     xrdb_line=$(grep -n -m1 'xrdb' "$REPO_ROOT/.xinitrc" | cut -d: -f1)
     [ "$env_line" -lt "$xrdb_line" ]
+}
+
+@test "xinitrc hands DISPLAY to tmux and the user service manager" {
+    grep -q 'tmux set-environment -g DISPLAY' "$REPO_ROOT/.xinitrc"
+    grep -q 'dbus-update-activation-environment --systemd DISPLAY XAUTHORITY' "$REPO_ROOT/.xinitrc"
+}
+
+@test "xinitrc starts background programs only if installed, logging their output" {
+    # Run the real start() from .xinitrc against a missing program.
+    sed -n '/^start() {/,/^}/p' "$REPO_ROOT/.xinitrc" > "$TEST_HOME/start.sh"
+    [ -s "$TEST_HOME/start.sh" ]
+    run sh -c ". '$TEST_HOME/start.sh'; log='$TEST_HOME/xsession.log'
+        start definitely-not-installed --flag; start sh -c 'echo from-child'; wait
+        cat \"\$log\""
+    assert_output_contains "definitely-not-installed not installed"
+    assert_output_contains "from-child"
+    for prog in picom dunst xss-lock redshift dwmblocks; do
+        grep -qE "^start $prog( |$)" "$REPO_ROOT/.xinitrc" || { echo "not started via start(): $prog"; return 1; }
+    done
 }

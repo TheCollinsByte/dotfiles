@@ -85,6 +85,16 @@ The scripts live in `bin/statusbar/`; the block table is
 Then ❖ Shift+R reloads dwm without closing windows. Restart dwmblocks with
 `pkill dwmblocks; dwmblocks &`.
 
+## Troubleshooting
+
+- **`Can't open X display` in a terminal**: the shell has no `DISPLAY`,
+  usually a tmux pane created before X started. Run `reload` (or open a new
+  pane); `envars.sh` then finds your running X server.
+- **Something from `.xinitrc` isn't running** (bar, notifications,
+  auto-lock, redshift): check `~/.local/state/dotfiles/xsession.log`. Programs
+  that are not installed are listed there as skipped, and crashes leave
+  their error output there.
+
 ## Acceptance checklist
 
 Run once in a live X session after installing:

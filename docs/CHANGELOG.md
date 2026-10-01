@@ -39,6 +39,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   list), autosaving every 15 minutes. Run `prefix + I` once to fetch it.
 
 ### Fixed
+- **`feh: Can't open X display` (and every other X program) in tmux panes
+  created before X started**: those shells had no `DISPLAY`. `envars.sh` now
+  adopts a running X server you own when `DISPLAY` is unset (never in SSH
+  sessions), and `.xinitrc` hands `DISPLAY`/`XAUTHORITY` to tmux and the
+  user service manager. Existing panes recover with `reload`.
+- `.xinitrc` starts background programs only if they are installed and
+  sends their output to `~/.local/state/dotfiles/xsession.log`, so a
+  daemon that is missing or dies (dunst, xss-lock, redshift...) leaves a
+  trace instead of failing silently.
 - Neovim config (`config/nvim`): format-on-save, `:ReloadConfig`, snippet
   completion, LSP file-operation renames and the telescope fzf sorter now
   work; mason, telescope and nvim-tree no longer load at every startup;

@@ -15,6 +15,20 @@ pathadd() {
     esac
 }
 
+# Shells started before X (tmux panes from an earlier login) or outside it
+# have no DISPLAY, so X programs fail with "Can't open X display". Adopt a
+# local X server this user owns -- never inside SSH sessions, which should
+# not draw on the laptop screen.
+if [ -z "${DISPLAY:-}" ] && [ -z "${SSH_CONNECTION:-}" ]; then
+    for _x_sock in "${X11_SOCKET_DIR:-/tmp/.X11-unix}"/X*; do
+        if [ -S "$_x_sock" ] && [ -O "$_x_sock" ]; then
+            export DISPLAY=":${_x_sock##*/X}"
+            break
+        fi
+    done
+    unset _x_sock
+fi
+
 export EDITOR=nvim
 export TERMINAL=st
 

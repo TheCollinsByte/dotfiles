@@ -256,7 +256,7 @@ wrong.
 
 ```bash
 make check     # lint + syntax + dry-run + tests — the same checks CI runs
-make test      # bats test suite (172 tests)
+make test      # bats test suite (179 tests)
 make hooks     # enable the pre-commit hook (lint + secret scanning)
 make health    # verify the current installation
 make help      # list all targets
