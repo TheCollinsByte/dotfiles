@@ -1,0 +1,45 @@
+# dunst — gruvbox dark, matching dwm/dmenu/st. Reload: killall dunst.
+
+[global]
+    monitor = 0
+    follow = keyboard
+    origin = top-right
+    offset = (12, 36)
+    width = 350
+    notification_limit = 5
+    font = FiraCode Nerd Font 10
+    frame_width = 2
+    corner_radius = 0
+    separator_height = 2
+    separator_color = frame
+    padding = 10
+    horizontal_padding = 12
+    gap_size = 6
+    icon_position = left
+    max_icon_size = 32
+    format = "<b>%s</b>\n%b"
+    alignment = left
+    word_wrap = yes
+    show_age_threshold = 60
+    history_length = 30
+    mouse_left_click = close_current
+    mouse_middle_click = do_action, close_current
+    mouse_right_click = close_all
+
+[urgency_low]
+    background = "#282828"
+    foreground = "#a89984"
+    frame_color = "#504945"
+    timeout = 3
+
+[urgency_normal]
+    background = "#282828"
+    foreground = "#ebdbb2"
+    frame_color = "#d79921"
+    timeout = 5
+
+[urgency_critical]
+    background = "#cc241d"
+    foreground = "#ebdbb2"
+    frame_color = "#fb4934"
+    timeout = 0

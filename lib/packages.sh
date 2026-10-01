@@ -12,6 +12,9 @@ readonly DOTFILES_PACKAGES_SOURCED=1
 # Tools installed on every platform and in every mode.
 readonly -a COMMON_PACKAGES=(git curl wget tmux htop vim neovim ripgrep fzf stow shellcheck)
 
+# AUR-only desktop packages (pacman systems with yay).
+readonly -a AUR_PACKAGES=(i3lock-color)
+
 install_packages() {
     print_section "Installing Packages"
 
@@ -32,14 +35,14 @@ install_packages() {
             [[ "${MINIMAL_MODE:-false}" == false ]] && packages+=(base-devel)
             [[ "${SERVER_MODE:-false}" == true ]] &&
                 packages+=(nginx docker docker-compose fail2ban ufw certbot certbot-nginx)
-            is_headless || packages+=(libx11 libxft libxinerama)
+            is_headless || packages+=(libx11 libxft libxinerama dunst xss-lock playerctl xtrlock)
             ;;
         apt)
             packages+=(fd-find bat)
             [[ "${MINIMAL_MODE:-false}" == false ]] && packages+=(build-essential)
             [[ "${SERVER_MODE:-false}" == true ]] &&
                 packages+=(nginx docker.io docker-compose fail2ban ufw certbot python3-certbot-nginx)
-            is_headless || packages+=(libx11-dev libxft-dev libxinerama-dev)
+            is_headless || packages+=(libx11-dev libxft-dev libxinerama-dev dunst xss-lock playerctl xtrlock)
             # eza only exists in newer repos; add it when available.
             if apt-cache show eza >/dev/null 2>&1; then
                 packages+=(eza)
@@ -52,7 +55,7 @@ install_packages() {
             [[ "${MINIMAL_MODE:-false}" == false ]] && packages+=(@development-tools)
             [[ "${SERVER_MODE:-false}" == true ]] &&
                 packages+=(nginx docker docker-compose fail2ban firewalld certbot python3-certbot-nginx)
-            is_headless || packages+=(libX11-devel libXft-devel libXinerama-devel)
+            is_headless || packages+=(libX11-devel libXft-devel libXinerama-devel dunst xss-lock playerctl)
             ;;
         zypper)
             packages+=(fd bat)
@@ -90,6 +93,7 @@ install_packages() {
 
     if is_dry_run; then
         print_dry "install ${#packages[@]} package(s) via ${PACKAGE_MANAGER}"
+        install_aur_packages
         return 0
     fi
 
@@ -108,8 +112,29 @@ install_packages() {
     }
 
     [[ "$PACKAGE_MANAGER" == apt ]] && link_renamed_binaries
+    install_aur_packages
 
     print_ok "Package installation completed"
+}
+
+# AUR packages via yay on pacman systems. Optional: without yay, bin/lock
+# falls back to xtrlock, so this only warns.
+install_aur_packages() {
+    [[ "${PACKAGE_MANAGER:-}" == pacman ]] || return 0
+    is_headless && return 0
+
+    if ! command_exists yay; then
+        print_warn "yay not found — skipping AUR packages (${AUR_PACKAGES[*]}); the lock screen falls back to xtrlock"
+        return 0
+    fi
+
+    if is_dry_run; then
+        print_dry "install AUR package(s) via yay: ${AUR_PACKAGES[*]}"
+        return 0
+    fi
+
+    yay -S --needed --noconfirm "${AUR_PACKAGES[@]}" ||
+        print_warn "AUR install failed (${AUR_PACKAGES[*]}); the lock screen falls back to xtrlock"
 }
 
 # Debian/Ubuntu install fd and bat as `fdfind` and `batcat` (name clashes in

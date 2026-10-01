@@ -90,6 +90,7 @@ $(echo -e "${BLUE}Commands${NC}")
       --restore          Restore configs from a previous backup
       --cleanup          Delete old backups, keeping the newest 5
       --show-log         Print the most recent install log
+      --wallpapers       Download the curated gruvbox wallpaper set (~58 MB)
   -a, --all              Run the full installation
   -h, --help             Show this help
   -V, --version          Show the version

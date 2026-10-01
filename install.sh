@@ -43,7 +43,7 @@ fi
 # shellcheck source=lib/core.sh
 source "${LIB_DIR}/core.sh"
 
-for _module in profiles location symlinks system packages dotfiles suckless server update ui; do
+for _module in profiles location symlinks system packages dotfiles suckless server update wallpapers ui; do
     # shellcheck source=/dev/null
     source "${LIB_DIR}/${_module}.sh" ||
         { echo "ERROR: failed to load lib/${_module}.sh" >&2; exit 1; }
@@ -171,6 +171,15 @@ parse_args() {
             -d|--dotfiles)       setup_dotfiles;             ran_command=true; shift ;;
             --restore)           restore_backup || true;     ran_command=true; shift ;;
             --show-log)          show_last_log || true;      ran_command=true; shift ;;
+            --wallpapers)
+                if is_headless; then
+                    print_warn "Skipping wallpapers in server/minimal mode"
+                else
+                    fetch_wallpapers || true
+                fi
+                ran_command=true
+                shift
+                ;;
             --server-config)     configure_server_services;  ran_command=true; shift ;;
 
             -r|--suckless-repos)

@@ -42,6 +42,7 @@ setup_dotfiles() {
             "$DOTFILES_DIR/.Xresources:$HOME/.Xresources"
             "$DOTFILES_DIR/.dmenurc:$HOME/.dmenurc"
             "$DOTFILES_DIR/config/cmus:$HOME/.config/cmus"
+            "$DOTFILES_DIR/config/dunst:$HOME/.config/dunst"
             "$DOTFILES_DIR/config/fontconfig:$HOME/.config/fontconfig"
             "$DOTFILES_DIR/suckless:$HOME/.config/suckless"
         )
