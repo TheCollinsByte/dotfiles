@@ -1,5 +1,10 @@
 #!/bin/sh
 
+# Environment for everything started below — dwmblocks click handlers need
+# $TERMINAL/$EDITOR and PATH even when X is launched by a display manager.
+# shellcheck source=config/shell/envars.sh
+[ -f "$HOME/.config/shell/envars.sh" ] && . "$HOME/.config/shell/envars.sh"
+
 userresources=$HOME/.Xresources
 usermodmap=$HOME/.Xmodmap
 sysresources=/etc/X11/xinit/.Xresources
@@ -31,11 +36,6 @@ if [ -d /etc/X11/xinit/xinitrc.d ] ; then
  done
  unset f
 fi
-
-# Environment for everything started below — dwmblocks click handlers need
-# $TERMINAL/$EDITOR and PATH even when X is launched by a display manager.
-# shellcheck source=config/shell/envars.sh
-[ -f "$HOME/.config/shell/envars.sh" ] && . "$HOME/.config/shell/envars.sh"
 
 # Keyboard Layout
 setxkbmap uk &

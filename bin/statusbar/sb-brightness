@@ -6,8 +6,9 @@ set -- "${SB_SYSFS:-/sys}"/class/backlight/*
 
 case $BLOCK_BUTTON in
     3) notify-send "💡 Brightness" "Scroll up / down: ±5%" ;;
-    4) brightnessctl -q set 5%+ ;;
-    5) brightnessctl -q set 5%- ;;
+    # -d: change the device this block reads, not brightnessctl's default.
+    4) brightnessctl -d "${1##*/}" -q set 5%+ ;;
+    5) brightnessctl -d "${1##*/}" -q set 5%- ;;
 esac
 
 max=$(cat "$1/max_brightness")

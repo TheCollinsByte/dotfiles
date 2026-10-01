@@ -133,6 +133,9 @@ install_aur_packages() {
         return 0
     fi
 
+    confirm "Build ${AUR_PACKAGES[*]} from the AUR with yay?" y ||
+        { print_status "Skipped AUR packages; the lock screen falls back to xtrlock"; return 0; }
+
     yay -S --needed --noconfirm "${AUR_PACKAGES[@]}" ||
         print_warn "AUR install failed (${AUR_PACKAGES[*]}); the lock screen falls back to xtrlock"
 }

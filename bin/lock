@@ -7,11 +7,11 @@ img="${XDG_CACHE_HOME:-$HOME/.cache}/lock.png"
 
 # i3lock-color installs as `i3lock`; its version string carries a ".c." suffix.
 if command -v i3lock >/dev/null 2>&1 && i3lock --version 2>&1 | grep -q '[0-9]\.c\.'; then
-    if [ -r "$img" ]; then bg="-i $img"; else bg="-c 282828"; fi
+    # Positional parameters keep a cache path with spaces as one argument.
+    if [ -r "$img" ]; then set -- -i "$img"; else set -- -c 282828; fi
 
     font="FiraCode Nerd Font"
-    # shellcheck disable=SC2086  # $bg is two words by design
-    exec i3lock --nofork $bg \
+    exec i3lock --nofork "$@" \
         --ignore-empty-password --show-failed-attempts \
         --clock --indicator \
         --time-str="%H:%M" --date-str="%A, %d %B" \

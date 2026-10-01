@@ -78,3 +78,10 @@ run_shuffle() { run env PATH="$STUBS:$BASE_BIN" SCREEN_SIZE=1920x1080 "$@" bash 
     [ "$status" -ne 0 ]
     assert_not_called feh
 }
+
+@test "the old wallpaper.png copy is not a candidate" {
+    echo x > "$OWN/wallpaper.png"
+    run_shuffle
+    [ "$status" -ne 0 ]
+    assert_not_called feh
+}

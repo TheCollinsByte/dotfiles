@@ -140,3 +140,21 @@ make_wallpaper_repo() {
     assert_output_contains "xcb-util"
     assert_output_contains "pkg"
 }
+
+@test "AUR build asks before running" {
+    mkdir -p "$TEST_HOME/stubs"
+    printf '#!/bin/sh\necho "YAY $*"\n' > "$TEST_HOME/stubs/yay"; chmod +x "$TEST_HOME/stubs/yay"
+    run env PATH="$TEST_HOME/stubs:$PATH" bash -c "
+        source '$REPO_ROOT/lib/core.sh'; source '$REPO_ROOT/lib/packages.sh'
+        confirm() { echo \"ASKED: \$1\"; return 1; }
+        PACKAGE_MANAGER=pacman install_aur_packages"
+    assert_output_contains "ASKED:"
+    assert_output_not_contains "YAY"
+}
+
+@test "xinitrc loads the environment before anything else runs" {
+    local env_line xrdb_line
+    env_line=$(grep -n -m1 'envars.sh' "$REPO_ROOT/.xinitrc" | cut -d: -f1)
+    xrdb_line=$(grep -n -m1 'xrdb' "$REPO_ROOT/.xinitrc" | cut -d: -f1)
+    [ "$env_line" -lt "$xrdb_line" ]
+}

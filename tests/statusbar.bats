@@ -146,9 +146,9 @@ make_backlight() {   # name brightness max
     make_backlight intel 50 100
     stub brightnessctl
     run_block sb-brightness BLOCK_BUTTON=4
-    assert_called "brightnessctl -q set 5%+"
+    assert_called "brightnessctl -d intel -q set 5%+"
     run_block sb-brightness BLOCK_BUTTON=5
-    assert_called "brightnessctl -q set 5%-"
+    assert_called "brightnessctl -d intel -q set 5%-"
 }
 
 # --- sb-volume --------------------------------------------------------------
@@ -323,4 +323,32 @@ make_iface() {   # name operstate
     make_battery BAT0 93 Full
     run_block sb-battery
     [ -z "$output" ]
+}
+
+@test "brightness controls the same device it reads" {
+    make_backlight acpi_video0 5 10
+    make_backlight intel_backlight 50 100
+    stub brightnessctl
+    run_block sb-brightness BLOCK_BUTTON=4
+    assert_called "brightnessctl -d acpi_video0 -q set 5%+"
+}
+
+@test "music drops the dash when there is no artist" {
+    stub playerctl 'case "$1" in status) echo Playing ;; metadata) echo " – Just A Title" ;; esac'
+    run_block sb-music
+    [ "$output" = "▶ Just A Title" ]
+}
+
+@test "music repairs invalid UTF-8 and still truncates" {
+    stub playerctl 'case "$1" in status) echo Playing ;; metadata) printf "Bad\377Bytes – %s\n" "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" ;; esac'
+    run_block sb-music LC_ALL=C LANG=
+    local text="${output#▶ }"
+    printf '%s' "$text" | iconv -f UTF-8 -t UTF-8 >/dev/null
+    [ "$(printf '%s' "$text" | LC_ALL=C.UTF-8 wc -m)" -le 30 ]
+}
+
+@test "keyboard rotation keeps layout variants paired" {
+    stub setxkbmap 'printf "layout:     us,ru\nvariant:    ,phonetic\n"'
+    run_block sb-kbd BLOCK_BUTTON=1
+    assert_called "setxkbmap -layout ru,us -variant phonetic,"
 }

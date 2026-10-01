@@ -39,6 +39,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   list), autosaving every 15 minutes. Run `prefix + I` once to fetch it.
 
 ### Fixed
+- Suckless forks brought up to date: dwm 6.8 (fixes a getatomprop() heap
+  overflow any X client could trigger), st 0.9.3+ (async-safe sigchld),
+  dmenu 5.4+ (three crash fixes). st no longer reads past its colour table
+  when drawing the cursor over a selection; dwm's status buffer holds a full
+  dwmblocks line.
+- Brightness block, idle dim and keys act on the backlight they read; the
+  idle dim no longer brightens an already-dim screen.
+- `lock` handles a cache path with spaces; music block drops the dash when a
+  track has no artist and repairs invalid UTF-8; keyboard rotation keeps
+  layout variants; the old `wallpaper.png` copy is excluded from the
+  shuffle; the AUR build asks first; `.xinitrc` loads the environment
+  before anything else.
 - **Relocating into an existing directory nested the repo inside it.**
   `--location` offered to "merge", and `mv` then produced `target/dotfiles`,
   leaving every repointed symlink dangling. Relocation now refuses a target

@@ -32,7 +32,8 @@ for dir in "${SOURCES[@]}"; do
     [[ -d "$dir" ]] || continue
     while IFS= read -r -d '' f; do
         candidates+=("$f")
-    done < <(find "$dir" -type f -not -path '*/.git/*' -print0)
+    # wallpaper.png: the copy older versions of this script wrote into the folder.
+    done < <(find "$dir" -type f -not -path '*/.git/*' -not -name 'wallpaper.png' -print0)
 done
 
 if [[ ${#candidates[@]} -eq 0 ]]; then

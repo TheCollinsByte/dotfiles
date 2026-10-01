@@ -13,7 +13,7 @@ load helpers/common
 # Real utilities the scripts may use; everything else must be stubbed.
 BASE_TOOLS=(sh bash cat awk sed grep date printf cut head tail tr sleep rm
             mkdir mv cp wc expr ls basename dirname find shuf sort env kill
-            seq id readlink touch tee)
+            seq id readlink touch tee iconv)
 
 setup_statusbar() {
     setup_sandbox

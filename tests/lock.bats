@@ -62,7 +62,7 @@ run_bin() { local name="$1"; shift; run env PATH="$STUBS:$BASE_BIN" "$@" "$REPO_
     mkdir -p "$SB_SYSFS/class/backlight/intel"
     echo 500 > "$SB_SYSFS/class/backlight/intel/brightness"
     echo 1000 > "$SB_SYSFS/class/backlight/intel/max_brightness"
-    stub brightnessctl 'case "$1" in get) echo 500 ;; esac'
+    stub brightnessctl 'case "$*" in *get*) echo 500 ;; esac'
 
     env PATH="$STUBS:$BASE_BIN" "$REPO_ROOT/bin/dim-screen" &
     local pid=$!
@@ -70,8 +70,8 @@ run_bin() { local name="$1"; shift; run env PATH="$STUBS:$BASE_BIN" "$@" "$REPO_
     kill -TERM "$pid"
     wait "$pid" || true
 
-    assert_called "brightnessctl -q set 10%"
-    assert_called "brightnessctl -q set 500"
+    assert_called "brightnessctl -d intel -q set 10%"
+    assert_called "brightnessctl -d intel -q set 500"
 }
 
 @test "dim-screen is a no-op without a backlight" {
@@ -79,4 +79,24 @@ run_bin() { local name="$1"; shift; run env PATH="$STUBS:$BASE_BIN" "$@" "$REPO_
     run_bin dim-screen
     [ "$status" -eq 0 ]
     assert_not_called brightnessctl
+}
+
+@test "lock passes a cache path with spaces as one argument" {
+    export XDG_CACHE_HOME="$TEST_HOME/my cache"
+    mkdir -p "$XDG_CACHE_HOME"; touch "$XDG_CACHE_HOME/lock.png"
+    stub i3lock 'case "$1" in --version) echo "i3lock: version 2.13.c.5" ;; *) for a; do echo "ARG:$a" >> "$CALLS"; done ;; esac'
+    run_bin lock
+    grep -qx "ARG:$XDG_CACHE_HOME/lock.png" "$CALLS"
+}
+
+@test "dim-screen never brightens an already dim screen" {
+    mkdir -p "$SB_SYSFS/class/backlight/intel"
+    echo 50 > "$SB_SYSFS/class/backlight/intel/brightness"
+    echo 1000 > "$SB_SYSFS/class/backlight/intel/max_brightness"
+    stub brightnessctl 'case "$*" in *get*) echo 50 ;; esac'
+    env PATH="$STUBS:$BASE_BIN" "$REPO_ROOT/bin/dim-screen" &
+    local pid=$!
+    # It should exit on its own; TERM it only if it is (wrongly) still running.
+    sleep 0.5; kill -TERM "$pid" 2>/dev/null || true; wait "$pid" || true
+    ! grep -q "set 10%" "$CALLS"
 }

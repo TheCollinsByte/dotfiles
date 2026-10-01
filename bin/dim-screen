@@ -5,9 +5,15 @@
 set -- "${SB_SYSFS:-/sys}"/class/backlight/*
 [ -r "$1/brightness" ] || exit 0
 
-saved=$(brightnessctl get) || exit 0
-trap 'brightnessctl -q set "$saved"; exit 0' TERM INT HUP
+dev="${1##*/}"
+max=$(cat "$1/max_brightness")
+saved=$(brightnessctl -d "$dev" get) || exit 0
 
-brightnessctl -q set 10%
+# Already at or below the dim level (e.g. at night): leave it alone.
+[ $((saved * 10)) -le "$max" ] && exit 0
+
+trap 'brightnessctl -d "$dev" -q set "$saved"; exit 0' TERM INT HUP
+
+brightnessctl -d "$dev" -q set 10%
 # Short sleeps so the trap runs promptly.
 while :; do sleep 1; done

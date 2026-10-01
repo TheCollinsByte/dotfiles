@@ -19,7 +19,13 @@ case $status in
 esac
 
 text=$(playerctl metadata --format '{{artist}} – {{title}}' 2>/dev/null)
+text=${text# – }      # no artist
 [ -n "$text" ] || exit 0
+
+# Drop invalid UTF-8 so the character-based truncation below can count it.
+if command -v iconv >/dev/null 2>&1; then
+    text=$(printf '%s' "$text" | iconv -f UTF-8 -t UTF-8 -c 2>/dev/null)
+fi
 
 # Count characters, not bytes, even when dwmblocks runs under the C locale.
 text=$(printf '%s' "$text" | LC_ALL=C.UTF-8 sed 's/^\(.\{29\}\).\{2,\}$/\1…/')
