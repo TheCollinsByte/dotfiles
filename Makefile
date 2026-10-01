@@ -7,10 +7,10 @@ SHELL := /bin/bash
 .DEFAULT_GOAL := help
 
 # Every shell script tracked in this repo, excluding submodules.
-SCRIPTS := install.sh $(wildcard lib/*.sh) $(wildcard bin/*.sh) \
+SCRIPTS := install.sh $(wildcard lib/*.sh) $(shell find bin -type f) \
            $(wildcard config/shell/*.sh) $(wildcard profiles/*.profile) \
-           tests/helpers/common.bash .githooks/pre-commit \
-           $(wildcard bin/statusbar/*) .bashrc .bash_profile .xinitrc \
+           tests/helpers/common.bash tests/helpers/statusbar.bash \
+           .githooks/pre-commit .bashrc .bash_profile .xinitrc \
            config/ranger/scope.sh
 
 .PHONY: help
