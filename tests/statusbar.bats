@@ -237,3 +237,76 @@ make_battery() {   # name capacity status
     run_block sb-battery
     [ "$(grep -c 'notify-send -u critical' "$CALLS")" -eq 2 ]
 }
+
+# --- sb-internet ------------------------------------------------------------
+
+make_iface() {   # name operstate
+    mkdir -p "$SB_SYSFS/class/net/$1"
+    echo "$2" > "$SB_SYSFS/class/net/$1/operstate"
+}
+
+@test "internet shows wifi strength" {
+    make_iface wlan0 up
+    mkdir -p "$SB_PROCFS/net"
+    printf 'Inter-| sta-|   Quality\n face | tus | link level noise\n wlan0: 0000   49.  -61.  -256\n' > "$SB_PROCFS/net/wireless"
+    run_block sb-internet
+    [ "$output" = "📶 70%" ]
+}
+
+@test "internet shows ethernet when wifi is down" {
+    make_iface wlan0 down
+    make_iface enp0s31f6 up
+    run_block sb-internet
+    [ "$output" = "🌐" ]
+}
+
+@test "internet shows offline" {
+    make_iface wlan0 down
+    run_block sb-internet
+    [ "$output" = "❌" ]
+}
+
+@test "internet click opens nmtui" {
+    make_iface wlan0 down
+    run_block sb-internet BLOCK_BUTTON=1 TERMINAL=st
+    assert_called "setsid -f st -e nmtui"
+}
+
+# --- sb-music ---------------------------------------------------------------
+
+@test "music hides with no player" {
+    stub playerctl 'exit 1'
+    run_block sb-music
+    [ -z "$output" ]
+}
+
+@test "music shows playing track" {
+    stub playerctl 'case "$1" in status) echo Playing ;; metadata) echo "Daft Punk – Contact" ;; esac'
+    run_block sb-music
+    [ "$output" = "▶ Daft Punk – Contact" ]
+}
+
+@test "music shows paused" {
+    stub playerctl 'case "$1" in status) echo Paused ;; metadata) echo "A – B" ;; esac'
+    run_block sb-music
+    [ "$output" = "⏸ A – B" ]
+}
+
+@test "music truncates long titles to 30 characters, valid UTF-8 under C locale" {
+    stub playerctl 'case "$1" in status) echo Playing ;; metadata) echo "Sigur Rós – Hoppípolla Hoppípolla Hoppípolla" ;; esac'
+    run_block sb-music LC_ALL=C LANG=
+    local text="${output#▶ }"
+    [ "$(printf '%s' "$text" | LC_ALL=C.UTF-8 wc -m)" -le 30 ]
+    printf '%s' "$text" | iconv -f UTF-8 -t UTF-8 >/dev/null
+    [[ "$text" == *… ]]
+}
+
+@test "music clicks control the player" {
+    stub playerctl 'case "$1" in status) echo Playing ;; metadata) echo "A – B" ;; esac'
+    run_block sb-music BLOCK_BUTTON=1
+    assert_called "playerctl play-pause"
+    run_block sb-music BLOCK_BUTTON=4
+    assert_called "playerctl next"
+    run_block sb-music BLOCK_BUTTON=5
+    assert_called "playerctl previous"
+}
