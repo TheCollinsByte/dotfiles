@@ -8,6 +8,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Added
+- **dwm desktop foundations** (see `docs/DESKTOP.md`): Super-key keymap,
+  gruvbox and FiraCode across dwm/dmenu/st/dunst, statuscmd and restartsig
+  patches, dwmblocks-async with ten clickable blocks that hide when
+  irrelevant and refresh instantly from hardware keys, dunst notifications,
+  an i3lock-color lock screen over the blurred wallpaper with xtrlock
+  fallback, auto-lock (dim 9:30, lock 10:00, before suspend), and
+  `--wallpapers` for an optional curated set.
+
 ### Changed
 - **Shell startup is ~8x faster** (~250ms → ~30ms). nvm is lazy-loaded (the
   default node's bin goes on PATH directly, so node, npm and global CLIs work

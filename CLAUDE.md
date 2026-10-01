@@ -10,7 +10,7 @@ Personal Linux dotfiles. No application build, no package manifest. The delivera
 
 ```bash
 make check                        # lint + syntax + dry-run + tests — what CI runs
-make test                         # bats suite (93 tests)
+make test                         # bats suite (156 tests)
 make lint                         # shellcheck --severity=warning over all scripts
 make hooks                        # enable .githooks/pre-commit
 make health                       # verify the current installation
@@ -85,7 +85,7 @@ The symlink map is the `dotfiles` array in `lib/dotfiles.sh` as `"source:destina
 
 ### Submodules
 
-Five, all pointing at the owner's own forks: `config/nvim` (init.nvim) and `suckless/{dwm,st,dmenu,dwmblocks}`. Cloning needs `--recursive`. Editing suckless source means committing in the submodule and bumping the pointer here. `config/nvim` has its own `CLAUDE.md` — read it before touching Neovim config.
+Five, all pointing at the owner's own forks: `config/nvim` (init.nvim) and `suckless/{dwm,st,dmenu,dwmblocks}`. Cloning needs `--recursive`. Editing suckless source means committing in the submodule and bumping the pointer here. Each suckless fork keeps a committed `config.h` (personal settings; `config.def.h` stays upstream, some forks need `git add -f`). `suckless/dwmblocks` is dwmblocks-async; its block scripts are `bin/statusbar/sb-*` (see `docs/DESKTOP.md`). `config/nvim` has its own `CLAUDE.md` — read it before touching Neovim config.
 
 ### Shell config chain
 
