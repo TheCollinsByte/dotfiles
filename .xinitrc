@@ -47,6 +47,8 @@ if xrandr 2>/dev/null | grep -q '^Virtual-1 connected'; then
 fi
 
 # Idle: screensaver event at 9:30 (dim), lock 30s later; display off at 15 min.
+# noblank: without it Xorg blanks the screen itself at 9:30 instead of dimming.
+xset s noblank
 xset s 570 30
 xset dpms 0 0 900
 

@@ -86,3 +86,51 @@ teardown() { teardown_sandbox; }
     grep -q 'xset s 570 30' "$REPO_ROOT/.xinitrc"
     grep -q 'xset dpms 0 0 900' "$REPO_ROOT/.xinitrc"
 }
+
+# Bare-bones upstream repo with one wallpaper per category.
+make_wallpaper_repo() {
+    WP_SRC="$TEST_HOME/src-repo"
+    git init -q "$WP_SRC"
+    mkdir -p "$WP_SRC/wallpapers/minimalistic"
+    echo a > "$WP_SRC/wallpapers/minimalistic/a.jpg"
+    git -C "$WP_SRC" add . && git -C "$WP_SRC" -c user.name=t -c user.email=t@t commit -qm init
+}
+
+@test "--wallpapers re-run picks up new upstream commits" {
+    make_wallpaper_repo
+    DOTFILES_WALLPAPER_REPO="file://$WP_SRC" run_install --wallpapers
+    assert_success
+
+    echo c > "$WP_SRC/wallpapers/minimalistic/c.jpg"
+    git -C "$WP_SRC" add . && git -C "$WP_SRC" -c user.name=t -c user.email=t@t commit -qm more
+
+    DOTFILES_WALLPAPER_REPO="file://$WP_SRC" run_install --wallpapers
+    assert_success
+    assert_output_not_contains "update failed"
+    [ -f "$TEST_HOME/.local/share/wallpapers/gruvbox/wallpapers/minimalistic/c.jpg" ]
+}
+
+@test "--wallpapers never deletes a user folder it did not create" {
+    make_wallpaper_repo
+    local dest="$TEST_HOME/.local/share/wallpapers/gruvbox"
+    mkdir -p "$dest"
+    echo mine > "$dest/my-own.png"
+
+    DOTFILES_WALLPAPER_REPO="file://$WP_SRC" run_install --wallpapers
+    [ "$(cat "$dest/my-own.png")" = mine ]
+    assert_output_contains "not a wallpaper checkout"
+}
+
+@test "menu offers the wallpaper download" {
+    run bash -c "
+        source '$REPO_ROOT/lib/core.sh'; source '$REPO_ROOT/lib/ui.sh'
+        clear() { :; }; press_any_key() { :; }
+        fetch_wallpapers() { echo FETCHED; }
+        show_menu; printf 'w\n0\n' | run_interactive_menu"
+    assert_output_contains "Download wallpapers"
+    assert_output_contains "FETCHED"
+}
+
+@test "xinitrc stops X blanking over the idle dim" {
+    grep -q '^xset s noblank' "$REPO_ROOT/.xinitrc"
+}

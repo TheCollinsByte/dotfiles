@@ -310,3 +310,17 @@ make_iface() {   # name operstate
     run_block sb-music BLOCK_BUTTON=5
     assert_called "playerctl previous"
 }
+
+@test "cpu stale sample with idle outpacing total stays within 0-100" {
+    # Stored sample from another boot: total and idle both lower, idle far lower.
+    echo "1000 100" > "$XDG_RUNTIME_DIR/sb-cpu"
+    write_stat "10 0 0 1500 0 0 0 0 0 0"        # total 1510, idle 1500
+    run_block sb-cpu
+    [ "$output" = "💻 0%" ]
+}
+
+@test "battery reporting Full below 95% hides (worn battery on AC)" {
+    make_battery BAT0 93 Full
+    run_block sb-battery
+    [ -z "$output" ]
+}

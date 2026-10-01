@@ -22,8 +22,9 @@ printf '%s %s\n' "$total" "$idle_all" > "$state"
 
 dt=$((total - prev_total))
 di=$((idle_all - prev_idle))
-# Counters reset (new boot) or unchanged: use the since-boot average instead.
-if [ "$dt" -le 0 ] || [ "$di" -lt 0 ]; then
+# Counters reset (new boot), unchanged, or a stale sample where idle grew more
+# than total: use the since-boot average instead, which is always 0-100.
+if [ "$dt" -le 0 ] || [ "$di" -lt 0 ] || [ "$di" -gt "$dt" ]; then
     dt=$total di=$idle_all
 fi
 [ "$dt" -gt 0 ] || exit 0

@@ -41,6 +41,8 @@ case $status in
         [ "$cap" -lt 20 ] && icon="🪫"
         ;;
     Charging) rm -f "$flag"; icon="⚡" ;;
+    # Full on AC; worn batteries report Full well below 100%.
+    Full) rm -f "$flag"; exit 0 ;;
     *)
         rm -f "$flag"
         # Full, or held at a charge threshold: hide only when actually full.

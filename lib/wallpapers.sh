@@ -35,9 +35,16 @@ fetch_wallpapers() {
 
     if [[ -d "$WALLPAPER_DEST/.git" ]]; then
         print_status "Updating wallpapers..."
+        # A depth-1 clone has no shared history to fast-forward from, so fetch
+        # the new tip and reset to it; this directory is a read-only mirror.
         git -C "$WALLPAPER_DEST" sparse-checkout set "${paths[@]}" &&
-            git -C "$WALLPAPER_DEST" pull -q --ff-only --depth 1 ||
+            git -C "$WALLPAPER_DEST" fetch -q --depth 1 origin &&
+            git -C "$WALLPAPER_DEST" reset -q --hard FETCH_HEAD ||
             { print_error "Wallpaper update failed"; return 1; }
+    elif [[ -e "$WALLPAPER_DEST" && -n "$(ls -A "$WALLPAPER_DEST" 2>/dev/null)" ]]; then
+        # Never clone over (or clean up) a folder the user filled themselves.
+        print_error "$WALLPAPER_DEST exists and is not a wallpaper checkout — move it aside first"
+        return 1
     else
         print_status "Fetching wallpapers..."
         mkdir -p "$(dirname "$WALLPAPER_DEST")"

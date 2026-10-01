@@ -22,6 +22,7 @@ show_menu() {
     echo -e "${BLUE}│${NC}  ${GREEN}4.${NC} Build & install suckless tools       ${BLUE}│${NC}"
     echo -e "${BLUE}│${NC}  ${GREEN}5.${NC} Configure server services            ${BLUE}│${NC}"
     echo -e "${BLUE}│${NC}  ${BLUE}6.${NC} Install everything                   ${BLUE}│${NC}"
+    echo -e "${BLUE}│${NC}  ${GREEN}w.${NC} Download wallpapers (~58 MB)         ${BLUE}│${NC}"
     echo -e "${BLUE}├──────────────────────────────────────────┤${NC}"
     echo -e "${BLUE}│${NC}  ${YELLOW}7.${NC} Check dependencies                   ${BLUE}│${NC}"
     echo -e "${BLUE}│${NC}  ${YELLOW}8.${NC} Health check                         ${BLUE}│${NC}"
@@ -44,6 +45,13 @@ run_interactive_menu() {
             4) build_suckless         || true; press_any_key ;;
             5) configure_server_services || true; press_any_key ;;
             6) run_full_install       || true; press_any_key ;;
+            w|W)
+                if is_headless; then
+                    print_warn "Skipping wallpapers in server/minimal mode"
+                else
+                    fetch_wallpapers  || true
+                fi
+                press_any_key ;;
             7) check_dependencies     || true; press_any_key ;;
             8) health_check           || true; press_any_key ;;
             9) restore_backup         || true; press_any_key ;;
