@@ -84,8 +84,8 @@ build_suckless() {
 
     if ! command_exists make || ! command_exists gcc; then
         print_error "Build tools missing (make/gcc)"
-        print_status "Arch:   sudo pacman -S base-devel libx11 libxft libxinerama"
-        print_status "Debian: sudo apt install build-essential libx11-dev libxft-dev libxinerama-dev"
+        print_status "Arch:   sudo pacman -S base-devel libx11 libxft libxinerama pkgconf xcb-util"
+        print_status "Debian: sudo apt install build-essential libx11-dev libxft-dev libxinerama-dev pkg-config libxcb-util-dev"
         return 1
     fi
 

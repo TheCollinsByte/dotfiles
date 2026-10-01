@@ -134,3 +134,9 @@ make_wallpaper_repo() {
 @test "xinitrc stops X blanking over the idle dim" {
     grep -q '^xset s noblank' "$REPO_ROOT/.xinitrc"
 }
+
+@test "package list includes dwmblocks-async build dependencies" {
+    run_install --dry-run --packages
+    assert_output_contains "xcb-util"
+    assert_output_contains "pkg"
+}

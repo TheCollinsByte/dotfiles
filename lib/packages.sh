@@ -35,14 +35,14 @@ install_packages() {
             [[ "${MINIMAL_MODE:-false}" == false ]] && packages+=(base-devel)
             [[ "${SERVER_MODE:-false}" == true ]] &&
                 packages+=(nginx docker docker-compose fail2ban ufw certbot certbot-nginx)
-            is_headless || packages+=(libx11 libxft libxinerama dunst xss-lock playerctl xtrlock)
+            is_headless || packages+=(libx11 libxft libxinerama pkgconf xcb-util dunst xss-lock playerctl xtrlock)
             ;;
         apt)
             packages+=(fd-find bat)
             [[ "${MINIMAL_MODE:-false}" == false ]] && packages+=(build-essential)
             [[ "${SERVER_MODE:-false}" == true ]] &&
                 packages+=(nginx docker.io docker-compose fail2ban ufw certbot python3-certbot-nginx)
-            is_headless || packages+=(libx11-dev libxft-dev libxinerama-dev dunst xss-lock playerctl xtrlock)
+            is_headless || packages+=(libx11-dev libxft-dev libxinerama-dev pkg-config libxcb-util-dev dunst xss-lock playerctl xtrlock)
             # eza only exists in newer repos; add it when available.
             if apt-cache show eza >/dev/null 2>&1; then
                 packages+=(eza)
@@ -55,19 +55,19 @@ install_packages() {
             [[ "${MINIMAL_MODE:-false}" == false ]] && packages+=(@development-tools)
             [[ "${SERVER_MODE:-false}" == true ]] &&
                 packages+=(nginx docker docker-compose fail2ban firewalld certbot python3-certbot-nginx)
-            is_headless || packages+=(libX11-devel libXft-devel libXinerama-devel dunst xss-lock playerctl)
+            is_headless || packages+=(libX11-devel libXft-devel libXinerama-devel pkgconf-pkg-config xcb-util-devel dunst xss-lock playerctl)
             ;;
         zypper)
             packages+=(fd bat)
             [[ "${MINIMAL_MODE:-false}" == false ]] && packages+=(patterns-devel-base-devel_basis)
             [[ "${SERVER_MODE:-false}" == true ]] && packages+=(nginx docker fail2ban firewalld certbot)
-            is_headless || packages+=(libX11-devel libXft-devel libXinerama-devel)
+            is_headless || packages+=(libX11-devel libXft-devel libXinerama-devel pkg-config xcb-util-devel)
             ;;
         apk)
             packages+=(fd bat)
             [[ "${MINIMAL_MODE:-false}" == false ]] && packages+=(build-base)
             [[ "${SERVER_MODE:-false}" == true ]] && packages+=(nginx docker fail2ban certbot)
-            is_headless || packages+=(libx11-dev libxft-dev libxinerama-dev)
+            is_headless || packages+=(libx11-dev libxft-dev libxinerama-dev pkgconf xcb-util-dev)
             ;;
         brew)
             packages+=(fd bat eza)
