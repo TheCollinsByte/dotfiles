@@ -2114,7 +2114,7 @@ User then pushes: `cd suckless/dwmblocks && git push fork async:main` (after the
 ### Task 13: Docs, full verification, acceptance checklist
 
 **Files:**
-- Modify: `docs/CHANGELOG.md`, `README.md`, `CLAUDE.md` (test count, submodule note), `docs/TODO.md`
+- Modify: `docs/CHANGELOG.md`, `README.md`, `CLAUDE.md` (test count, submodule note)
 - Create: `docs/DESKTOP.md` (keymap, bar, lock, manual checklist)
 
 - [ ] **Step 1: Write `docs/DESKTOP.md`**
