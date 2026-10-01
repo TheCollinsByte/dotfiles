@@ -14,8 +14,8 @@ if ! command -v geoiplookup >/dev/null 2>&1; then
 fi
 
 # Fetch public IP and geolocation information
-addr="$(geoiplookup "$(curl -sfm 1 ifconfig.me 2>/dev/null)")"
+addr="$(geoiplookup "$(curl -sfm 1 https://ifconfig.me 2>/dev/null)")"
 name="${addr##*, }"
-flag="$(grep "flag: $name" "${XDG_DATA_HOME:-$HOME/.local/share}/thecollinsbyte/emoji")"
+flag="$(grep "flag: $name" "${XDG_DATA_HOME:-$HOME/.local/share}/thecollinsbyte/emoji" 2>/dev/null)" || flag=""
 flag="${flag%% *}"
 printf "%s %s\\n" "$flag" "$name"

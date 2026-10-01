@@ -29,6 +29,8 @@ split() {
 
 vol="$(printf "%.0f" "$(split "$vol" ".")")"
 
+# Deliberate: match the first range test that evaluates to 1.
+# shellcheck disable=SC2194
 case 1 in
 	$((vol >= 70)) ) icon="🔊" ;;
 	$((vol >= 30)) ) icon="🔉" ;;

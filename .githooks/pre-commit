@@ -59,7 +59,10 @@ if command -v gitleaks >/dev/null 2>&1; then
     fi
 else
     # Minimal fallback so the hook still catches the worst cases without gitleaks.
-    if git diff --cached -U0 | grep -qE '^\+.*-----BEGIN [A-Z ]*PRIVATE KEY'; then
+    # Capture first: piping into `grep -q` lets git die of SIGPIPE on a match,
+    # and under pipefail that 141 makes the if see "no key" — a silent miss.
+    staged_diff=$(git diff --cached -U0)
+    if grep -qE '^\+.*-----BEGIN [A-Z ]*PRIVATE KEY' <<<"$staged_diff"; then
         fail "a private key appears in the staged diff — commit blocked"
         status=1
     fi

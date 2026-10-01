@@ -1,10 +1,15 @@
 #!/bin/sh
 
+# First backlight device; desktops and VMs have none, so show nothing.
+set -- /sys/class/backlight/*
+[ -r "$1/brightness" ] && [ -r "$1/max_brightness" ] || exit 0
+
 # current brightness
-curr_brightness=$(cat /sys/class/backlight/*/brightness)
+curr_brightness=$(cat "$1/brightness")
 
 # max_brightness
-max_brightness=$(cat /sys/class/backlight/*/max_brightness)
+max_brightness=$(cat "$1/max_brightness")
+[ "$max_brightness" -gt 0 ] 2>/dev/null || exit 0
 
 # brightness percentage
 brightness_per=$((100 * curr_brightness / max_brightness))
