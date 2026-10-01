@@ -46,13 +46,23 @@ if xrandr 2>/dev/null | grep -q '^Virtual-1 connected'; then
     xrandr --output Virtual-1 --mode 1920x1080
 fi
 
+# Idle: screensaver event at 9:30 (dim), lock 30s later; display off at 15 min.
+xset s 570 30
+xset dpms 0 0 900
+
 # compositor
 picom -f &
+
+# notifications
+dunst &
+
+# Lock on idle and before suspend, dimming first.
+xss-lock --transfer-sleep-lock -n dim-screen -- lock-sleep-wrapper lock &
 
 # redshift
 redshift -l -6:34 -t 5500:2500 &
 
-# Load Wallpaper with (FEH)
+# Wallpaper (also renders the lock-screen image)
 ~/.local/bin/wallpaper-shuffle.sh &
 
 dwmblocks &

@@ -69,3 +69,20 @@ teardown() { teardown_sandbox; }
     run_install --help
     assert_output_contains "--wallpapers"
 }
+
+@test "xinitrc starts the session in order" {
+    # Line number of the first line starting with the given text.
+    line() { grep -n -m1 -- "^$1" "$REPO_ROOT/.xinitrc" | cut -d: -f1; }
+    local prev=0 n step
+    for step in "\[ -f \"\$HOME/.config/shell/envars.sh\" \]" "setxkbmap" "xset s" "picom" \
+                "dunst" "xss-lock" "redshift" "~/.local/bin/wallpaper-shuffle" \
+                "dwmblocks" "~/.local/bin/fix-audio" "exec dwm"; do
+        n=$(line "$step")
+        [ -n "$n" ] || { echo "missing: $step"; return 1; }
+        [ "$n" -gt "$prev" ] || { echo "out of order: $step"; return 1; }
+        prev=$n
+    done
+    grep -q 'xss-lock .*-n dim-screen .*-- lock-sleep-wrapper lock' "$REPO_ROOT/.xinitrc"
+    grep -q 'xset s 570 30' "$REPO_ROOT/.xinitrc"
+    grep -q 'xset dpms 0 0 900' "$REPO_ROOT/.xinitrc"
+}
