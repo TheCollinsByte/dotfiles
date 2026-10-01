@@ -1,37 +1,51 @@
 #!/bin/sh
+# Battery charge; hidden without a battery or when full on AC.
+# Left click: status and time estimate. Right click: help.
 
-# Prints all batteries, their percentage remaining and an emoji corresponding
-# to charge status (🔌 for plugged up, 🔋 for discharging on battery, etc.).
+set -- "${SB_SYSFS:-/sys}"/class/power_supply/BAT*
+bat="$1"
+[ -r "$bat/capacity" ] || exit 0
+
+cap=$(cat "$bat/capacity")
+status=$(cat "$bat/status" 2>/dev/null)
+flag="${XDG_RUNTIME_DIR:-/tmp}/sb-battery-warned"
+
+# Hours:minutes from energy (µWh) and power (µW), when the battery reports them.
+estimate() {
+    [ -r "$bat/energy_now" ] && [ -r "$bat/power_now" ] || return 0
+    awk -v now="$(cat "$bat/energy_now")" -v full="$(cat "$bat/energy_full" 2>/dev/null || echo 0)" \
+        -v power="$(cat "$bat/power_now")" -v status="$status" '
+        BEGIN {
+            if (power <= 0) exit
+            h = (status == "Charging") ? (full - now) / power : now / power
+            printf "%d:%02d %s\n", int(h), int((h - int(h)) * 60), \
+                (status == "Charging") ? "until full" : "remaining"
+        }'
+}
 
 case $BLOCK_BUTTON in
-	3) notify-send "🔋 Battery module" "🔋: discharging
-🛑: not charging
-♻: stagnant charge
-🔌: charging
-⚡: charged
-❗: battery very low!
-- Scroll to change adjust xbacklight." ;;
-	4) xbacklight -inc 10 ;;
-	5) xbacklight -dec 10 ;;
-	6) setsid -f "$TERMINAL" -e "$EDITOR" "$0" ;;
+    1) notify-send "🔋 Battery" "$status, $cap%
+$(estimate)" ;;
+    3) notify-send "🔋 Battery" "⚡ charging, 🔋 on battery, 🪫 below 20%.
+Critical alert once below 10%.
+Left click: status and time estimate" ;;
 esac
 
-# Loop through all attached batteries and format the info
-for battery in /sys/class/power_supply/BAT?*; do
-	# If non-first battery, print a space separator.
-	[ -n "${capacity+x}" ] && printf " "
-	# Sets up the status and capacity
-	case "$(cat "$battery/status" 2>&1)" in
-		"Full") status="⚡" ;;
-		"Discharging") status="🔋" ;;
-		"Charging") status="🔌" ;;
-		"Not charging") status="🛑" ;;
-		"Unknown") status="♻️" ;;
-		*) exit 1 ;;
-	esac
-	capacity="$(cat "$battery/capacity" 2>&1)"
-	# Will make a warn variable if discharging and low
-	[ "$status" = "🔋" ] && [ "$capacity" -le 25 ] && warn="❗"
-	# Prints the info
-	printf "%s%s%d%%" "$status" "$warn" "$capacity"; unset warn
-done && printf "\\n"
+case $status in
+    Discharging)
+        if [ "$cap" -lt 10 ] && [ ! -e "$flag" ]; then
+            notify-send -u critical "🪫 Battery critical" "$cap% left — plug in now"
+            : > "$flag"
+        fi
+        icon="🔋"
+        [ "$cap" -lt 20 ] && icon="🪫"
+        ;;
+    Charging) rm -f "$flag"; icon="⚡" ;;
+    *)
+        rm -f "$flag"
+        # Full, or held at a charge threshold: hide only when actually full.
+        [ "$cap" -ge 95 ] && exit 0
+        icon="🔋"
+        ;;
+esac
+echo "$icon $cap%"

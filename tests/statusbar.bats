@@ -150,3 +150,90 @@ make_backlight() {   # name brightness max
     run_block sb-brightness BLOCK_BUTTON=5
     assert_called "brightnessctl -q set 5%-"
 }
+
+# --- sb-volume --------------------------------------------------------------
+
+@test "volume hides when no audio server answers" {
+    stub wpctl 'exit 1'
+    run_block sb-volume
+    [ "$status" -eq 0 ]
+    [ -z "$output" ]
+}
+
+@test "volume shows level with a matching icon" {
+    stub wpctl 'echo "Volume: 0.45"'
+    run_block sb-volume
+    [ "$output" = "🔉 45%" ]
+    stub wpctl 'echo "Volume: 0.80"'
+    run_block sb-volume
+    [ "$output" = "🔊 80%" ]
+}
+
+@test "volume shows muted" {
+    stub wpctl 'echo "Volume: 0.45 [MUTED]"'
+    run_block sb-volume
+    [ "$output" = "🔇 45%" ]
+}
+
+@test "volume click mutes and scroll changes level" {
+    stub wpctl 'echo "Volume: 0.45"'
+    run_block sb-volume BLOCK_BUTTON=1
+    assert_called "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
+    run_block sb-volume BLOCK_BUTTON=4
+    assert_called "wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%+"
+    run_block sb-volume BLOCK_BUTTON=5
+    assert_called "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"
+}
+
+# --- sb-battery -------------------------------------------------------------
+
+make_battery() {   # name capacity status
+    mkdir -p "$SB_SYSFS/class/power_supply/$1"
+    echo "$2" > "$SB_SYSFS/class/power_supply/$1/capacity"
+    echo "$3" > "$SB_SYSFS/class/power_supply/$1/status"
+}
+
+@test "battery hides without a battery" {
+    run_block sb-battery
+    [ -z "$output" ]
+}
+
+@test "battery hides when full on AC" {
+    make_battery BAT0 100 Full
+    run_block sb-battery
+    [ -z "$output" ]
+}
+
+@test "battery held at a charge threshold shows plainly" {
+    make_battery BAT0 80 "Not charging"
+    run_block sb-battery
+    [ "$output" = "🔋 80%" ]
+    assert_not_called notify-send
+}
+
+@test "battery shows charging and discharging, first battery only" {
+    make_battery BAT0 82 Charging
+    make_battery BAT1 10 Discharging
+    run_block sb-battery
+    [ "$output" = "⚡ 82%" ]
+}
+
+@test "battery low icon below 20%" {
+    make_battery BAT0 15 Discharging
+    run_block sb-battery
+    [ "$output" = "🪫 15%" ]
+}
+
+@test "battery critical notification fires once per discharge" {
+    make_battery BAT0 8 Discharging
+    run_block sb-battery
+    run_block sb-battery
+    [ "$(grep -c 'notify-send -u critical' "$CALLS")" -eq 1 ]
+
+    # Charging clears the flag, so the next discharge warns again.
+    make_battery BAT0 8 Charging
+    run_block sb-battery
+    make_battery BAT0 8 Discharging
+    run_block sb-battery
+    [ "$(grep -c 'notify-send -u critical' "$CALLS")" -eq 2 ]
+}
