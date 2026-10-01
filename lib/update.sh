@@ -80,7 +80,9 @@ update_dotfiles() {
     fi
 
     print_status "Updating submodules..."
-    if git submodule update --init --recursive --remote --merge; then
+    # Check out the commits this repo pins, not each fork's latest tip:
+    # --remote would install untested submodule code and leave the tree dirty.
+    if git submodule update --init --recursive; then
         print_ok "Submodules updated"
     else
         print_warn "Some submodules failed to update"

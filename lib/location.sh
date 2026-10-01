@@ -54,13 +54,7 @@ prompt_dotfiles_location() {
     echo ""
     print_status "New location: $new_location"
 
-    if [[ -e "$new_location" ]]; then
-        print_error "Location already exists: $new_location"
-        confirm "Merge with existing location?" n || {
-            print_warn "Keeping current location"
-            return 1
-        }
-    fi
+    validate_new_location "$new_location" "$current" || return 1
 
     confirm "Move dotfiles to $new_location?" n || {
         print_warn "Keeping current location"
@@ -80,6 +74,8 @@ move_dotfiles() {
         return 0
     fi
 
+    validate_new_location "$new_location" "$old_location" || return 1
+
     if is_dry_run; then
         print_dry "move $old_location → $new_location"
         print_dry "repoint existing symlinks and save the location preference"
@@ -88,6 +84,10 @@ move_dotfiles() {
 
     print_status "Moving dotfiles from $old_location to $new_location..."
     mkdir -p "$(dirname "$new_location")"
+
+    # `mv src existing-dir` nests src inside it; clear an empty target first.
+    # validate_new_location has already refused a non-empty one.
+    [[ -d "$new_location" ]] && rmdir "$new_location"
 
     if ! mv "$old_location" "$new_location"; then
         print_error "Failed to move dotfiles"
@@ -104,6 +104,25 @@ move_dotfiles() {
     update_symlinks_location "$old_location" "$new_location"
 
     save_location_preference "$new_location"
+}
+
+# Refuse targets that mv would mishandle: an occupied path (mv would nest the
+# repo inside it, or clobber a file) or a path inside the repo itself.
+validate_new_location() {
+    local new_location="$1" old_location="$2"
+
+    if [[ "$new_location" == "$old_location"/* ]]; then
+        print_error "Cannot move the repo inside itself: $new_location"
+        return 1
+    fi
+
+    if [[ -e "$new_location" || -L "$new_location" ]]; then
+        if [[ -d "$new_location" && ! -L "$new_location" && -z "$(ls -A "$new_location")" ]]; then
+            return 0
+        fi
+        print_error "Location already exists and is not an empty directory: $new_location"
+        return 1
+    fi
 }
 
 # Repoint symlinks in $HOME and $HOME/.config from old_location to new_location.
@@ -133,7 +152,9 @@ update_symlinks_location() {
         [[ -L "$link" ]] || continue
 
         target=$(readlink "$link") || continue
-        [[ "$target" == "$old_location"* ]] || continue
+        # Match the directory itself or a path below it — a bare prefix match
+        # would also catch siblings like "$old_location-old".
+        [[ "$target" == "$old_location" || "$target" == "$old_location"/* ]] || continue
 
         new_target="${new_location}${target#"$old_location"}"
         if ln -sfn "$new_target" "$link"; then

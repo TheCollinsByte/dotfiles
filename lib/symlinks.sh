@@ -271,6 +271,31 @@ cleanup_backups() {
     print_status "Kept the newest ${BACKUP_RETENTION}"
 }
 
+# Put one backed-up entry back at $target without ever leaving the user with
+# neither version: copy beside the target first, then swap, rolling back if
+# the swap fails. A plain rm-then-cp loses the live file when cp fails.
+restore_one() {
+    local file="$1" target="$2"
+    local tmp="${target}.dotfiles-restore.$$"
+    local prev="${target}.dotfiles-prev.$$"
+
+    cp -a "$file" "$tmp" 2>/dev/null || { rm -rf "$tmp"; return 1; }
+
+    if [[ -e "$target" || -L "$target" ]]; then
+        mv -T "$target" "$prev" || { rm -rf "$tmp"; return 1; }
+    fi
+
+    if mv -T "$tmp" "$target"; then
+        rm -rf "$prev"
+        return 0
+    fi
+
+    # Swap failed: put the live version back.
+    [[ -e "$prev" || -L "$prev" ]] && mv -T "$prev" "$target"
+    rm -rf "$tmp"
+    return 1
+}
+
 # Interactive restoration from a previous backup.
 #
 # Reverses a run recorded in .manifest: removes symlinks we created, then
@@ -358,9 +383,8 @@ restore_backup() {
         fi
 
         mkdir -p "$(dirname "$target")"
-        [[ -e "$target" || -L "$target" ]] && rm -rf "$target"
 
-        if cp -a "$file" "$target" 2>/dev/null; then
+        if restore_one "$file" "$target"; then
             print_ok "Restored $target"
             restored=$((restored + 1))
         else

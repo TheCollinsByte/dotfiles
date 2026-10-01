@@ -85,6 +85,38 @@ install_with_backup() {
     assert_symlink "$TEST_HOME/.bashrc"
 }
 
+@test "a failed restore copy leaves the current file in place" {
+    [ "$(id -u)" -ne 0 ] || skip "root can read mode-000 files"
+
+    # Manifest-less backup whose only file cannot be copied.
+    local backup="$TEST_HOME/.dotfiles_backup_20260101_000000"
+    mkdir -p "$backup"
+    echo "BACKED UP" > "$backup/.foorc"
+    chmod 000 "$backup/.foorc"
+    echo "CURRENT" > "$TEST_HOME/.foorc"
+
+    run bash -c "echo 1 | '$INSTALL' --restore"
+    chmod 600 "$backup/.foorc"
+
+    assert_output_contains "Failed to restore"
+    assert_file_contains "$TEST_HOME/.foorc" "CURRENT"
+}
+
+@test "restore replaces an existing directory with the backed-up one" {
+    local backup="$TEST_HOME/.dotfiles_backup_20260101_000000"
+    mkdir -p "$backup/.config/app"
+    echo "OLD" > "$backup/.config/app/conf"
+    mkdir -p "$TEST_HOME/.config/app"
+    echo "NEW" > "$TEST_HOME/.config/app/conf"
+
+    run bash -c "echo 1 | '$INSTALL' --restore"
+    assert_success
+
+    assert_file_contains "$TEST_HOME/.config/app/conf" "OLD"
+    # No temp siblings left behind.
+    [ -z "$(find "$TEST_HOME/.config" -name '*.dotfiles-*')" ]
+}
+
 @test "dry-run restore changes nothing" {
     install_with_backup
 

@@ -96,7 +96,8 @@ install_packages() {
     # Package installs need root; fail loudly rather than half-installing.
     case "$PACKAGE_MANAGER" in
         pacman) sudo pacman -S --noconfirm --needed "${packages[@]}" ;;
-        apt)    sudo apt-get update && sudo apt-get install -y "${packages[@]}" ;;
+        # noninteractive: debconf/needrestart prompts would block unattended runs.
+        apt)    sudo apt-get update && sudo env DEBIAN_FRONTEND=noninteractive apt-get install -y "${packages[@]}" ;;
         dnf)    sudo dnf install -y "${packages[@]}" ;;
         zypper) sudo zypper --non-interactive install "${packages[@]}" ;;
         apk)    sudo apk add "${packages[@]}" ;;
@@ -106,5 +107,29 @@ install_packages() {
         return 1
     }
 
+    [[ "$PACKAGE_MANAGER" == apt ]] && link_renamed_binaries
+
     print_ok "Package installation completed"
+}
+
+# Debian/Ubuntu install fd and bat as `fdfind` and `batcat` (name clashes in
+# their archive). The shell config calls the upstream names, including from
+# FZF_DEFAULT_COMMAND where aliases do not apply, so link them into
+# ~/.local/bin. Never replaces anything already there.
+link_renamed_binaries() {
+    local pair renamed upstream src
+    for pair in fdfind:fd batcat:bat; do
+        renamed="${pair%%:*}" upstream="${pair#*:}"
+        src=$(command -v "$renamed" 2>/dev/null) || continue
+        [[ -e "$HOME/.local/bin/$upstream" || -L "$HOME/.local/bin/$upstream" ]] && continue
+
+        if is_dry_run; then
+            print_dry "link ~/.local/bin/$upstream → $src"
+            continue
+        fi
+
+        mkdir -p "$HOME/.local/bin"
+        ln -s "$src" "$HOME/.local/bin/$upstream" && print_ok "Linked $upstream → $src"
+    done
+    return 0
 }

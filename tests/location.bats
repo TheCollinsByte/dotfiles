@@ -97,3 +97,48 @@ teardown() { teardown_sandbox; }
     [ -f "$REPO_COPY/install.sh" ]
     assert_not_exists "$TEST_HOME/nope"
 }
+
+@test "relocation refuses a non-empty existing target" {
+    mkdir -p "$TEST_HOME/occupied"
+    echo keep > "$TEST_HOME/occupied/file"
+
+    run "$REPO_COPY/install.sh" --set-location "$TEST_HOME/occupied"
+    assert_failure
+    assert_output_contains "already exists"
+
+    # Nothing moved, nothing nested.
+    [ -f "$REPO_COPY/install.sh" ]
+    assert_not_exists "$TEST_HOME/occupied/dotfiles"
+    [ "$(cat "$TEST_HOME/occupied/file")" = keep ]
+}
+
+@test "relocation into an existing empty directory does not nest the repo" {
+    mkdir -p "$TEST_HOME/empty"
+
+    run "$REPO_COPY/install.sh" --set-location "$TEST_HOME/empty"
+    assert_success
+
+    [ -f "$TEST_HOME/empty/install.sh" ]
+    assert_not_exists "$TEST_HOME/empty/dotfiles"
+}
+
+@test "relocation refuses a target inside the repo" {
+    run "$REPO_COPY/install.sh" --set-location "$REPO_COPY/sub"
+    assert_failure
+    [ -f "$REPO_COPY/install.sh" ]
+}
+
+@test "relocation leaves symlinks into a sibling with a shared prefix alone" {
+    "$REPO_COPY/install.sh" --minimal --dotfiles >/dev/null 2>&1
+
+    # A link into ".../dotfiles-old" shares the repo path as a string prefix.
+    mkdir -p "${REPO_COPY}-old"
+    touch "${REPO_COPY}-old/thing"
+    mkdir -p "$TEST_HOME/.config"
+    ln -s "${REPO_COPY}-old/thing" "$TEST_HOME/.config/sibling"
+
+    run "$REPO_COPY/install.sh" --set-location "$TEST_HOME/relocated"
+    assert_success
+
+    [ "$(readlink "$TEST_HOME/.config/sibling")" = "${REPO_COPY}-old/thing" ]
+}
