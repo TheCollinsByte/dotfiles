@@ -30,6 +30,12 @@ alias yupgrade='yay -Syu'           # Fetch the database from the official repos
 alias yclean='yay -Sc --aur'        # Clean AUR Cache
 alias pyclean='yay -Sc'             # Clean both the pacman and yay caches
 
+# Cloudflare WARP
+alias wup='warp-cli connect'        # VPN on
+alias wdown='warp-cli disconnect'   # VPN off
+alias wst='warp-cli status'         # Connection state
+alias wip='curl -s https://www.cloudflare.com/cdn-cgi/trace | grep -E "^(warp|ip)="'   # Verify egress goes through WARP
+
 # tmux aliases
 alias tmux="tmux -u"
 alias tns="tmux new -s"
