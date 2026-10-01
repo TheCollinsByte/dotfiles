@@ -39,6 +39,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   list), autosaving every 15 minutes. Run `prefix + I` once to fetch it.
 
 ### Fixed
+- Neovim config (`config/nvim`): format-on-save, `:ReloadConfig`, snippet
+  completion, LSP file-operation renames and the telescope fzf sorter now
+  work; mason, telescope and nvim-tree no longer load at every startup;
+  textobject jumps stop shadowing `]c` (diff hunks) and `]l` (location
+  list); Codeium leaves `<Tab>` to completion (accept with `<C-g>`). Adds a
+  headless smoke test (`config/nvim/tests/smoke.lua`).
 - Suckless forks brought up to date: dwm 6.8 (fixes a getatomprop() heap
   overflow any X client could trigger), st 0.9.3+ (async-safe sigchld),
   dmenu 5.4+ (three crash fixes). st no longer reads past its colour table
